@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".AddProjectActivity"
     android:background="@color/light_purple"
-    android:paddingTop="30dp">
+    android:paddingTop="35dp">
     <ImageButton
         android:id="@+id/back_button"
         android:layout_width="wrap_content"
@@ -14,7 +14,7 @@
         android:src="@drawable/ic_left"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginLeft="25dp"
+        android:layout_marginLeft="30dp"
         android:background="@color/light_purple"/>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/addproject_Title"
@@ -24,15 +24,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="30dp"
-        android:paddingHorizontal="25dp">
-        <TextView
+        android:paddingHorizontal="30dp">
+        <EditText
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="기계학습 팀플"
+            android:hint="제목을 입력하세요"
             android:fontFamily="@font/spoqahansansneo_bold"
             android:textColor="@color/black"
             android:textSize="18dp"
+            android:background="@null"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
@@ -44,30 +45,43 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:src="@drawable/ic_more"
             android:background="@color/light_purple"
-            app:tint="@color/blue" />
+            app:tint="@color/blue"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
     <TextView
+        android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="2023.01.16 오전 03:24 저장됨"
+        android:text="2023년 01월 16일 03:24 작성됨"
         app:layout_constraintTop_toBottomOf="@id/addproject_Title"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="10dp"
         android:textSize="12dp"
-
-        android:paddingLeft="25dp"
+        android:paddingLeft="30dp"
         android:textColor="@color/gray"
         android:fontFamily="@font/spoqahansansneo_regular"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/addproject_list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="30dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/date"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="40dp"
+        app:layout_constraintBottom_toTopOf="@id/audio_play_box"
+        tools:listitem="@layout/fragment_add_project_list"/>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addproject_add_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/audio_play_box"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="25dp"
-        android:layout_marginRight="25dp"
+        android:layout_marginRight="30dp"
         android:src="@drawable/ic_plus"
-
-        />
+        app:maxImageSize="16dp"/>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/audio_play_box"
         android:layout_width="match_parent"
@@ -77,20 +91,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:background="@color/blue"
         android:paddingHorizontal="25dp">
+
         <com.google.android.material.slider.Slider
             android:id="@+id/audio_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="5dp"
+            android:value="0.5"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:thumbColor="@color/white"
             app:thumbRadius="6dp"
-            app:trackHeight="3dp"
             app:trackColorActive="@color/white"
             app:trackColorInactive="#8667F2"
-            android:value="0.5"
-            android:layout_marginTop="5dp" />
+            app:trackHeight="3dp" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -99,16 +115,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/audio_bar"
             android:paddingBottom="20dp">
-            <ImageButton
+            <androidx.appcompat.widget.AppCompatCheckBox
                 android:id="@+id/audio_play_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/audioplay_button_style"
-                android:background="@color/blue"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/audioplay_button_style"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                android:button="@null"/>
             <ImageButton
                 android:id="@+id/audio_back_button"
                 android:layout_width="wrap_content"

@@ -12,7 +12,6 @@ class BottomNavigationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
-
         supportFragmentManager
             .beginTransaction()
             .replace(viewBinding.navContainer.id, HomeFragment())

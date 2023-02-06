@@ -13,10 +13,11 @@ import com.example.voco.databinding.FragmentCountryBinding
 class CountryAdapter(context: Context) : RecyclerView.Adapter<CountryAdapter.ViewHolder>() {
     private lateinit var binding: FragmentCountryBinding
     private val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    var countryList : List<Country> = arrayListOf(Country("영어", R.drawable.ic_america),
+    var countryList : List<Country> = arrayListOf(Country("영어(미국)", R.drawable.ic_america),
+        Country("영어(영국)", R.drawable.ic_united_kingdom),
+        Country("한국어", R.drawable.ic_south_korea),
         Country("중국어",R.drawable.ic_china),
         Country("일본어",R.drawable.ic_japan),
-        Country("포르투갈어",R.drawable.ic_portugal),
         Country("프랑스어",R.drawable.ic_france),
         Country("독일어",R.drawable.ic_germany),)
     override fun getItemCount(): Int = countryList.size

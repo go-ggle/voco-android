@@ -31,13 +31,14 @@
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/menu_mypage.xml" value="0.14270833333333333" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/menu_project.xml" value="0.14270833333333333" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/nav_menu_style.xml" value="0.1" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/project_edittext_style.xml" value="0.72" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/searchview_style.xml" value="0.265625" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/splash_style.xml" value="0.4" />
-        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/activity_add_project.xml" value="0.4" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/activity_add_project.xml" value="0.4311377245508982" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/activity_bottom_navigation.xml" value="0.6" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/activity_splash.xml" value="0.2" />
-        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_add_project_list.xml" value="0.1" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_add_project_list.xml" value="0.5242105263157895" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_country.xml" value="0.72" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_country_icon.xml" value="0.23385416666666667" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_favorites.xml" value="0.12708333333333333" />
@@ -47,6 +48,7 @@
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_project_list.xml" value="0.4" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/menu/activity_main.xml" value="0.1" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/menu/menu_bottomnav.xml" value="0.1" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/menu/menu_language.xml" value="0.16041666666666668" />
       </map>
     </option>
   </component>

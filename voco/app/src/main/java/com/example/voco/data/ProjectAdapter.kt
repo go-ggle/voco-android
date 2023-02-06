@@ -8,21 +8,11 @@ import com.example.voco.R
 import com.example.voco.data.model.Project
 import com.example.voco.databinding.FragmentProjectListBinding
 
-class ProjectAdapter (context: Context) : RecyclerView.Adapter<ProjectAdapter.ViewHolder>() {
+class ProjectAdapter (context: Context, val projectList : ArrayList<Project>) : RecyclerView.Adapter<ProjectAdapter.ViewHolder>() {
     private lateinit var binding: FragmentProjectListBinding
     private val parent : Context = context
     private val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    private var projectList : List<Project> = arrayListOf(Project("기학 발표","2023년 01년 05일 16:22","こんにちは。これは何でもありません。 卒は何でもありません。は何でもありません。"),
-        Project("기학 발표","2023년 01년 05일 16:22","こんにちは。これは何でもありません。 卒は何でもありません。は何でもありません。"),
-        Project("기학 발표","2023년 01년 05일 16:22","こんにちは。これは何でもありません。 卒は何でもありません。は何でもありません。"),
-        Project("기학 발표","2023년 01년 05일 16:22","こんにちは。これは何でもありません。 卒は何でもありません。は何でもありません。"),
-        Project("기학 발표","2023년 01년 05일 16:22","こんにちは。これは何でもありません。 卒は何でもありません。は何でもありません。"),
-        Project("기학 발표","2023년 01년 05일 16:22","こんにちは。これは何でもありません。 卒は何でもありません。は何でもありません。"),
-        Project("기학 발표","2023년 01년 05일 16:22","こんにちは。これは何でもありません。 卒は何でもありません。は何でもありません。"),
-        Project("기학 발표","2023년 01년 05일 16:22","こんにちは。これは何でもありません。 卒は何でもありません。は何でもありません。"),
-        Project("기학 발표","2023년 01년 05일 16:22","こんにちは。これは何でもありません。 卒は何でもありません。は何でもありません。"),
-        Project("기학 발표","2023년 01년 05일 16:22","こんにちは。これは何でもありません。 卒は何でもありません。は何でもありません。")
-    )
+
     override fun getItemCount(): Int = projectList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProjectAdapter.ViewHolder {
@@ -43,7 +33,11 @@ class ProjectAdapter (context: Context) : RecyclerView.Adapter<ProjectAdapter.Vi
                 R.drawable.ic_america,
                 R.drawable.ic_china,
                 R.drawable.ic_japan))
-            binding.countryList.addItemDecoration(HorizontalItemDecoration(20))
+            binding.favorites.isChecked = project.isFavorites
+            binding.countryList.addItemDecoration(HorizontalItemDecoration(10))
+            binding.favorites.setOnCheckedChangeListener { buttonView, isChecked ->
+                // db에 즐겨찾기 여부 update
+            }
         }
     }
 }

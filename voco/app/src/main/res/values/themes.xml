@@ -28,6 +28,11 @@
         <item name="android:fontFamily">@font/suit_regular</item>
         <item name="android:textSize">13dp</item>
     </style>
+    <style name="language_Theme">
+        <item name="android:fontFamily">@font/suit_regular</item>
+        <item name="android:textSize">13dp</item>
+        <item name="android:background">#FEECDB</item>
+    </style>
     <style name="Theme.Voco.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
