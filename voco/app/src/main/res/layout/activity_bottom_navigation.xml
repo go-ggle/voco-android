@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".BottomNavigationActivity">
     <FrameLayout
         android:id="@+id/nav_container"
@@ -24,6 +25,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:itemIconSize="20dp"
+        app:labelVisibilityMode="selected"
         app:itemTextAppearanceActive="@style/BottomNavTheme"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

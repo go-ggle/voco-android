@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".AddProjectActivity"
     android:background="@color/light_purple"
+    android:fitsSystemWindows="true"
     android:paddingTop="35dp">
     <ImageButton
         android:id="@+id/back_button"
@@ -147,5 +148,9 @@
                 android:layout_marginLeft="40dp"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <include
+        android:id="@+id/interval_picker"
+        layout="@layout/dialog_interval_picker"
+        android:visibility="gone"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

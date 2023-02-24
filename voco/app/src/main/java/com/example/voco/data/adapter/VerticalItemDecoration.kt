@@ -1,4 +1,4 @@
-package com.example.voco.data
+package com.example.voco.data.adapter
 
 import android.graphics.Rect
 import android.view.View

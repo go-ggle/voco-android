@@ -1,7 +1,12 @@
 package com.example.voco
 
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+import android.view.WindowManager
+import androidx.annotation.RequiresApi
 import com.example.voco.databinding.ActivityBottomNavigationBinding
 
 
@@ -9,6 +14,7 @@ class BottomNavigationActivity : AppCompatActivity() {
     private val viewBinding: ActivityBottomNavigationBinding by lazy {
         ActivityBottomNavigationBinding.inflate(layoutInflater)
     }
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
@@ -16,7 +22,7 @@ class BottomNavigationActivity : AppCompatActivity() {
             .beginTransaction()
             .replace(viewBinding.navContainer.id, HomeFragment())
             .commitAllowingStateLoss()
-
+        val window = window
         // run을 쓰면 연결된 요소에 코드를 바로 작성 가능
         viewBinding.bottomNav.run{
             setOnItemSelectedListener {
@@ -26,24 +32,21 @@ class BottomNavigationActivity : AppCompatActivity() {
                             .beginTransaction()
                             .replace(viewBinding.navContainer.id, HomeFragment())
                             .commitAllowingStateLoss()
+                        window.setBackgroundDrawableResource(R.color.pure_white)
                     }
                     R.id.menu_board ->{
                         supportFragmentManager
                             .beginTransaction()
                             .replace(viewBinding.navContainer.id, ProjectFragment())
                             .commitAllowingStateLoss()
-                    }
-                    R.id.menu_calendar ->{
-                        supportFragmentManager
-                            .beginTransaction()
-                            .replace(viewBinding.navContainer.id, FavoritesFragment())
-                            .commitAllowingStateLoss()
+                        window.setBackgroundDrawableResource(R.drawable.background)
                     }
                     R.id.menu_setting ->{
                         supportFragmentManager
                             .beginTransaction()
                             .replace(viewBinding.navContainer.id, MypageFragment())
                             .commitAllowingStateLoss()
+                        window.setBackgroundDrawableResource(R.color.light_purple)
                     }
                 }
                 // 리턴값을 true와 false로 받음. 일반적으로는 true로 바로 변경되도록 하면 됨

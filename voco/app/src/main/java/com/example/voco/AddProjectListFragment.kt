@@ -16,4 +16,9 @@ class AddProjectListFragment : Fragment() {
         binding = FragmentAddProjectListBinding.inflate(layoutInflater)
         return binding.root
     }
+    private fun clearFocus() {
+        if (activity != null && requireActivity().currentFocus != null) {
+            binding.projectEditText.clearFocus()
+        }
+    }
 }

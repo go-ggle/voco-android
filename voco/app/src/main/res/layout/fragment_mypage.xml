@@ -28,8 +28,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:elevation="10dp"
-        android:padding="25dp"
-        android:layout_marginHorizontal="20dp">
+        android:padding="23dp"
+        android:layout_marginHorizontal="25dp">
         <TextView
             android:id="@+id/board_title"
             android:layout_width="wrap_content"
@@ -51,7 +51,7 @@
             android:id="@+id/download_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/round_button_style"
+            android:background="@drawable/background_round_30"
             android:text="다운로드 횟수"
             android:textColor="@color/white"
             android:fontFamily="@font/suit_regular"
@@ -86,7 +86,7 @@
             android:id="@+id/textNum_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/round_button_style"
+            android:background="@drawable/background_round_30"
             android:text="글자 수"
             android:textColor="@color/white"
             android:fontFamily="@font/suit_regular"
@@ -147,7 +147,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginHorizontal="20dp"
+                android:layout_marginHorizontal="25dp"
                 android:layout_marginTop="60dp">
                 <TextView
                     android:id="@+id/setting1_title"
@@ -164,9 +164,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@id/setting1_title"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="16dp"
                     android:background="@color/light_purple"
-                    android:text="아이디/비밀번호 변경"
+                    android:text="팀 스페이스 관리"
                     android:textSize="14dp"
                     android:textAlignment="textStart"
                     android:drawableEnd="@drawable/ic_right"
@@ -178,7 +178,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     app:layout_constraintTop_toBottomOf="@id/setting1_1"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="8dp"
                     android:background="#D4D6DD"/>
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/setting1_2"
@@ -186,7 +186,7 @@
                     android:layout_height="wrap_content"
                     style="?android:attr/borderlessButtonStyle"
                     app:layout_constraintTop_toBottomOf="@id/setting1_line1"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="8dp"
                     android:background="@color/light_purple"
                     android:text="결제 수단 변경"
                     android:textSize="14dp"
@@ -199,7 +199,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     app:layout_constraintTop_toBottomOf="@id/setting1_2"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="8dp"
                     android:background="#D4D6DD"/>
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/setting1_3"
@@ -207,7 +207,7 @@
                     android:layout_height="wrap_content"
                     style="?android:attr/borderlessButtonStyle"
                     app:layout_constraintTop_toBottomOf="@id/setting1_line2"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="8dp"
                     android:background="@color/light_purple"
                     android:text="계정 정보 확인"
                     android:textSize="14dp"
@@ -224,7 +224,7 @@
                 app:layout_constraintTop_toBottomOf="@id/setting1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginHorizontal="20dp"
+                android:layout_marginHorizontal="25dp"
                 android:layout_marginTop="60dp"
                 android:paddingBottom="30dp">
                 <TextView
@@ -242,10 +242,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@id/setting2_title"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="16dp"
                     android:background="@color/light_purple"
                     style="?android:attr/borderlessButtonStyle"
-                    android:text="목소리 재등록"
+                    android:text="목소리 등록"
                     android:textSize="14dp"
                     android:textAlignment="textStart"
                     android:drawableEnd="@drawable/ic_right"
@@ -256,14 +256,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     app:layout_constraintTop_toBottomOf="@id/setting2_1"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="8dp"
                     android:background="#D4D6DD"/>
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/setting2_2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@id/setting2_line1"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="8dp"
                     style="?android:attr/borderlessButtonStyle"
                     android:background="@color/light_purple"
                     android:text="개인정보처리약관"
@@ -277,7 +277,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     app:layout_constraintTop_toBottomOf="@id/setting2_2"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="8dp"
                     android:background="#D4D6DD"/>
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/setting2_3"
@@ -285,7 +285,7 @@
                     android:layout_height="wrap_content"
                     style="?android:attr/borderlessButtonStyle"
                     app:layout_constraintTop_toBottomOf="@id/setting2_line2"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="8dp"
                     android:background="@color/light_purple"
                     android:text="라이센스"
                     android:textSize="14dp"

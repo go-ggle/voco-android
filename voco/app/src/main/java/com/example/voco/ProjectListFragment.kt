@@ -6,8 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.voco.data.HorizontalItemDecoration
-import com.example.voco.data.ProjectCountryAdapter
 import com.example.voco.databinding.FragmentProjectListBinding
 
 

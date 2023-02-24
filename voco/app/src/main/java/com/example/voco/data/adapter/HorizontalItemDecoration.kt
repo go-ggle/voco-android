@@ -1,4 +1,4 @@
-package com.example.voco.data
+package com.example.voco.data.adapter
 
 import android.graphics.Rect
 import android.view.View
@@ -13,6 +13,6 @@ class HorizontalItemDecoration(val offset : Int) : RecyclerView.ItemDecoration()
     ) {
         super.getItemOffsets(outRect, view, parent, state)
         outRect.left = offset
-
+        outRect.right = offset
     }
 }

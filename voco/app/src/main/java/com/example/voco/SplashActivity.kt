@@ -3,6 +3,8 @@ package com.example.voco
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.content.Intent
+import com.example.voco.data.model.AppDatabase
+import com.example.voco.data.model.Country
 
 
 class SplashActivity : AppCompatActivity() {

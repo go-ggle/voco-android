@@ -6,17 +6,24 @@
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.265625" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/add_button_style.xml" value="0.265625" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/audioplay_button_style.xml" value="0.315625" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/background_round_30.xml" value="0.265625" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/background_round_4.xml" value="0.26153846153846155" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/background_roundbottom_4.xml" value="0.26153846153846155" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/background_roundtop_4.xml" value="0.26153846153846155" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/board_style.xml" value="0.265625" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/countrybutton_style.xml" value="0.265625" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/favorites_button_color.xml" value="0.14375" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/favorites_button_style.xml" value="0.1390625" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/ic_america.xml" value="0.14322916666666666" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/ic_china.xml" value="0.14322916666666666" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/ic_delete.xml" value="0.265625" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/ic_download.xml" value="0.265625" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/ic_favorites_check.xml" value="0.25" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/ic_france.xml" value="0.14322916666666666" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/ic_japan.xml" value="0.14322916666666666" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/ic_launcher_background.xml" value="0.265625" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/ic_menu_favorites.xml" value="0.1" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/ic_menu_favorites_s.xml" value="0.19114583333333332" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/ic_menu_home.xml" value="0.1" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/ic_menu_home_s.xml" value="0.1" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/ic_menu_project.xml" value="0.1" />
@@ -26,28 +33,38 @@
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/ic_portugal.xml" value="0.14322916666666666" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/ic_right.xml" value="0.14322916666666666" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/ic_splash.xml" value="0.22291666666666668" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/ic_sub_play.xml" value="0.265625" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/ic_subplay.xml" value="0.18020833333333333" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/ic_team_selected.xml" value="0.265625" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/ic_toggle_down.xml" value="0.265625" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/ic_united_kingdom.xml" value="0.265625" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/menu_favorites.xml" value="0.14270833333333333" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/menu_home.xml" value="0.14270833333333333" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/menu_mypage.xml" value="0.14270833333333333" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/menu_project.xml" value="0.14270833333333333" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/nav_menu_style.xml" value="0.1" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/project_edittext_focused.xml" value="0.265625" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/project_edittext_style.xml" value="0.72" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/project_edittext_unfocused.xml" value="0.1375" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/round_button_style.xml" value="0.265625" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/searchview_style.xml" value="0.265625" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/drawable/splash_style.xml" value="0.4" />
-        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/activity_add_project.xml" value="0.4311377245508982" />
-        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/activity_bottom_navigation.xml" value="0.6" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/activity_add_project.xml" value="0.2" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/activity_bottom_navigation.xml" value="0.12" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/activity_splash.xml" value="0.2" />
-        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_add_project_list.xml" value="0.5242105263157895" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/dialog_interval_picker.xml" value="0.2" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_add_project_list.xml" value="0.3540315106580167" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_country.xml" value="0.72" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_country_icon.xml" value="0.23385416666666667" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_favorites.xml" value="0.12708333333333333" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_home.xml" value="0.264" />
-        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_mypage.xml" value="0.4" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_mypage.xml" value="0.3226452905811623" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_project.xml" value="0.264" />
-        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_project_list.xml" value="0.4" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_project_list.xml" value="0.536" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_team.xml" value="0.8" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/menu/activity_main.xml" value="0.1" />
-        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/menu/menu_bottomnav.xml" value="0.1" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/menu/menu_bottomnav.xml" value="0.152" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/menu/menu_language.xml" value="0.16041666666666668" />
       </map>
     </option>

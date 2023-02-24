@@ -9,10 +9,6 @@
         android:title="@string/title_project"
         android:icon="@drawable/menu_project"/>
     <item
-        android:id="@+id/menu_calendar"
-        android:title="@string/title_favorites"
-        android:icon="@drawable/menu_favorites"/>
-    <item
         android:id="@+id/menu_setting"
         android:title="@string/title_mypage"
         android:icon="@drawable/menu_mypage"/>
