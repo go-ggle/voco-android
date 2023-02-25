@@ -1,4 +1,4 @@
-package com.example.voco
+package com.example.voco.ui
 
 import android.content.Context
 import android.content.Intent
@@ -10,24 +10,24 @@ import android.view.ViewGroup
 import com.example.voco.data.adapter.ProjectAdapter
 import com.example.voco.data.adapter.VerticalItemDecoration
 import com.example.voco.data.model.Project
-import com.example.voco.databinding.FragmentProjectBinding
+import com.example.voco.databinding.FragmentSearchBinding
 
-class ProjectFragment : Fragment() {
-    private lateinit var binding: FragmentProjectBinding
+class SearchFragment : Fragment() {
+    private lateinit var binding: FragmentSearchBinding
     private lateinit var bottomNavigationActivity : BottomNavigationActivity
     private lateinit var searchProjectList : ArrayList<Project>
     private var projectList : ArrayList<Project> = arrayListOf(
-        Project("미국 여행 브이로그","2023년 01년 05일 16:22",0,true,1),
-        Project("영어 말하기대회 대본","2023년 01년 05일 16:22", 1,true,2),
-        Project("프랑스 여행 브이로그","2023년 01년 05일 16:22", 5,false,3),
-        Project("중국어 연습","2023년 01년 05일 16:22",3,true,4),
-        Project("미국 여행 브이로그","2023년 01년 05일 16:22",4,true,5),
-        Project("미국 여행 브이로그","2023년 01년 05일 16:22",5,true,6),
-        Project("미국 여행 브이로그","2023년 01년 05일 16:22",6,true,7),
-        Project("미국 여행 브이로그","2023년 01년 05일 16:22",0,true,8),
-        Project("미국 여행 브이로그","2023년 01년 05일 16:22",0,true,9),
-        Project("미국 여행 브이로그","2023년 01년 05일 16:22",0,true,10),
-        Project("미국 여행 브이로그","2023년 01년 05일 16:22",0,true,11),
+            Project("미국 여행 브이로그","2023년 01년 05일 16:22",0,true,1),
+            Project("영어 말하기대회 대본","2023년 01년 05일 16:22", 1,true,2),
+            Project("프랑스 여행 브이로그","2023년 01년 05일 16:22", 5,false,3),
+            Project("중국어 연습","2023년 01년 05일 16:22",3,true,4),
+            Project("미국 여행 브이로그","2023년 01년 05일 16:22",4,true,5),
+            Project("미국 여행 브이로그","2023년 01년 05일 16:22",5,false,6),
+            Project("미국 여행 브이로그","2023년 01년 05일 16:22",6,true,7),
+            Project("미국 여행 브이로그","2023년 01년 05일 16:22",0,true,8),
+            Project("미국 여행 브이로그","2023년 01년 05일 16:22",0,true,9),
+            Project("미국 여행 브이로그","2023년 01년 05일 16:22",0,true,10),
+            Project("미국 여행 브이로그","2023년 01년 05일 16:22",0,true,11),
         )
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -37,12 +37,12 @@ class ProjectFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentProjectBinding.inflate(layoutInflater)
+        binding = FragmentSearchBinding.inflate(layoutInflater)
         binding.projectList.adapter = ProjectAdapter(bottomNavigationActivity, 1, projectList)
         binding.projectList.addItemDecoration(VerticalItemDecoration(28))
 
         binding.projectAddButton.setOnClickListener {
-            val intent = Intent(bottomNavigationActivity, AddProjectActivity::class.java)
+            val intent = Intent(bottomNavigationActivity, CreateProjectActivity::class.java)
             startActivity(intent)
         }
 

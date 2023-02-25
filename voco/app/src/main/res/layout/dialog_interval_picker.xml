@@ -80,7 +80,7 @@
             android:textColor="@color/white"
             android:fontFamily="@font/spoqahansansneo_regular"
             android:textSize="16dp"
-            android:background="@drawable/background_round_4"
+            android:background="@drawable/background_round_4_white"
             android:backgroundTint="@color/light_gray2"
             android:text="@string/cancel_button"
             android:stateListAnimator="@null"/>
@@ -94,7 +94,7 @@
             android:textColor="@color/white"
             android:fontFamily="@font/spoqahansansneo_regular"
             android:textSize="16dp"
-            android:background="@drawable/background_round_4"
+            android:background="@drawable/background_round_4_white"
             android:backgroundTint="@color/light_orange"
             android:stateListAnimator="@null"/>
     </LinearLayout>

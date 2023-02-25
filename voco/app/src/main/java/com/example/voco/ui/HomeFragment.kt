@@ -1,4 +1,4 @@
-package com.example.voco
+package com.example.voco.ui
 
 import android.content.Context
 import android.os.Bundle
@@ -6,16 +6,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.voco.data.adapter.HorizontalItemDecoration
-import com.example.voco.data.adapter.ProjectAdapter
-import com.example.voco.data.adapter.TeamAdapter
-import com.example.voco.data.adapter.VerticalItemDecoration
+import com.example.voco.component.TeamBottomSheet
+import com.example.voco.data.adapter.*
 import com.example.voco.data.model.Project
 import com.example.voco.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var bottomNavigationActivity : BottomNavigationActivity
+    private val bottomSheet = TeamBottomSheet()
     private var projectList : ArrayList<Project> = arrayListOf(
         Project("미국 여행 브이로그","2023년 01년 05일 16:22",0,true,1),
         Project("영어 말하기대회 대본","2023년 01년 05일 16:22", 1,true,2),
@@ -38,11 +37,15 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val tabAdapter = TabAdapter(parentFragmentManager)
         binding = FragmentHomeBinding.inflate(layoutInflater)
         binding.teams.adapter = TeamAdapter(bottomNavigationActivity)
         binding.teams.addItemDecoration(HorizontalItemDecoration(12))
-        binding.projects.adapter = ProjectAdapter(bottomNavigationActivity,0,projectList)
-        binding.projects.addItemDecoration(VerticalItemDecoration(2))
+        binding.projects.adapter = tabAdapter
+        binding.menu.setupWithViewPager(binding.projects)
+        binding.addTeamButton.setOnClickListener {
+            bottomSheet.show(parentFragmentManager, bottomSheet.tag)
+        }
         return binding.root
     }
 

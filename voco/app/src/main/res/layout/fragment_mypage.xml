@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".MypageFragment"
+    tools:context=".ui.MypageFragment"
     android:background="@color/light_purple">
     <TextView
         android:id="@+id/title"
@@ -13,7 +13,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:text="마이페이지"
         android:textSize="18dp"
         android:textColor="@color/dark_blue"
@@ -23,7 +23,7 @@
         android:layout_marginTop="30dp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/board_style"
+        android:background="@drawable/background_round_12_purple"
         app:layout_constraintTop_toBottomOf="@id/title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -51,7 +51,7 @@
             android:id="@+id/download_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/background_round_30"
+            android:background="@drawable/background_round_30_blue"
             android:text="다운로드 횟수"
             android:textColor="@color/white"
             android:fontFamily="@font/suit_regular"
@@ -86,7 +86,7 @@
             android:id="@+id/textNum_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/background_round_30"
+            android:background="@drawable/background_round_30_blue"
             android:text="글자 수"
             android:textColor="@color/white"
             android:fontFamily="@font/suit_regular"
@@ -112,6 +112,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.ramijemli.percentagechartview.PercentageChartView
+            android:id="@+id/chart"
             android:layout_width="106dp"
             android:layout_height="106dp"
             app:layout_constraintEnd_toEndOf="parent"

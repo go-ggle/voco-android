@@ -1,4 +1,4 @@
-package com.example.voco
+package com.example.voco.ui
 
 import android.annotation.SuppressLint
 import android.os.Build
@@ -7,16 +7,17 @@ import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import androidx.annotation.RequiresApi
-import com.example.voco.data.adapter.AddProjectAdapter
+import com.example.voco.R
+import com.example.voco.data.adapter.BlockAdapter
 import com.example.voco.data.adapter.VerticalItemDecoration
 import com.example.voco.data.model.ProjectInfo
-import com.example.voco.databinding.ActivityAddProjectBinding
+import com.example.voco.databinding.ActivityCreateProjectBinding
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class AddProjectActivity : AppCompatActivity(), AddProjectAdapter.IntervalPicker {
-    private lateinit var binding: ActivityAddProjectBinding
-    private lateinit var adapter: AddProjectAdapter
+class CreateProjectActivity : AppCompatActivity(), BlockAdapter.IntervalPicker {
+    private lateinit var binding: ActivityCreateProjectBinding
+    private lateinit var adapter: BlockAdapter
     private var intervalChangeItemPos = -1
     private val projectId : Int = 0
     private var projectInfoList = arrayListOf(ProjectInfo(projectId,0,0,"",0,0.01))
@@ -27,13 +28,13 @@ class AddProjectActivity : AppCompatActivity(), AddProjectAdapter.IntervalPicker
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAddProjectBinding.inflate(layoutInflater)
+        binding = ActivityCreateProjectBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val window = window
         window.setBackgroundDrawableResource(R.color.light_purple)
 
-        adapter = AddProjectAdapter(this, projectId, projectInfoList)
+        adapter = BlockAdapter(this, projectId, projectInfoList)
         binding.addprojectList.adapter = adapter
         binding.addprojectList.addItemDecoration(VerticalItemDecoration(40))
         binding.date.text = LocalDateTime.now().format(dateFormatter)
@@ -59,7 +60,7 @@ class AddProjectActivity : AppCompatActivity(), AddProjectAdapter.IntervalPicker
         }
         // 리스트 마지막에 새로운 블럭 추가
         binding.addprojectAddButton.setOnClickListener {
-            (binding.addprojectList.adapter as AddProjectAdapter).addProjectInfo(adapter.itemCount)
+            (binding.addprojectList.adapter as BlockAdapter).addProjectInfo(adapter.itemCount)
         }
     }
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
@@ -75,7 +76,7 @@ class AddProjectActivity : AppCompatActivity(), AddProjectAdapter.IntervalPicker
     }
     private fun closeIntervalPicker(isUpdate: Boolean) {
         if(isUpdate)
-            (binding.addprojectList.adapter as AddProjectAdapter).updateInterval(intervalChangeItemPos,binding.intervalPicker.minute.value,binding.intervalPicker.second.value,binding.intervalPicker.msecond.value)
+            (binding.addprojectList.adapter as BlockAdapter).updateInterval(intervalChangeItemPos,binding.intervalPicker.minute.value,binding.intervalPicker.second.value,binding.intervalPicker.msecond.value)
         binding.intervalPicker.root.visibility = View.GONE
         intervalChangeItemPos = -1
     }

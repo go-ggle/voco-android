@@ -8,6 +8,7 @@
     <color name="purple">#3821C2</color>
     <color name="dark_purple">#483F8A</color>
     <color name="light_purple">#EBEEFF</color>
+    <color name="light_purple2">#DBD2FC</color>
     <color name="regular_purple">#8667F2</color>
     <color name="orange">#F77A55</color>
     <color name="light_orange">#FFA857</color>
@@ -16,6 +17,7 @@
     <color name="light_gray">#F6F8FF</color>
     <color name="light_gray2">#DADADA</color>
     <color name="light_gray3">#E4E4E4</color>
+    <color name="light_gray4">#F5F5FA</color>
     <color name="dark_gray">#7E7E7E</color>
     <color name="navi">#8667F2</color>
     <color name="transparency">#00ff0000</color>

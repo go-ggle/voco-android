@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".BottomNavigationActivity">
+    tools:context=".ui.BottomNavigationActivity">
     <FrameLayout
         android:id="@+id/nav_container"
         android:layout_width="0dp"
@@ -19,8 +19,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:menu="@menu/menu_bottomnav"
-        app:itemIconTint="@drawable/nav_menu_style"
-        app:itemTextColor="@drawable/nav_menu_style"
+        app:itemIconTint="@drawable/selector_navigation"
+        app:itemTextColor="@drawable/selector_navigation"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

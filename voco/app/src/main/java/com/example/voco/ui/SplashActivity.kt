@@ -1,10 +1,8 @@
-package com.example.voco
+package com.example.voco.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.content.Intent
-import com.example.voco.data.model.AppDatabase
-import com.example.voco.data.model.Country
 
 
 class SplashActivity : AppCompatActivity() {

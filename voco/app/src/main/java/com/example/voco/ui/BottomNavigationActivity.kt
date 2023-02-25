@@ -1,12 +1,10 @@
-package com.example.voco
+package com.example.voco.ui
 
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-import android.view.WindowManager
 import androidx.annotation.RequiresApi
+import com.example.voco.R
 import com.example.voco.databinding.ActivityBottomNavigationBinding
 
 
@@ -37,9 +35,9 @@ class BottomNavigationActivity : AppCompatActivity() {
                     R.id.menu_board ->{
                         supportFragmentManager
                             .beginTransaction()
-                            .replace(viewBinding.navContainer.id, ProjectFragment())
+                            .replace(viewBinding.navContainer.id, SearchFragment())
                             .commitAllowingStateLoss()
-                        window.setBackgroundDrawableResource(R.drawable.background)
+                        window.setBackgroundDrawableResource(R.drawable.background_search)
                     }
                     R.id.menu_setting ->{
                         supportFragmentManager

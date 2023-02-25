@@ -1,4 +1,4 @@
-package com.example.voco
+package com.example.voco.component
 
 import android.content.Context
 import android.os.Bundle
@@ -6,11 +6,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.voco.databinding.FragmentProjectListBinding
+import com.example.voco.ui.BottomNavigationActivity
+import com.example.voco.databinding.FragmentProjectBinding
 
 
-class ProjectListFragment : Fragment() {
-    private lateinit var binding: FragmentProjectListBinding
+class ProjectFragment : Fragment() {
+    private lateinit var binding: FragmentProjectBinding
     private lateinit var bottomNavigationActivity : BottomNavigationActivity
 
     override fun onAttach(context: Context) {
@@ -21,7 +22,7 @@ class ProjectListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentProjectListBinding.inflate(layoutInflater)
+        binding = FragmentProjectBinding.inflate(layoutInflater)
         return binding.root
     }
 }

@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull
 data class Country(
     @PrimaryKey @ColumnInfo(name="countryId") val countryId: Int,
     @NotNull @ColumnInfo(name = "countryName") val countryName: String,
-    @NotNull @ColumnInfo(name = "countryIcon") val countryIcon: Int,
 )
 @Entity(tableName="Project")
 data class Project(

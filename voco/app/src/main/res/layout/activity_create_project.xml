@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddProjectActivity"
+    tools:context=".ui.CreateProjectActivity"
     android:background="@color/light_purple"
     android:fitsSystemWindows="true"
     android:paddingTop="35dp">
@@ -72,7 +72,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="40dp"
         app:layout_constraintBottom_toTopOf="@id/audio_play_box"
-        tools:listitem="@layout/fragment_add_project_list"/>
+        tools:listitem="@layout/fragment_block"/>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addproject_add_button"
         android:layout_width="wrap_content"
@@ -120,7 +120,7 @@
                 android:id="@+id/audio_play_button"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:background="@drawable/audioplay_button_style"
+                android:background="@drawable/selector_play"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

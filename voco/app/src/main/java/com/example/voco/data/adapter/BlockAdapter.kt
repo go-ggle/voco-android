@@ -7,21 +7,22 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.voco.data.model.ProjectInfo
-import com.example.voco.databinding.FragmentAddProjectListBinding
 import android.view.inputmethod.InputMethodManager
+import com.example.voco.databinding.FragmentBlockBinding
 
 
-class AddProjectAdapter (val context: Context, projectId: Int, var projectInfoList : ArrayList<ProjectInfo>) : RecyclerView.Adapter<AddProjectAdapter.ViewHolder>() {
-    private lateinit var binding: FragmentAddProjectListBinding
+class BlockAdapter (val context: Context, projectId: Int, var projectInfoList : ArrayList<ProjectInfo>) : RecyclerView.Adapter<BlockAdapter.ViewHolder>() {
+    private lateinit var binding: FragmentBlockBinding
     private lateinit var intervalPicker: IntervalPicker
     private val projectId = projectId
     private val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
     private val keyboard: InputMethodManager by lazy {
         context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
     }
     override fun getItemCount(): Int = projectInfoList.size
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = FragmentAddProjectListBinding.inflate(inflater, parent, false)
+        binding = FragmentBlockBinding.inflate(inflater, parent, false)
         return ViewHolder(binding)
     }
 
@@ -30,7 +31,7 @@ class AddProjectAdapter (val context: Context, projectId: Int, var projectInfoLi
         holder.bind(projectInfoList[position])
     }
 
-    inner class ViewHolder(private val binding: FragmentAddProjectListBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(private val binding: FragmentBlockBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(projectInfo: ProjectInfo) {
             binding.projectEditText.setText(projectInfo.content)
             binding.projectEditText.requestFocus()
@@ -82,24 +83,24 @@ class AddProjectAdapter (val context: Context, projectId: Int, var projectInfoLi
         else {
             keyboard.showSoftInput(binding.projectEditText, 0)
             projectInfoList.add(position,ProjectInfo(projectId, 0, 0, "", 0, 0.01))
-            this@AddProjectAdapter.notifyItemInserted(position)
+            this@BlockAdapter.notifyItemInserted(position)
         }
     }
     // 프로젝트 block 삭제
     fun deleteProjectInfo(position: Int){
         projectInfoList.removeAt(position)
-        this@AddProjectAdapter.notifyItemRemoved(position)
+        this@BlockAdapter.notifyItemRemoved(position)
     }
     // 프로젝트 초기화
     fun deleteProjectInfoAll(size: Int){
         projectInfoList = arrayListOf(ProjectInfo(projectId,0,0,"",0,0.01))
-        this@AddProjectAdapter.notifyItemRangeRemoved(0,size-1)
+        this@BlockAdapter.notifyItemRangeRemoved(0,size-1)
     }
     // 인터벌 수정
     fun updateInterval(position: Int, minute:Int, second: Int, msecond: Int){
         projectInfoList[position].intervalMinute = minute
         projectInfoList[position].intervalSecond = second+msecond*0.01
-        this@AddProjectAdapter.notifyItemChanged(position)
+        this@BlockAdapter.notifyItemChanged(position)
     }
     interface IntervalPicker{
         fun openIntervalPicker(position: Int, minute:Int, second:Int, msecond:Int)

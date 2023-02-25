@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".AddProjectListFragment">
+    tools:context=".component.BlockFragment">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/project_menu_container"
         android:layout_width="0dp"
@@ -79,7 +79,7 @@
         android:id="@+id/project_editText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/project_edittext_style"
+        android:background="@drawable/selector_block"
         android:focusableInTouchMode="true"
         app:layout_constraintTop_toBottomOf="@id/project_menu_container"
         app:layout_constraintStart_toStartOf="parent"
@@ -102,7 +102,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:background="@drawable/background_round_30"
+        android:background="@drawable/background_round_30_blue"
         android:backgroundTint="@color/white"
         android:text="인터벌 0.01초"
         android:fontFamily="@font/suit_regular"
@@ -123,7 +123,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginLeft="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:background="@drawable/background_round_30"
+        android:background="@drawable/background_round_30_blue"
         android:backgroundTint="@color/white"
         android:stateListAnimator="@null"
         android:text="음성"
