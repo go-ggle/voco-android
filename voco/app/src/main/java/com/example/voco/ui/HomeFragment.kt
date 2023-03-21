@@ -39,13 +39,15 @@ class HomeFragment : Fragment() {
     ): View? {
         val tabAdapter = TabAdapter(parentFragmentManager)
         binding = FragmentHomeBinding.inflate(layoutInflater)
+
         binding.teams.adapter = TeamAdapter(bottomNavigationActivity)
         binding.teams.addItemDecoration(HorizontalItemDecoration(12))
-        binding.projects.adapter = tabAdapter
-        binding.menu.setupWithViewPager(binding.projects)
         binding.addTeamButton.setOnClickListener {
             bottomSheet.show(parentFragmentManager, bottomSheet.tag)
         }
+
+        binding.projects.adapter = tabAdapter
+        binding.menu.setupWithViewPager(binding.projects)
         return binding.root
     }
 

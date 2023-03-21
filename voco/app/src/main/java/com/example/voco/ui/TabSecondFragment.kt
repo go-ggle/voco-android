@@ -27,6 +27,7 @@ class TabSecondFragment : Fragment() {
         Project("미국 여행 브이로그","2023년 01년 05일 16:22",0,true,10),
         Project("미국 여행 브이로그","2023년 01년 05일 16:22",0,true,11),
     ).filter{ it.isFavorites } as ArrayList<Project>
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         bottomNavigationActivity = context as BottomNavigationActivity
@@ -36,10 +37,12 @@ class TabSecondFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentTabBinding.inflate(layoutInflater)
+        return binding.root
+    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.projects.adapter = ProjectAdapter(bottomNavigationActivity,0,projectList)
         binding.projects.addItemDecoration(VerticalItemDecoration(2))
-
-        return binding.root
     }
     fun newInstant() : TabSecondFragment
     {

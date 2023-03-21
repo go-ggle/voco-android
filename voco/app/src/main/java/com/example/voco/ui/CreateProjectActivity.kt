@@ -36,7 +36,7 @@ class CreateProjectActivity : AppCompatActivity(), BlockAdapter.IntervalPicker {
 
         adapter = BlockAdapter(this, projectId, projectInfoList)
         binding.addprojectList.adapter = adapter
-        binding.addprojectList.addItemDecoration(VerticalItemDecoration(40))
+        binding.addprojectList.addItemDecoration(VerticalItemDecoration(20))
         binding.date.text = LocalDateTime.now().format(dateFormatter)
 
         // 인터벌 선택 picker

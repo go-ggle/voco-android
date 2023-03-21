@@ -29,18 +29,21 @@ class TabFirstFragment : Fragment() {
     )
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        bottomNavigationActivity = context as BottomNavigationActivity
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentTabBinding.inflate(layoutInflater)
-        binding.projects.adapter = ProjectAdapter(bottomNavigationActivity,0,projectList)
-        binding.projects.addItemDecoration(VerticalItemDecoration(2))
-
         return binding.root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        binding.projects.adapter = ProjectAdapter(bottomNavigationActivity,0,projectList)
+        binding.projects.addItemDecoration(VerticalItemDecoration(2))
+        super.onViewCreated(view, savedInstanceState)
+    }
+
     fun newInstant() : TabFirstFragment
     {
         val args = Bundle()
