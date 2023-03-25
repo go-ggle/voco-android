@@ -3,17 +3,17 @@ package com.example.voco.data.adapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import com.example.voco.ui.TabFirstFragment
-import com.example.voco.ui.TabSecondFragment
+import androidx.fragment.app.FragmentStatePagerAdapter
+import com.example.voco.data.model.Project
+import com.example.voco.ui.TabFragment
 
-class TabAdapter (fm : FragmentManager): FragmentPagerAdapter(fm) {
+class TabAdapter (fm : FragmentManager, private val projectList: ArrayList<Project>): FragmentStatePagerAdapter(fm) {
     //position 에 따라 원하는 Fragment로 이동시키기
     override fun getItem(position: Int): Fragment =  when(position)
     {
-        0-> TabFirstFragment().newInstant()
-        else-> TabSecondFragment().newInstant()
+        0-> TabFragment(projectList)
+        else-> TabFragment(projectList.filter{ it.isFavorites } as ArrayList<Project>)
     }
-
     //tab의 개수만큼 return
     override fun getCount(): Int = 2
 
@@ -23,4 +23,5 @@ class TabAdapter (fm : FragmentManager): FragmentPagerAdapter(fm) {
         0->"전체"
         else->"즐겨찾기"
     }
+
 }

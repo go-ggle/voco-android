@@ -10,13 +10,13 @@
         android:id="@+id/logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_logo"
+        android:background="@drawable/ic_logo"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/login_container1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:paddingVertical="20dp"
-        app:tint="@color/purple" />
+        android:backgroundTint="@color/purple" />
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/login_container1"
         android:layout_width="match_parent"
@@ -90,8 +90,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/login_container1"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:paddingHorizontal="40dp"
-        android:layout_marginBottom="20dp">
+        android:paddingHorizontal="30dp">
         <TextView
             android:id="@+id/sns_login_title"
             android:layout_width="match_parent"
@@ -103,29 +102,45 @@
             android:fontFamily="@font/spoqahansansneo_regular"
             app:layout_constraintTop_toTopOf="parent"
             android:paddingBottom="30dp"/>
-        <androidx.appcompat.widget.AppCompatImageButton
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/sns_login_kakao"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_kakao_login"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/ic_kakao"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="10dp"
+            android:background="@drawable/background_round_30_light_gray"
+            android:backgroundTint="@color/kakao_yellow"
             app:layout_constraintTop_toBottomOf="@id/sns_login_title"
             app:layout_constraintStart_toStartOf="parent"
-            android:elevation="5dp"/>
-        <androidx.appcompat.widget.AppCompatImageButton
+            android:elevation="5dp"
+            android:layout_marginStart="10dp"/>
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/sns_login_naver"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_naver_login"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/background_round_30_light_gray"
+            android:backgroundTint="@color/naver_green"
             app:layout_constraintTop_toBottomOf="@id/sns_login_title"
             app:layout_constraintStart_toEndOf="@id/sns_login_kakao"
-            app:layout_constraintEnd_toStartOf="@id/sns_login_google"/>
-        <androidx.appcompat.widget.AppCompatImageButton
+            app:layout_constraintEnd_toStartOf="@id/sns_login_google"
+            android:src="@drawable/ic_naver"
+            android:padding="17dp"
+            android:elevation="5dp"
+            app:tint="@color/pure_white"/>
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/sns_login_google"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_google_login"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/background_round_30_light_gray"
+            android:backgroundTint="@color/white"
             app:layout_constraintTop_toBottomOf="@id/sns_login_title"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="10dp"
+            android:elevation="5dp"
+            android:src="@drawable/ic_google"
+            android:padding="12dp"/>
         <TextView
             android:id="@+id/sns_login_sub_title"
             android:layout_width="wrap_content"

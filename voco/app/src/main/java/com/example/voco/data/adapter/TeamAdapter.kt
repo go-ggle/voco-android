@@ -6,12 +6,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.voco.R
 import com.example.voco.databinding.FragmentTeamBinding
+import com.example.voco.login.GlobalApplication
 
 class TeamAdapter(context: Context) : RecyclerView.Adapter<TeamAdapter.ViewHolder>() {
     private lateinit var binding: FragmentTeamBinding
     private val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     private var teamList :List<Pair<Int,String>> = listOf(Pair(0,"정민정"),Pair(1,"고글"),Pair(2,"GOGGLE"),Pair(3,"GOGGLE"),Pair(4,"GOGGLE"),Pair(5,"GOGGLE"),Pair(6,"GOGGLE"),Pair(7,"GOGGLE"))
-    var currentTeam : Int = 0
+    var currentTeam : Int = GlobalApplication.prefs.getString("team","0").toInt()
 
     override fun getItemCount(): Int = teamList.size
 
@@ -26,8 +27,10 @@ class TeamAdapter(context: Context) : RecyclerView.Adapter<TeamAdapter.ViewHolde
 
     inner class ViewHolder(private val binding: FragmentTeamBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(team: Pair<Int,String>){
-            binding.teamButton.isSelected = when(adapterPosition){currentTeam->{true} else-> {false}}
-            binding.teamButton.setImageResource(when(adapterPosition){0->{R.drawable.ic_team_one} else -> {R.drawable.ic_team_group}})
+            binding.teamButton.run{
+                isSelected = when(adapterPosition){currentTeam->{true} else-> {false}}
+                setImageResource(when(adapterPosition){0->{R.drawable.ic_team_one} else -> {R.drawable.ic_team_group}})
+            }
             binding.teamName.text = team.second
             binding.teamButton.setOnClickListener {
                 if(currentTeam != adapterPosition){
@@ -40,5 +43,6 @@ class TeamAdapter(context: Context) : RecyclerView.Adapter<TeamAdapter.ViewHolde
         notifyItemChanged(currentTeam)
         notifyItemChanged(pos)
         currentTeam = pos
+        GlobalApplication.prefs.setString("team","$pos")
     }
 }

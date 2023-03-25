@@ -21,6 +21,7 @@ class BottomNavigationActivity : AppCompatActivity() {
             .replace(viewBinding.navContainer.id, HomeFragment())
             .commitAllowingStateLoss()
         val window = window
+
         // run을 쓰면 연결된 요소에 코드를 바로 작성 가능
         viewBinding.bottomNav.run{
             setOnItemSelectedListener {

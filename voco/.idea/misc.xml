@@ -60,7 +60,7 @@
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/activity_add_project.xml" value="0.2" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/activity_bottom_navigation.xml" value="0.264" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/activity_create_project.xml" value="0.4" />
-        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/activity_login.xml" value="0.10400000000000001" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/activity_login.xml" value="0.2" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/activity_splash.xml" value="0.2" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/button_rect.xml" value="0.264" />
@@ -77,6 +77,7 @@
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_project.xml" value="0.264" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_project_list.xml" value="0.536" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_search.xml" value="0.2" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_tab.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_tab_first.xml" value="0.24947916666666667" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/layout/fragment_team.xml" value="0.8" />
         <entry key="..\:/Users/user/AndroidStudioProjects/voco-android/voco/app/src/main/res/menu/activity_main.xml" value="0.1" />

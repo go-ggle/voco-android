@@ -203,14 +203,14 @@
                     android:layout_marginTop="8dp"
                     android:background="#D4D6DD"/>
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/setting1_3"
+                    android:id="@+id/logout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="?android:attr/borderlessButtonStyle"
                     app:layout_constraintTop_toBottomOf="@id/setting1_line2"
                     android:layout_marginTop="8dp"
                     android:background="@color/light_purple"
-                    android:text="계정 정보 확인"
+                    android:text="로그아웃"
                     android:textSize="14dp"
                     android:textAlignment="textStart"
                     android:drawableEnd="@drawable/ic_right"
@@ -281,7 +281,7 @@
                     android:layout_marginTop="8dp"
                     android:background="#D4D6DD"/>
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/setting2_3"
+                    android:id="@+id/license"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="?android:attr/borderlessButtonStyle"

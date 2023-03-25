@@ -48,7 +48,7 @@ class ProjectAdapter (val context: Context, val pageId: Int, private val project
                     binding.line.setBackgroundResource(R.color.transparency)
                 }
             }
-            val country = countryDb.CountryDao().selectById(project.countryId)
+            val country = countryDb.CountryDao().selectById(project.language)
             binding.icon.setBackgroundResource(when(country.countryId){
                 0->R.drawable.ic_america
                 1->R.drawable.ic_united_kingdom
