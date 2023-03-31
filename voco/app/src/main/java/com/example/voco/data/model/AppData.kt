@@ -4,20 +4,21 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import org.jetbrains.annotations.NotNull
+import org.jetbrains.annotations.Nullable
 
 @Entity(tableName="Country")
 data class Country(
     @PrimaryKey @ColumnInfo(name="countryId") val countryId: Int,
     @NotNull @ColumnInfo(name = "countryName") val countryName: String,
 )
-@Entity(tableName="Project", primaryKeys = ["id", "team"])
+@Entity(tableName="Project", primaryKeys = ["id"])
 data class Project(
-    @ColumnInfo(name = "title") val title: String,
-    @ColumnInfo(name = "date") val date: String,
-    @ColumnInfo(name = "language") val language: Int,
-    @ColumnInfo(name = "isFavorites") var isFavorites : Boolean = false,
-    @ColumnInfo(name="team") val teamId: Int,
     @ColumnInfo(name="id") val projectId: Int,
+    @ColumnInfo(name="team") val teamId: Int,
+    @ColumnInfo(name = "title") val title: String,
+    @ColumnInfo(name = "language") val language: Int,
+    @ColumnInfo(name = "updateAt") val date: String,
+    @ColumnInfo(name = "bookmarked") var isFavorites : Boolean,
 )
 @Entity(tableName="ProjectInfo", primaryKeys = ["projectId","order"])
 data class ProjectInfo(
@@ -28,3 +29,11 @@ data class ProjectInfo(
     @ColumnInfo(name="intervalMinute") var intervalMinute: Int,
     @ColumnInfo(name="intervalSecond") var intervalSecond: Double,
 )
+@Entity(tableName="Team", primaryKeys = ["id"])
+data class Team(
+    @ColumnInfo(name="id") val id: Int,
+    @ColumnInfo(name="name") val name: String,
+    @Nullable @ColumnInfo(name="teamCode") val teamCode: String,
+    @ColumnInfo(name = "private") var private: Boolean,
+)
+

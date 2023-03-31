@@ -2,12 +2,11 @@ package com.example.voco.data.adapter
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
 import androidx.fragment.app.FragmentStatePagerAdapter
 import com.example.voco.data.model.Project
-import com.example.voco.ui.TabFragment
+import com.example.voco.component.TabFragment
 
-class TabAdapter (fm : FragmentManager, private val projectList: ArrayList<Project>): FragmentStatePagerAdapter(fm) {
+class TabAdapter (fm : FragmentManager, private val projectList: List<Project>): FragmentStatePagerAdapter(fm) {
     //position 에 따라 원하는 Fragment로 이동시키기
     override fun getItem(position: Int): Fragment =  when(position)
     {

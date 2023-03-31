@@ -3,34 +3,73 @@ package com.example.voco.ui
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
+import androidx.core.widget.addTextChangedListener
+import com.example.voco.api.ApiData
+import com.example.voco.api.ApiRepository
 import com.example.voco.databinding.ActivityLoginBinding
 import com.example.voco.login.GlobalApplication
 import com.example.voco.login.LoginCallback
 import com.kakao.sdk.auth.LoginClient
+import java.util.regex.Pattern
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var viewBinding: ActivityLoginBinding
     private val loginCallback = LoginCallback(this)
+    private val apiRepository = ApiRepository(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         viewBinding = ActivityLoginBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
+        // if already login
         if(GlobalApplication.prefs.getString("id","logout") != "logout"){
-            // 로그인이 되어있는 경우
+            // go to home view
             val intent = Intent(this, SplashActivity::class.java)
             startActivity(intent)
+            finish()
+        }
+        // sign up
+        viewBinding.signUpButton.setOnClickListener {
+            val intent = Intent(this, SignupActivity::class.java)
+            startActivity(intent)
+        }
+        // local login
+        viewBinding.loginButton.setOnClickListener {
+            // if email and password are correct
+            if (Pattern.matches(GlobalApplication.emailValidation, viewBinding.email.text) && Pattern.matches(GlobalApplication.pwValidation, viewBinding.password.text) && viewBinding.password.text.length >= 8){
+                viewBinding.warningEmail.visibility = View.INVISIBLE
+                viewBinding.warningPassword.visibility = View.INVISIBLE
+                // send login request
+                apiRepository.login(ApiData.LoginRequest(viewBinding.email.text.toString(), viewBinding.password.text.toString()))
+            }
+            else {
+                // check email format
+                if(!Pattern.matches(GlobalApplication.emailValidation, viewBinding.email.text)){
+                    viewBinding.warningEmail.visibility = View.VISIBLE
+                }else{
+                    viewBinding.warningEmail.visibility = View.INVISIBLE
+                }
+                // check password format
+                if(!Pattern.matches(GlobalApplication.pwValidation, viewBinding.password.text) || viewBinding.password.text.length < 8){
+                    viewBinding.warningPassword.visibility = View.VISIBLE
+                }else{
+                    viewBinding.warningPassword.visibility = View.INVISIBLE
+                }
+            }
+
         }
         // kakao login
         viewBinding.snsLoginKakao.setOnClickListener {
-            // 카카오톡 실행이 가능하면
+            // if kakaotalk application is available
             if(LoginClient.instance.isKakaoTalkLoginAvailable(this)){
-                // 카카오톡으로 로그인
+                // login with kakaotalk application
                 LoginClient.instance.loginWithKakaoTalk(this, callback = loginCallback.kakao)
             }
-            // 카카오톡 실행이 불가능하면
             else{
-                // 카카오 계정으로 로그인
+                // login with kakaotalk account
                 LoginClient.instance.loginWithKakaoAccount(this, callback = loginCallback.kakao)
             }
         }

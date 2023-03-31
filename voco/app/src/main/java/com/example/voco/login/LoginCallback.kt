@@ -3,7 +3,6 @@ package com.example.voco.login
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
-import com.example.voco.ui.BottomNavigationActivity
 import com.example.voco.ui.SplashActivity
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.AuthErrorCause

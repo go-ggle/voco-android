@@ -9,7 +9,7 @@ import com.example.voco.data.model.AppDatabase
 import com.example.voco.data.model.Project
 import com.example.voco.databinding.FragmentProjectBinding
 
-class ProjectAdapter (val context: Context, val pageId: Int, private val projectList : ArrayList<Project>) : RecyclerView.Adapter<ProjectAdapter.ViewHolder>() {
+class ProjectAdapter (val context: Context, val pageId: Int, private val projectList : List<Project>) : RecyclerView.Adapter<ProjectAdapter.ViewHolder>() {
     private lateinit var binding: FragmentProjectBinding
     private lateinit var countryDb : AppDatabase
     private val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
