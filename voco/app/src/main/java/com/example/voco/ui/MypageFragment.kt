@@ -9,6 +9,9 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import com.example.voco.databinding.FragmentMypageBinding
 import com.example.voco.login.GlobalApplication
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
 
 class MypageFragment : Fragment() {
     private lateinit var binding: FragmentMypageBinding
@@ -18,7 +21,7 @@ class MypageFragment : Fragment() {
     ): View {
         binding = FragmentMypageBinding.inflate(layoutInflater)
         binding.logout.setOnClickListener {
-            GlobalApplication.prefs.setString("id","logout")
+            CoroutineScope(IO).launch { GlobalApplication.prefs.setString("id","logout") }
             val intent = Intent(context, LoginActivity::class.java)
             startActivity(intent)
             ActivityCompat.finishAffinity(requireActivity())

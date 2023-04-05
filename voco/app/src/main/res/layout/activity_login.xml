@@ -71,7 +71,19 @@
             android:hint="Password"
             app:layout_constraintTop_toBottomOf="@id/email"
             android:layout_marginTop="20dp"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:paddingRight="40dp"/>
+        <CheckBox
+            android:id="@+id/password_visibility"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="@id/password"
+            app:layout_constraintBottom_toBottomOf="@id/password"
+            app:layout_constraintEnd_toEndOf="@id/password"
+            android:button="@drawable/selector_pwd_eye"
+            android:buttonTint="@color/dark_gray"
+            android:layout_marginRight="10dp"
+            android:checked="false"/>
         <TextView
             android:id="@+id/warning_password"
             android:layout_width="wrap_content"
@@ -112,6 +124,7 @@
             android:layout_marginTop="10dp"
             android:textAlignment="center"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/login_container2"
         android:layout_width="match_parent"

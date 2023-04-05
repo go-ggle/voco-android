@@ -12,7 +12,7 @@ class TeamFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentTeamBinding.inflate(layoutInflater)
         return binding.root
     }

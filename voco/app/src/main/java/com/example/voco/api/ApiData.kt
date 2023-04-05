@@ -1,5 +1,8 @@
 package com.example.voco.api
 
+import androidx.room.ColumnInfo
+import androidx.room.PrimaryKey
+
 class ApiData {
     data class LoginRequest(
         val email:String,

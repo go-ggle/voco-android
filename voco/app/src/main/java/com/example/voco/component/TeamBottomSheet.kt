@@ -8,55 +8,73 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.example.voco.api.Api
+import com.example.voco.api.ApiRepository
 import com.example.voco.databinding.BottomSheetTeamBinding
+import com.example.voco.databinding.FragmentHomeBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class TeamBottomSheet() : BottomSheetDialogFragment() {
+class TeamBottomSheet(private val parentBinding: FragmentHomeBinding, private val apiRepository : ApiRepository) : BottomSheetDialogFragment() {
     private lateinit var viewBinding: BottomSheetTeamBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        var clipboardManager = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    ): View {
+        val clipboardManager = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
         viewBinding = BottomSheetTeamBinding.inflate(layoutInflater)
+        // close bottom sheet
         viewBinding.closeBtn.setOnClickListener{
             dismiss()
         }
+        // create team option button
         viewBinding.option1.setOnClickListener {
+            viewBinding.optionContainer.visibility = View.GONE
+            viewBinding.optionButtonContainer.visibility = View.GONE
             viewBinding.subTitle.text= "생성할 팀 스페이스의 이름을 입력해주세요"
-            viewBinding.editText.hint = "이름을 입력해주세요"
-            viewBinding.btn.btnRect.text = "다음"
-            viewBinding.editText.setText("")
 
-            viewBinding.optionButtonContainer.visibility = View.GONE
-            viewBinding.optionContainer.visibility = View.GONE
-            viewBinding.editText.visibility = View.VISIBLE
-            viewBinding.btn.root.visibility = View.VISIBLE
+            viewBinding.editText.run {
+                hint = "이름을 입력해주세요"
+                visibility = View.VISIBLE
+                setText("")
+            }
+            viewBinding.btn.run{
+                btnRect.text = "다음"
+                root.visibility = View.VISIBLE
+            }
+
         }
+        // join team option button
         viewBinding.option2.setOnClickListener {
-            viewBinding.subTitle.text= "초대받은 팀 스페이스에 참여하기"
-            viewBinding.editText.hint = "초대코드를 입력해주세요"
-            viewBinding.btn.btnRect.text = "다음"
-            viewBinding.editText.setText("")
-
             viewBinding.optionButtonContainer.visibility = View.GONE
             viewBinding.optionContainer.visibility = View.GONE
-            viewBinding.editText.visibility = View.VISIBLE
-            viewBinding.btn.root.visibility = View.VISIBLE
+            viewBinding.subTitle.text= "초대받은 팀 스페이스에 참여하기"
+
+            viewBinding.editText.run {
+                hint = "초대코드를 입력해주세요"
+                visibility = View.VISIBLE
+                setText("")
+            }
+            viewBinding.btn.run{
+                btnRect.text = "다음"
+                root.visibility = View.VISIBLE
+            }
         }
         viewBinding.btn.root.setOnClickListener {
             when(viewBinding.subTitle.text){
+                // create team workspace
                 "생성할 팀 스페이스의 이름을 입력해주세요"->{
-                    // 팀 생성 api
-                    if(viewBinding.editText.text.toString().trim() == "")
-                        Toast.makeText(requireContext(),"이름을 입력해주세요",Toast.LENGTH_SHORT).show()
-                    else {
-                        viewBinding.subTitle.text = "초대코드를 공유해주세요"
-                        viewBinding.boldText.text = "XJ56JK7" // 초대코드
-                        viewBinding.btn.btnRect.text = "초대코드 복사하기"
-                        viewBinding.editText.visibility = View.GONE
-                        viewBinding.boldText.visibility = View.VISIBLE
+                    when {
+                        // if team name is empty string
+                        viewBinding.editText.text.toString().trim() == "" -> Toast.makeText(requireContext(),"이름을 입력해주세요",Toast.LENGTH_SHORT).show()
+                        // if team name length is not 2..8
+                        viewBinding.editText.text?.length !in 2..8 -> {
+                            Toast.makeText(requireContext(), "2자에서 8자 사이로 입력해주세요", Toast.LENGTH_SHORT).show()
+                        }
+                        else -> {
+                            // send create team request
+                            apiRepository.createTeam(parentBinding, viewBinding, viewBinding.editText.text.toString())
+                        }
                     }
                 }
                 "초대받은 팀 스페이스에 참여하기"->{

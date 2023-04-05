@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.voco.data.adapter.ProjectAdapter
+import com.example.voco.data.adapter.TabAdapter
 import com.example.voco.data.adapter.VerticalItemDecoration
 import com.example.voco.data.model.Project
 import com.example.voco.databinding.FragmentTabBinding
@@ -30,8 +31,11 @@ class TabFragment(private val projectList: List<Project>) : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.projects.run{
-            adapter = ProjectAdapter(bottomNavigationActivity,0, projectList )
+            adapter = ProjectAdapter(bottomNavigationActivity, 0, projectList )
             addItemDecoration(VerticalItemDecoration(2))
         }
+    }
+    fun updateProjectList(newProjectList: List<Project>){
+        (binding.projects.adapter as ProjectAdapter).updateProjectList(newProjectList)
     }
 }

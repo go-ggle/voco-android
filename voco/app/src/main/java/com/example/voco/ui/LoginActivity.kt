@@ -3,10 +3,8 @@ package com.example.voco.ui
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
+import android.text.InputType
 import android.view.View
-import androidx.core.widget.addTextChangedListener
 import com.example.voco.api.ApiData
 import com.example.voco.api.ApiRepository
 import com.example.voco.databinding.ActivityLoginBinding
@@ -19,17 +17,24 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var viewBinding: ActivityLoginBinding
     private val loginCallback = LoginCallback(this)
     private val apiRepository = ApiRepository(this)
-
     override fun onCreate(savedInstanceState: Bundle?) {
         viewBinding = ActivityLoginBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
+        val defaultType = viewBinding.password.inputType
         // if already login
         if(GlobalApplication.prefs.getString("id","logout") != "logout"){
             // go to home view
             val intent = Intent(this, SplashActivity::class.java)
             startActivity(intent)
             finish()
+        }
+        // password visibility
+        viewBinding.passwordVisibility.setOnCheckedChangeListener { _, isChecked ->
+            when(isChecked){
+                true -> viewBinding.password.inputType = InputType.TYPE_CLASS_TEXT
+                else -> viewBinding.password.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            }
         }
         // sign up
         viewBinding.signUpButton.setOnClickListener {

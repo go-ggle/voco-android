@@ -8,7 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.voco.data.adapter.ProjectAdapter
+import com.example.voco.data.adapter.TabAdapter
 import com.example.voco.data.adapter.VerticalItemDecoration
+import com.example.voco.data.model.AppDatabase
 import com.example.voco.data.model.Project
 import com.example.voco.databinding.FragmentSearchBinding
 
@@ -16,17 +18,20 @@ class SearchFragment : Fragment() {
     private lateinit var binding: FragmentSearchBinding
     private lateinit var bottomNavigationActivity : BottomNavigationActivity
     private lateinit var searchProjectList : ArrayList<Project>
-    private var projectList : ArrayList<Project> = arrayListOf()
+    private lateinit var localDb : AppDatabase
+    private lateinit var projectList : ArrayList<Project>
     override fun onAttach(context: Context) {
         super.onAttach(context)
         bottomNavigationActivity = context as BottomNavigationActivity
+        localDb = AppDatabase.getProjectInstance(bottomNavigationActivity)!!
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
+        projectList = localDb.ProjectDao().selectAll() as ArrayList<Project>
         binding = FragmentSearchBinding.inflate(layoutInflater)
-        binding.projectList.adapter = ProjectAdapter(bottomNavigationActivity, 1, projectList)
+        binding.projectList.adapter = ProjectAdapter(bottomNavigationActivity,1, projectList)
         binding.projectList.addItemDecoration(VerticalItemDecoration(28))
 
         binding.projectAddButton.setOnClickListener {

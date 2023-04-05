@@ -1,24 +1,29 @@
 package com.example.voco.data.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.voco.R
+import com.example.voco.api.ApiRepository
 import com.example.voco.data.model.AppDatabase
 import com.example.voco.data.model.Project
+import com.example.voco.databinding.FragmentHomeBinding
 import com.example.voco.databinding.FragmentProjectBinding
+import com.example.voco.databinding.FragmentTabBinding
 
-class ProjectAdapter (val context: Context, val pageId: Int, private val projectList : List<Project>) : RecyclerView.Adapter<ProjectAdapter.ViewHolder>() {
+class ProjectAdapter (val context: Context, val pageId: Int, private var projectList : List<Project>) : RecyclerView.Adapter<ProjectAdapter.ViewHolder>() {
     private lateinit var binding: FragmentProjectBinding
     private lateinit var countryDb : AppDatabase
     private val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-
+    private val apiRepository = ApiRepository(context)
     override fun getItemCount(): Int = projectList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         binding = FragmentProjectBinding.inflate(inflater, parent, false)
-        countryDb = AppDatabase.getInstance(context)!!
+        countryDb = AppDatabase.getCountryInstance(context)!!
         return ViewHolder(binding)
     }
 
@@ -29,12 +34,13 @@ class ProjectAdapter (val context: Context, val pageId: Int, private val project
     inner class ViewHolder(private val binding: FragmentProjectBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(project: Project){
             binding.title.text = project.title
-            binding.date.text = project.date
-            binding.favorites.isChecked = project.isFavorites
+            binding.date.text = project.updatedAt
+            binding.favorites.isChecked = project.bookmarked
 
             when(pageId){
                 0->{
                     binding.project.background = null
+                    binding.favorites.visibility = View.GONE
                     if(itemCount == 1)
                         binding.line.setBackgroundResource(R.color.transparency)
                     else {
@@ -48,8 +54,7 @@ class ProjectAdapter (val context: Context, val pageId: Int, private val project
                     binding.line.setBackgroundResource(R.color.transparency)
                 }
             }
-            val country = countryDb.CountryDao().selectById(project.language)
-            binding.icon.setBackgroundResource(when(country.countryId){
+            binding.icon.setBackgroundResource(when(project.language){
                 0->R.drawable.ic_america
                 1->R.drawable.ic_united_kingdom
                 3->R.drawable.ic_china
@@ -58,9 +63,13 @@ class ProjectAdapter (val context: Context, val pageId: Int, private val project
                 else->R.drawable.ic_germany
             })
             binding.favorites.setOnCheckedChangeListener { buttonView, isChecked ->
-                // db에 즐겨찾기 여부 update
-                project.isFavorites = isChecked
+                apiRepository.updateBookmark(project.id, isChecked)
             }
         }
+    }
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateProjectList(newProjectList: List<Project>){
+        projectList = newProjectList
+        notifyDataSetChanged()
     }
 }

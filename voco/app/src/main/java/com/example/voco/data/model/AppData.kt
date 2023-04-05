@@ -11,14 +11,14 @@ data class Country(
     @PrimaryKey @ColumnInfo(name="countryId") val countryId: Int,
     @NotNull @ColumnInfo(name = "countryName") val countryName: String,
 )
-@Entity(tableName="Project", primaryKeys = ["id"])
+@Entity(tableName="Project")
 data class Project(
-    @ColumnInfo(name="id") val projectId: Int,
-    @ColumnInfo(name="team") val teamId: Int,
+    @PrimaryKey @ColumnInfo(name="id") val id: Int,
+    @ColumnInfo(name="team") val team: Int,
     @ColumnInfo(name = "title") val title: String,
     @ColumnInfo(name = "language") val language: Int,
-    @ColumnInfo(name = "updateAt") val date: String,
-    @ColumnInfo(name = "bookmarked") var isFavorites : Boolean,
+    @ColumnInfo(name = "updatedAt") val updatedAt: String,
+    @ColumnInfo(name = "bookmarked") var bookmarked : Boolean,
 )
 @Entity(tableName="ProjectInfo", primaryKeys = ["projectId","order"])
 data class ProjectInfo(

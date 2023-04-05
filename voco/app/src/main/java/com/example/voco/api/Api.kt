@@ -20,6 +20,15 @@ interface Api {
     @GET("/teams")
     suspend fun getTeamList(): Response<List<Team>>
 
+    // 팀 생성
+    @POST("/teams")
+    suspend fun createTeam(
+        @Body request : HashMap<String,String>
+    ): Response<Team>
+
+    // 팀 참여
+    
+
     // 프로젝트 생성
     @POST("/teams/{teamId}/projects")
     suspend fun createProject(
@@ -32,4 +41,16 @@ interface Api {
     suspend fun getProjectList(
         @Path("teamId") teamId: String,
     ): Response<HashMap<String, List<Project>>>
+
+    // 북마크 생성
+    @POST("/bookmarks/{projectId}")
+    suspend fun createBookmark(
+        @Path("projectId") projectId: Int
+    ): Response<HashMap<String, Int>>
+
+    // 북마크 해제
+    @DELETE("/bookmarks/{projectId}")
+    suspend fun deleteBookmark(
+        @Path("projectId") projectId: Int
+    ): Response<String>
 }

@@ -1,6 +1,8 @@
 package com.example.voco.api
 
 import com.example.voco.login.GlobalApplication
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -10,7 +12,6 @@ import java.io.IOException
 
 object RetrofitClient {
     private const val BASE_URL = "http://3.39.130.119:8080"
-
     fun getRetrofitClient(isHeader: Boolean) : Retrofit {
         return when(isHeader){
             true -> Retrofit.Builder()
@@ -33,7 +34,7 @@ object RetrofitClient {
                 .build()
         }
     }
-    fun getOkHttpClient(interceptor: AppInterceptor) : OkHttpClient
+    private fun getOkHttpClient(interceptor: AppInterceptor) : OkHttpClient
     = OkHttpClient.Builder().run{
         addInterceptor(interceptor)
         build()
@@ -42,7 +43,7 @@ object RetrofitClient {
         @Throws(IOException::class)
         override fun intercept(chain: Interceptor.Chain) : Response = with(chain) {
             val newRequest = request().newBuilder()
-                .addHeader("Authorization", GlobalApplication.prefs.getString("id","logout"))
+                .addHeader("Authorization", "Bearer "+GlobalApplication.prefs.getString("id","logout"))
                 .build()
             proceed(newRequest)
         }

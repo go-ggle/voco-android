@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 
 class PreferenceUtil(context: Context) {
+    // id, pwd, token, team, workspace
     private val prefs: SharedPreferences =
         context.getSharedPreferences("user", Context.MODE_PRIVATE)
 
@@ -13,5 +14,8 @@ class PreferenceUtil(context: Context) {
 
     fun setString(key: String, str: String) {
         prefs.edit().putString(key, str).apply()
+    }
+    fun clear(){
+        prefs.edit().clear()
     }
 }
