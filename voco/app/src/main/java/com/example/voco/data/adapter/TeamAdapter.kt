@@ -36,27 +36,27 @@ class TeamAdapter(context: Context, private val parentBinding: FragmentHomeBindi
 
     inner class ViewHolder(private val binding: FragmentTeamBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(team: Team){
+            binding.teamName.text = team.name
             when(team.id){
                 GlobalApplication.prefs.getString("team",GlobalApplication.prefs.getString("workspace","1")).toInt()->{
-                    binding.teamButton.run{
-                        isSelected = true
-                    }
+                    binding.teamButton.isSelected = true
                     currentPos = adapterPosition
                 }
                 else ->{
-                    binding.teamButton.run{
-                        isSelected = false
-                    }
+                    binding.teamButton.isSelected = false
                 }
             }
-            when(adapterPosition){
-                0 -> binding.teamButton.setImageResource(R.drawable.ic_team_one)
-                else -> binding.teamButton.setImageResource(R.drawable.ic_team_group)
-            }
-            binding.teamName.text = team.name
-            binding.teamButton.setOnClickListener {
-                if(adapterPosition != currentPos){
-                    updateCurrentTeam(adapterPosition, team.id)
+            binding.teamButton.run {
+                setImageResource(
+                    when (adapterPosition) {
+                        0 -> R.drawable.ic_team_one
+                        else -> R.drawable.ic_team_group
+                    }
+                )
+                setOnClickListener {
+                    if(adapterPosition != currentPos){
+                        updateCurrentTeam(adapterPosition, team.id)
+                    }
                 }
             }
         }

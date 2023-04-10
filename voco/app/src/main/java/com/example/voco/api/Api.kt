@@ -27,7 +27,10 @@ interface Api {
     ): Response<Team>
 
     // 팀 참여
-    
+    @POST("/teams/{teamCode}")
+    suspend fun joinTeam(
+        @Path("teamCode") teamCode: String
+    ): Response<Team>
 
     // 프로젝트 생성
     @POST("/teams/{teamId}/projects")

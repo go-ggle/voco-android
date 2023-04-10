@@ -204,6 +204,47 @@ open class ApiRepository(private val context: Context) {
             }
         }
     }
+    fun joinTeam(parentBinding: FragmentHomeBinding, binding: BottomSheetTeamBinding, code: String) = CoroutineScope(Default).launch {
+        try{
+            val request = CoroutineScope(IO).async { apiService.joinTeam(code) }
+            val response = request.await()
+
+            when(response.code()){
+                201 ->{
+                    withContext(Main){
+                        binding.subTitle.text = "팀 스페이스에 참여되었습니다"
+                        binding.btn.btnRect.text = "홈으로 이동하기"
+                        binding.editText.visibility = View.GONE
+                        binding.boldText.run{
+                            visibility = View.VISIBLE
+                            text = response.body()?.name // 팀 이름
+                        }
+                    }
+                    // update team list
+                    (parentBinding.teams.adapter as TeamAdapter).addTeam(response.body()!!)
+                }
+                404 -> {
+                    withContext(Main){
+                        Toast.makeText(context, "잘못된 초대코드입니다", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                409 ->{
+                    withContext(Main){
+                        Toast.makeText(context, "이미 참여한 팀 스페이스입니다", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                else -> {
+                    withContext(Main){
+                        Toast.makeText(context, "프로젝트 참여에 실패했습니다.\n 나중에 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }catch (e: Exception){
+            withContext(Main){
+                Toast.makeText(context, "네트워크 상태를 확인해주세요.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
     // update project list at home page
     fun updateProjectList(binding: FragmentHomeBinding) = CoroutineScope(Default).launch{
         try {

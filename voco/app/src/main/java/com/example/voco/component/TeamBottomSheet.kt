@@ -81,22 +81,19 @@ class TeamBottomSheet(private val parentBinding: FragmentHomeBinding, private va
                     if(viewBinding.editText.text.toString().trim() == "")
                         Toast.makeText(requireContext(),"초대코드를 입력해주세요",Toast.LENGTH_SHORT).show()
                     else {
-                        // 초대코드로 팀 검색 api
-                        viewBinding.subTitle.text = "팀 스페이스"
-                        viewBinding.boldText.text = "고글" // 팀 이름
-                        viewBinding.btn.btnRect.text = "참여하기"
-                        viewBinding.editText.visibility = View.GONE
-                        viewBinding.boldText.visibility = View.VISIBLE
+                        // send join team request
+                        apiRepository.joinTeam(parentBinding, viewBinding, viewBinding.editText.text.toString())
                     }
                 }
                 "초대코드를 공유해주세요"->{
+                    // copy team code
                     val clip : ClipData = ClipData.newPlainText("invitation code",viewBinding.boldText.text)
                     clipboardManager.setPrimaryClip(clip)
                     Toast.makeText(requireContext(),"초대코드가 복사되었습니다",Toast.LENGTH_SHORT).show()
                     dismiss()
                 }
                 else ->{
-                    // 팀 참여 api
+                    // after join team request is success
                     dismiss()
                 }
             }

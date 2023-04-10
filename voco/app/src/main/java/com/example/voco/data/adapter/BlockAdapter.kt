@@ -33,15 +33,39 @@ class BlockAdapter (val context: Context, projectId: Int, var projectInfoList : 
 
     inner class ViewHolder(private val binding: FragmentBlockBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(projectInfo: ProjectInfo) {
-            binding.projectEditText.setText(projectInfo.content)
-            binding.projectEditText.requestFocus()
-            keyboard.showSoftInput(binding.projectEditText, 0)
-            when (projectInfo.intervalMinute) {
-                0 -> binding.projectIntervalButton.text = "인터벌 ${projectInfo.intervalSecond}초"
-                else -> binding.projectIntervalButton.text =
-                    "인터벌 ${projectInfo.intervalMinute}분 ${projectInfo.intervalSecond}초"
-            }
+            binding.projectEditText.run {
+                setText(projectInfo.content)
+                requestFocus()
 
+                setOnFocusChangeListener { v, hasFocus ->
+                    when (hasFocus) {
+                        true -> {
+                            keyboard.showSoftInput(v, 0)
+                        }
+                        false -> {
+                            projectInfo.content = binding.projectEditText.text.trim().toString()
+                            keyboard.hideSoftInputFromWindow(binding.root.windowToken, 0)
+                            // 음성 생성 요청 보내기
+                        }
+                    }
+                }
+            }
+            keyboard.showSoftInput(binding.projectEditText, 0)
+            binding.projectIntervalButton.run {
+                text = when (projectInfo.intervalMinute) {
+                    0 -> "인터벌 ${projectInfo.intervalSecond}초"
+                    else -> "인터벌 ${projectInfo.intervalMinute}분 ${projectInfo.intervalSecond}초"
+                }
+                // choose interval
+                setOnClickListener {
+                    intervalPicker.openIntervalPicker(
+                        adapterPosition,
+                        projectInfo.intervalMinute,
+                        projectInfo.intervalSecond.toInt(),
+                        ((projectInfo.intervalSecond - projectInfo.intervalSecond.toInt()) * 100).toInt()
+                    )
+                }
+            }
             binding.projectAddButton.setOnClickListener {
                 addProjectInfo(adapterPosition + 1)
             }
@@ -49,30 +73,9 @@ class BlockAdapter (val context: Context, projectId: Int, var projectInfoList : 
             binding.projectDeleteButton.setOnClickListener {
                 deleteProjectInfo(adapterPosition)
             }
-            // language 선택
+            // choose voice
             binding.menuLanguage.setOnClickListener {
 
-            }
-            // interval 선택
-            binding.projectIntervalButton.setOnClickListener {
-                intervalPicker.openIntervalPicker(
-                    adapterPosition,
-                    projectInfo.intervalMinute,
-                    projectInfo.intervalSecond.toInt(),
-                    ((projectInfo.intervalSecond - projectInfo.intervalSecond.toInt()) * 100).toInt()
-                )
-            }
-            binding.projectEditText.setOnFocusChangeListener { v, hasFocus ->
-                when (hasFocus) {
-                    true -> {
-                        keyboard.showSoftInput(v, 0)
-                    }
-                    false -> {
-                        projectInfo.content = binding.projectEditText.text.trim().toString()
-                        keyboard.hideSoftInputFromWindow(binding.root.windowToken, 0)
-                        // 음성 생성 요청 보내기
-                    }
-                }
             }
         }
     }

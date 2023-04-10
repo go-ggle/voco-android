@@ -33,32 +33,36 @@ class CreateProjectActivity : AppCompatActivity(), BlockAdapter.IntervalPicker {
 
         val window = window
         window.setBackgroundDrawableResource(R.color.light_purple)
-
-        adapter = BlockAdapter(this, projectId, projectInfoList)
-        binding.addprojectList.adapter = adapter
-        binding.addprojectList.addItemDecoration(VerticalItemDecoration(20))
         binding.date.text = LocalDateTime.now().format(dateFormatter)
 
-        // 인터벌 선택 picker
-        binding.intervalPicker.minute.minValue=0
-        binding.intervalPicker.minute.maxValue=20
-        binding.intervalPicker.second.minValue =0
-        binding.intervalPicker.second.maxValue=59
-        binding.intervalPicker.msecond.minValue=0
-        binding.intervalPicker.msecond.maxValue=59
-
-        binding.intervalPicker.cancelButton.setOnClickListener {
-            closeIntervalPicker(false)
-        }
-        binding.intervalPicker.confirmButton.setOnClickListener {
-            closeIntervalPicker(true)
+        adapter = BlockAdapter(this, projectId, projectInfoList)
+        binding.addprojectList.run {
+            adapter = adapter
+            addItemDecoration(VerticalItemDecoration(20))
         }
 
-        // 뒤로가기
+        // interval picker
+        binding.intervalPicker.run {
+            minute.minValue=0
+            minute.maxValue=20
+            second.minValue =0
+            second.maxValue=59
+            msecond.minValue=0
+            msecond.maxValue=59
+
+            cancelButton.setOnClickListener {
+                closeIntervalPicker(false)
+            }
+            confirmButton.setOnClickListener {
+                closeIntervalPicker(true)
+            }
+        }
+
+        // back button
         binding.backButton.setOnClickListener {
             super.onBackPressed()
         }
-        // 리스트 마지막에 새로운 블럭 추가
+        // add new text block at last index
         binding.addprojectAddButton.setOnClickListener {
             (binding.addprojectList.adapter as BlockAdapter).addProjectInfo(adapter.itemCount)
         }
@@ -67,12 +71,14 @@ class CreateProjectActivity : AppCompatActivity(), BlockAdapter.IntervalPicker {
         binding.addprojectList.clearFocus()
         return super.dispatchTouchEvent(ev)
     }
-    override fun openIntervalPicker(position: Int, minute:Int, second:Int, msecond:Int){
+    override fun openIntervalPicker(position: Int, min:Int, sec:Int, msec:Int){
         intervalChangeItemPos = position
-        binding.intervalPicker.minute.value = minute
-        binding.intervalPicker.second.value = second
-        binding.intervalPicker.msecond.value = msecond
-        binding.intervalPicker.root.visibility = View.VISIBLE
+        binding.intervalPicker.run {
+            minute.value = min
+            second.value = sec
+            msecond.value = msec
+            root.visibility = View.VISIBLE
+        }
     }
     private fun closeIntervalPicker(isUpdate: Boolean) {
         if(isUpdate)
