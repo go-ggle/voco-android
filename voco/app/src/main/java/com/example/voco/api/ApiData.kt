@@ -1,7 +1,6 @@
 package com.example.voco.api
 
-import androidx.room.ColumnInfo
-import androidx.room.PrimaryKey
+import com.example.voco.data.model.Block
 
 class ApiData {
     data class LoginRequest(
@@ -16,5 +15,9 @@ class ApiData {
     data class CreateProjectRequest(
         val title:String,
         val language:Int,
+    )
+    data class UpdateProjectRequest(
+        val title: String,
+        val blockList: List<Block>
     )
 }

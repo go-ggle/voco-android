@@ -1,27 +1,26 @@
 package com.example.voco.ui
 
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import com.example.voco.R
 import com.example.voco.databinding.ActivityBottomNavigationBinding
 
 
 class BottomNavigationActivity : AppCompatActivity() {
-    private val viewBinding: ActivityBottomNavigationBinding by lazy {
-        ActivityBottomNavigationBinding.inflate(layoutInflater)
-    }
+    private lateinit var viewBinding: ActivityBottomNavigationBinding
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewBinding = ActivityBottomNavigationBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
         supportFragmentManager
             .beginTransaction()
             .replace(viewBinding.navContainer.id, HomeFragment())
             .commitAllowingStateLoss()
-        val window = window
 
+        val window = window
         // run을 쓰면 연결된 요소에 코드를 바로 작성 가능
         viewBinding.bottomNav.run{
             setOnItemSelectedListener {

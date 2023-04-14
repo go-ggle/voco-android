@@ -10,12 +10,6 @@ import com.example.voco.data.model.Team
 import com.example.voco.databinding.FragmentHomeBinding
 import com.example.voco.databinding.FragmentTeamBinding
 import com.example.voco.login.GlobalApplication
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Default
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class TeamAdapter(context: Context, private val parentBinding: FragmentHomeBinding, var teamList :ArrayList<Team>) : RecyclerView.Adapter<TeamAdapter.ViewHolder>() {
     private lateinit var binding: FragmentTeamBinding
@@ -38,7 +32,7 @@ class TeamAdapter(context: Context, private val parentBinding: FragmentHomeBindi
         fun bind(team: Team){
             binding.teamName.text = team.name
             when(team.id){
-                GlobalApplication.prefs.getString("team",GlobalApplication.prefs.getString("workspace","1")).toInt()->{
+                GlobalApplication.prefs.getCurrentTeam()->{
                     binding.teamButton.isSelected = true
                     currentPos = adapterPosition
                 }
@@ -65,8 +59,8 @@ class TeamAdapter(context: Context, private val parentBinding: FragmentHomeBindi
         notifyItemChanged(currentPos)
         notifyItemChanged(new_pos)
         currentPos = new_pos
-        GlobalApplication.prefs.setString("team","$id")
-        apiRepository.updateProjectList(parentBinding)
+        GlobalApplication.prefs.setInt("team",id)
+        apiRepository.updateCurrentTeam(parentBinding)
     }
     fun addTeam(newTeam: Team){
         teamList.add(newTeam)

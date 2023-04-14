@@ -11,21 +11,21 @@ data class Country(
     @PrimaryKey @ColumnInfo(name="countryId") val countryId: Int,
     @NotNull @ColumnInfo(name = "countryName") val countryName: String,
 )
-@Entity(tableName="Project")
+@Entity(tableName="Project", primaryKeys = ["id"])
 data class Project(
-    @PrimaryKey @ColumnInfo(name="id") val id: Int,
+    @ColumnInfo(name="id") val id: Int,
     @ColumnInfo(name="team") val team: Int,
     @ColumnInfo(name = "title") val title: String,
     @ColumnInfo(name = "language") val language: Int,
     @ColumnInfo(name = "updatedAt") val updatedAt: String,
     @ColumnInfo(name = "bookmarked") var bookmarked : Boolean,
 )
-@Entity(tableName="ProjectInfo", primaryKeys = ["projectId","order"])
-data class ProjectInfo(
-    @ColumnInfo(name="projectId") val projectId: Int,
+@Entity(tableName="Block", primaryKeys = ["order"])
+data class Block(
     @ColumnInfo(name="order") val order: Int,
+    @ColumnInfo(name="audioPath") val audioPath: String,
     @ColumnInfo(name="voiceId") val voiceId: Int,
-    @ColumnInfo(name = "content") var content: String,
+    @ColumnInfo(name = "text") var text: String,
     @ColumnInfo(name="intervalMinute") var intervalMinute: Int,
     @ColumnInfo(name="intervalSecond") var intervalSecond: Double,
 )
@@ -35,5 +35,10 @@ data class Team(
     @ColumnInfo(name="name") val name: String,
     @Nullable @ColumnInfo(name="teamCode") val teamCode: String,
     @ColumnInfo(name = "private") var private: Boolean,
+)
+@Entity(tableName="Voice", primaryKeys = ["id"])
+data class Voice(
+    @ColumnInfo(name="id") val id: Int,
+    @ColumnInfo(name="nickname") val name: String,
 )
 

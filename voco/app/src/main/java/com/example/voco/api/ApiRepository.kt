@@ -5,16 +5,16 @@ import android.content.Intent
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.FragmentManager
+import com.example.voco.R
 import com.example.voco.data.adapter.HorizontalItemDecoration
 import com.example.voco.data.adapter.TabAdapter
 import com.example.voco.data.adapter.TeamAdapter
-import com.example.voco.data.model.AppDatabase
-import com.example.voco.data.model.Team
+import com.example.voco.data.model.*
 import com.example.voco.databinding.BottomSheetTeamBinding
 import com.example.voco.databinding.FragmentHomeBinding
 import com.example.voco.login.GlobalApplication
 import com.example.voco.ui.BottomNavigationActivity
-import com.example.voco.ui.HomeFragment
+import com.example.voco.ui.CreateProjectActivity
 import com.example.voco.ui.LoginActivity
 import com.example.voco.ui.SignupActivity
 import kotlinx.coroutines.CoroutineScope
@@ -24,10 +24,51 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
 
 open class ApiRepository(private val context: Context) {
     private var apiService = RetrofitClient.getRetrofitClient(true).create(Api::class.java)
-
+    private val _prefs =  GlobalApplication.prefs
+    private suspend fun showToast(textId: Int) = withContext(Main){
+        Toast.makeText(context, context.resources.getString(textId), Toast.LENGTH_SHORT).show()
+    }
+    private fun updateLocalDb(type:String, data:List<Any>)= CoroutineScope(IO).launch{
+        when(type){
+            "project" -> {
+                val localDao = AppDatabase.getProjectInstance(context)!!.ProjectDao()
+                CoroutineScope(IO).async {
+                    localDao.deleteAll()
+                    localDao.insert(data as List<Project>) }.onAwait
+            }
+            "voice" -> {
+                val localDao = AppDatabase.getVoiceInstance(context)!!.VoiceDao()
+                CoroutineScope(IO).async {
+                    localDao.deleteAll()
+                    localDao.insert(data as List<Voice>) }.onAwait
+            }
+            else -> {
+                val localDao = AppDatabase.getBlockInstance(context)!!.BlockDao()
+                CoroutineScope(IO).async {
+                    localDao.deleteAll()
+                    localDao.insert(data as List<Block>) }.onAwait
+            }
+        }
+    }
+    private fun backToLoginPage(){
+        val intent = Intent(context, LoginActivity::class.java)
+        context.startActivity(intent)
+        (context as SignupActivity).finish()
+    }
+    private fun goToMainPage(){
+        val intent = Intent(context, BottomNavigationActivity::class.java)
+        context.startActivity(intent)
+        (context as LoginActivity).finish()
+    }
+    private fun goToBlockPage(projectId: Int){
+        val intent = Intent(context, CreateProjectActivity::class.java)
+        intent.putExtra("project", projectId) // project id 넘기기
+        context.startActivity(intent)
+    }
     // signup request coroutine
     fun signup(user: ApiData.SignupRequest) = CoroutineScope(Default).launch {
         apiService = RetrofitClient.getRetrofitClient(false).create(Api::class.java)
@@ -36,140 +77,143 @@ open class ApiRepository(private val context: Context) {
             val response = request.await()
             when(response.code()){
                 201 ->{
-                    withContext(Main){
-                        Toast.makeText(context, "성공적으로 회원가입 되었습니다", Toast.LENGTH_SHORT).show()
-                    }
-                    val intent = Intent(context, LoginActivity::class.java)
-                    context.startActivity(intent)
-                    (context as SignupActivity).finish()
+                    showToast(R.string.toast_signup_success)
+                    backToLoginPage()
                 }
-                409 -> {
-                    withContext(Main){
-                        Toast.makeText(context, "이미 존재하는 회원입니다", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                else ->{
-                    withContext(Main){
-                        Toast.makeText(context, " 회원가입에 실패했습니다. \n나중에 다시 시도해주세요", Toast.LENGTH_SHORT).show()
-                    }
-                }
+                409 -> showToast(R.string.toast_already_signup)
+                else ->showToast(R.string.toast_request_error)
             }
         }catch (e: Exception){
-            withContext(Main){
-                Toast.makeText(context, "   회원가입에 실패했습니다.  \n네트워크 상태를 확인해주세요", Toast.LENGTH_SHORT).show()
-            }
+            showToast(R.string.toast_network_error)
         }
     }
     // login request coroutine
-    fun login(user: ApiData.LoginRequest) = CoroutineScope(Default).launch {
+    fun emailLogin(user: ApiData.LoginRequest) = CoroutineScope(Default).launch {
         apiService = RetrofitClient.getRetrofitClient(false).create(Api::class.java)
         try{
             val request = CoroutineScope(IO).async { apiService.login(user) }
             val response = request.await()
             when(response.code()) {
                 200 -> {
-                    CoroutineScope(IO).launch {
-                        GlobalApplication.prefs.setString(
-                            "id",
-                            response.body()?.get("accessToken")!!
-                        )
-                        GlobalApplication.prefs.setString(
-                            "workspace",
-                            response.body()?.get("privateTeamId")!!
-                        )
+                    withContext(IO) {
+                        _prefs.setString("token", response.body()?.get("accessToken")!!)
+                        _prefs.setInt("workspace",response.body()?.get("privateTeamId")!!.toInt())
+                        _prefs.setIdAndPwd(user)
                     }
-                    val intent = Intent(context, BottomNavigationActivity::class.java)
-                    context.startActivity(intent)
-                    (context as LoginActivity).finish()
+                    goToMainPage()
                 }
-                404 -> {
-                    withContext(Main){
-                        Toast.makeText(context, "   등록되지 않은 회원입니다.   \n아이디와 비밀번호를 다시 확인해주세요", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                else -> {
-                    withContext(Main){
-                        Toast.makeText(context, "  로그인에 실패했습니다. \n나중에 다시 시도해주세요", Toast.LENGTH_SHORT).show()
-                    }
-                }
+                404 -> showToast(R.string.toast_wrong_id_or_pwd)
+                else -> showToast(R.string.toast_request_error)
             }
         }catch(e: Exception){
-            withContext(Main){
-                Toast.makeText(context, "  로그인에 실패했습니다.  \n네트워크 상태를 확인해주세요", Toast.LENGTH_SHORT).show()
-            }
+            showToast(R.string.toast_network_error)
         }
     }
-    // get data for home page (team list and project list)
-    fun getHomepageData(binding: FragmentHomeBinding, fm: FragmentManager, context: Context) = CoroutineScope(Default).launch {
+    // refreshToken coroutine
+    private fun refreshToken() = CoroutineScope(Default).launch {
+        apiService = RetrofitClient.getRetrofitClient(false).create(Api::class.java)
+        try {
+            val request = CoroutineScope(IO).async { when(_prefs.loginMode()){
+                "sns" -> apiService.login(_prefs.getIdAndPwd())
+                else -> apiService.login(_prefs.getIdAndPwd())
+            }}
+            val response = request.await()
+            when(response.code()) {
+                200 -> withContext(IO){ _prefs.refreshToken(response.body()?.get("accessToken")!!) }
+            }
+        }catch(e: Exception){
+            return@launch
+        }
+    }
+    fun createProject(title:String, language: Int) = CoroutineScope(Default).launch {
         try{
-            // get team list
-            val teamRequest = CoroutineScope(IO).async { apiService.getTeamList() }
-            // get project list
-            val projectRequest = CoroutineScope(IO).async {
-                apiService.getProjectList(
-                    // specify team id
-                    GlobalApplication.prefs.getString("team", GlobalApplication.prefs.getString("workspace","1"))
-                )
-            }
-            val teamResponse = teamRequest.await()
-            val projectResponse = projectRequest.await()
-            withContext(Main){
-                binding.progressBar.visibility = View.GONE
-            }
-            when {
-                // if both requests are failed
-                teamResponse.code() != 200 && projectResponse.code() != 200 ->{
-                    withContext(Main){
-                        Toast.makeText(context, "  조회에 실패했습니다.  \n나중에 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
-                    }
+            val request = CoroutineScope(IO).async { apiService.createProject(_prefs.getCurrentTeam(),
+                ApiData.CreateProjectRequest(title, language)
+            ) }
+            val response = request.await()
+            when(response.code()){
+                200 -> {
+                    val localDao = AppDatabase.getProjectInstance(context)!!.ProjectDao()
+                    localDao.insert(listOf(response.body()) as List<Project>)
+                    val blockLocalDao = AppDatabase.getBlockInstance(context)!!.BlockDao()
+                    blockLocalDao.insert(listOf(Block(1,"",_prefs.getInt("defaultVoiceId",0),"",0,0.01)) as List<Block>)
+                    goToBlockPage(response.body()?.id!!)
                 }
-                else -> {
-                    // handle team request result
-                    when(teamResponse.code()){
-                        200 ->{
-                            withContext(Main){
-                                binding.teams.run{
-                                    adapter = TeamAdapter(context, binding, teamResponse.body() as ArrayList<Team>)
-                                    addItemDecoration(HorizontalItemDecoration(12))
-                                }
-                            }
-                        }
-                        else ->{
-                            withContext(Main){
-                            Toast.makeText(context, "팀목록 조회에 실패했습니다.\n나중에 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
-                        }
+            }
+        }catch (e:Exception){
+            showToast(R.string.toast_network_error)
+        }
+    }
+    // get project list request
+    fun getProject(binding: FragmentHomeBinding, fm: FragmentManager) = CoroutineScope(Default).launch {
+        try{
+            val projectRequest = CoroutineScope(IO).async { apiService.getProjectList(_prefs.getCurrentTeam())}
+            var projectResponse = projectRequest.await()
+            // if login session is finished
+            if (projectResponse.code() == 401){
+                refreshToken() // refresh token
+                projectResponse = projectRequest.await() // request again
+            }
+            when(projectResponse.code()) {
+                200 ->{
+                    // connect with project adapter
+                    withContext(Main){
+                        binding.projects.run{
+                            adapter = TabAdapter(fm, projectResponse.body()?.get("projects")!!)
+                            binding.menu.setupWithViewPager(binding.projects)
                         }
                     }
-                    // handle project request result
-                    when(projectResponse.code()) {
-                        200 ->{
-                            withContext(IO){
-                                // save project list in local DB
-                                val localDb = AppDatabase.getProjectInstance(context)!!
-                                if(localDb.ProjectDao().selectAll().isEmpty())
-                                    localDb.ProjectDao().insert(projectResponse.body()?.get("projects")!!)
-                            }
-                            withContext(Main){
-                                binding.projects.run{
-                                    adapter = TabAdapter(fm, projectResponse.body()?.get("projects")!!)
-                                    binding.menu.setupWithViewPager(binding.projects)
-                                }
-                            }
+                    // save project list in local DB
+                    updateLocalDb("project",projectResponse.body()?.get("projects")!!)
+                }
+            }
+        }catch(e:Exception){
+            showToast(R.string.toast_request_error)
+        }
+    }
+    // get dubbing voice list request
+    fun getVoice() = CoroutineScope(Default).launch {
+        try{
+            val voiceRequest = CoroutineScope(IO).async{ apiService.getVoice(_prefs.getCurrentTeam())}
+            val voiceResponse = voiceRequest.await()
+            when (voiceResponse.code()) {
+                200 ->{
+                    when (voiceResponse.body()?.isEmpty()) {
+                        true -> {
+                            // if no available dubbing voice
+                            withContext(IO) { _prefs.setInt("defaultVoiceId", 0) }
                         }
                         else -> {
-                            withContext(Main){
-                                Toast.makeText(context, "프로젝트 조회에 실패했습니다.\n 나중에 다시 시도해주세요.", Toast.LENGTH_SHORT)
-                                    .show()
-                            }
+                            updateLocalDb("voice", voiceResponse.body()!!)
+                            // set default dubbing voice
+                            withContext(IO){_prefs.setInt("defaultVoiceId", voiceResponse.body()!![0].id)}
                         }
                     }
                 }
             }
-        } catch (e: Exception){
-            Toast.makeText(context, "네트워크 상태를 확인해주세요.", Toast.LENGTH_SHORT).show()
-            println(GlobalApplication.prefs.getString("id","0"))
-            println("에러")
-            println(e)
+        }catch (e:Exception){
+            showToast(R.string.toast_request_error)
+        }
+    }
+    // get workspace list request
+    fun getTeam(binding: FragmentHomeBinding) = CoroutineScope(Default).launch {
+        try{
+            val teamRequest = CoroutineScope(IO).async { apiService.getTeamList() }
+            val teamResponse = teamRequest.await()
+            when(teamResponse.code()){
+                200 ->{
+                    // connect with team adapter
+                    withContext(Main){
+                        binding.teams.run{
+                            adapter = TeamAdapter(context, binding, teamResponse.body() as ArrayList<Team>)
+                            addItemDecoration(HorizontalItemDecoration(12))
+                            binding.progressBar.visibility = View.GONE
+                        }
+                    }
+                }
+            }
+        }catch (e:Exception){
+            showToast(R.string.toast_request_error)
         }
     }
     // create team workspace request
@@ -192,16 +236,10 @@ open class ApiRepository(private val context: Context) {
                         (parentBinding.teams.adapter as TeamAdapter).addTeam(response.body()!!)
                     }
                 }
-                else -> {
-                    withContext(Main){
-                        Toast.makeText(context, "  팀 생성에 실패했습니다. \n 나중에 다시 시도해주세요", Toast.LENGTH_SHORT).show()
-                    }
-                }
+                else -> showToast(R.string.toast_request_error)
             }
         }catch (e: Exception){
-            withContext(Main){
-                Toast.makeText(context, " 팀 생성에 실패했습니다. \n 네트워크 상태를 확인해주세요.", Toast.LENGTH_SHORT).show()
-            }
+            showToast(R.string.toast_network_error)
         }
     }
     fun joinTeam(parentBinding: FragmentHomeBinding, binding: BottomSheetTeamBinding, code: String) = CoroutineScope(Default).launch {
@@ -223,60 +261,55 @@ open class ApiRepository(private val context: Context) {
                     // update team list
                     (parentBinding.teams.adapter as TeamAdapter).addTeam(response.body()!!)
                 }
-                404 -> {
-                    withContext(Main){
-                        Toast.makeText(context, "잘못된 초대코드입니다", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                409 ->{
-                    withContext(Main){
-                        Toast.makeText(context, "이미 참여한 팀 스페이스입니다", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                else -> {
-                    withContext(Main){
-                        Toast.makeText(context, "프로젝트 참여에 실패했습니다.\n 나중에 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
-                    }
-                }
+                404 -> showToast(R.string.toast_wrong_code)
+                409 -> showToast(R.string.toast_already_join)
+                else -> showToast(R.string.toast_request_error)
             }
         }catch (e: Exception){
-            withContext(Main){
-                Toast.makeText(context, "네트워크 상태를 확인해주세요.", Toast.LENGTH_SHORT).show()
-            }
+            showToast(R.string.toast_network_error)
         }
     }
     // update project list at home page
-    fun updateProjectList(binding: FragmentHomeBinding) = CoroutineScope(Default).launch{
+    fun updateCurrentTeam(binding: FragmentHomeBinding) = CoroutineScope(Default).launch{
         try {
-            val request = CoroutineScope(IO).async {
-                apiService.getProjectList(
-                    // specify team id
-                    GlobalApplication.prefs.getString("team", GlobalApplication.prefs.getString("workspace","1"))
-                )
+            val projectRequest = CoroutineScope(IO).async { apiService.getProjectList(_prefs.getCurrentTeam()) }
+            val voiceRequest = CoroutineScope(IO).async{ apiService.getVoice(_prefs.getCurrentTeam())}
+            var projectResponse = projectRequest.await()
+            if (projectResponse.code() == 401){
+                refreshToken() // refresh token
+                projectResponse = projectRequest.await() // request again
             }
-            val response = request.await()
-            when(response.code()) {
-                200 ->{
-                    withContext(IO) {
-                        val localDb = AppDatabase.getProjectInstance(context)!!
-                        localDb.ProjectDao().deleteAll()
-                        localDb.ProjectDao().insert(response.body()?.get("projects")!!)
+            CoroutineScope(Default).launch {
+                when(projectResponse.code()) {
+                    200 -> {
+                        withContext(Main){
+                            (binding.projects.adapter as TabAdapter).updateProjectList(projectResponse.body()?.get("projects")!!)
+                        }
+                        updateLocalDb("project",projectResponse.body()?.get("projects")!!)
                     }
-                    withContext(Main){
-                        (binding.projects.adapter as TabAdapter).updateProjectList(response.body()?.get("projects")!!)
-                    }
+                    else -> showToast(R.string.toast_request_error)
                 }
-                else -> {
-                    withContext(Main){
-                        Toast.makeText(context, "프로젝트 조회에 실패했습니다.\n 나중에 다시 시도해주세요.", Toast.LENGTH_SHORT)
-                        .show()
+            }
+            CoroutineScope(Default).launch {
+                val voiceResponse = voiceRequest.await()
+                when(voiceResponse.code()){
+                    200 -> {
+                        when(voiceResponse.body()!!.isEmpty()){
+                            true -> {
+                                // if no available dubbing voice
+                                withContext(IO){ _prefs.setInt("defaultVoiceId", 0) }
+                            }
+                            else ->{
+                                updateLocalDb("voice",voiceResponse.body()!!)
+                                withContext(IO) { _prefs.setInt("defaultVoiceId", voiceResponse.body()!![0].id) }
+                            }
+                        }
                     }
+                    else -> showToast(R.string.toast_request_error)
                 }
             }
         } catch (e: Exception) {
-            withContext(Main){
-                Toast.makeText(context, "네트워크 상태를 확인해주세요.", Toast.LENGTH_SHORT).show()
-            }
+            showToast(R.string.toast_network_error)
         }
     }
     fun updateBookmark(projectId: Int, isChecked: Boolean) = CoroutineScope(Default).launch {
@@ -289,25 +322,15 @@ open class ApiRepository(private val context: Context) {
             }
             val response = request.await()
             when(response.code()){
-                200 ->{
-                    withContext(IO){
+                200 -> withContext(IO){
                         val localDb = AppDatabase.getProjectInstance(context)
                         localDb!!.ProjectDao().updateBookmark(projectId, isChecked)
                     }
-                }
-                else -> {
-                    withContext(Main){
-                        Toast.makeText(context, "북마크가 변경되지 않았습니다.\n나중에 다시 시도해주세요", Toast.LENGTH_SHORT).show()
-                    }
-                }
+                else -> showToast(R.string.toast_request_error)
             }
 
         }catch (e: Exception){
-            withContext(Main){
-                Toast.makeText(context, "네트워크 상태를 확인해주세요.", Toast.LENGTH_SHORT).show()
-            }
+            showToast(R.string.toast_network_error)
         }
     }
-
-
 }

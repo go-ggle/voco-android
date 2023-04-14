@@ -1,10 +1,10 @@
 package com.example.voco.ui
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.example.voco.api.ApiData
 import com.example.voco.api.ApiRepository
 import com.example.voco.databinding.ActivityLoginBinding
@@ -21,14 +21,7 @@ class LoginActivity : AppCompatActivity() {
         viewBinding = ActivityLoginBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
-        val defaultType = viewBinding.password.inputType
-        // if already login
-        if(GlobalApplication.prefs.getString("id","logout") != "logout"){
-            // go to home view
-            val intent = Intent(this, SplashActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
+
         // password visibility
         viewBinding.passwordVisibility.setOnCheckedChangeListener { _, isChecked ->
             when(isChecked){
@@ -48,7 +41,7 @@ class LoginActivity : AppCompatActivity() {
                 viewBinding.warningEmail.visibility = View.INVISIBLE
                 viewBinding.warningPassword.visibility = View.INVISIBLE
                 // send login request
-                apiRepository.login(ApiData.LoginRequest(viewBinding.email.text.toString(), viewBinding.password.text.toString()))
+                apiRepository.emailLogin(ApiData.LoginRequest(viewBinding.email.text.toString(), viewBinding.password.text.toString()))
             }
             else {
                 // check email format

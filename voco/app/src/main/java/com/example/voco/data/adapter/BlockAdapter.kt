@@ -1,77 +1,104 @@
 package com.example.voco.data.adapter
 
+import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.example.voco.data.model.ProjectInfo
+import com.example.voco.data.model.Block
+import com.example.voco.data.model.Project
 import android.view.inputmethod.InputMethodManager
 import com.example.voco.databinding.FragmentBlockBinding
+import com.example.voco.login.GlobalApplication
 
-
-class BlockAdapter (val context: Context, projectId: Int, var projectInfoList : ArrayList<ProjectInfo>) : RecyclerView.Adapter<BlockAdapter.ViewHolder>() {
+class BlockAdapter (val context: Context, val project: Project, var blockList : ArrayList<Block>) : RecyclerView.Adapter<BlockAdapter.ViewHolder>() {
     private lateinit var binding: FragmentBlockBinding
     private lateinit var intervalPicker: IntervalPicker
-    private val projectId = projectId
+    private lateinit var clipBoard: ClipboardManager
+    private lateinit var keyboard : InputMethodManager
     private val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+    private val defaultVoiceId = GlobalApplication.prefs.getInt("defaultVoiceId", 0)
+    private var isLongclick = false
 
-    private val keyboard: InputMethodManager by lazy {
-        context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-    }
-    override fun getItemCount(): Int = projectInfoList.size
+    override fun getItemCount(): Int = blockList.size
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         binding = FragmentBlockBinding.inflate(inflater, parent, false)
+        isLongclick = false
+        clipBoard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        keyboard = context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         intervalPicker = context as IntervalPicker
-        holder.bind(projectInfoList[position])
+        holder.bind(blockList[position])
     }
 
     inner class ViewHolder(private val binding: FragmentBlockBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(projectInfo: ProjectInfo) {
+        fun bind(block: Block) {
             binding.projectEditText.run {
-                setText(projectInfo.content)
+                setText(block.text)
                 requestFocus()
 
                 setOnFocusChangeListener { v, hasFocus ->
                     when (hasFocus) {
                         true -> {
-                            keyboard.showSoftInput(v, 0)
+                            if(!isLongclick){
+                                // keyboard up
+                                keyboard.showSoftInput(v, 0)
+                            }
                         }
                         false -> {
-                            projectInfo.content = binding.projectEditText.text.trim().toString()
+                            isLongclick = false
+                            block.text += binding.projectEditText.text.trim().toString()
                             keyboard.hideSoftInputFromWindow(binding.root.windowToken, 0)
-                            // 음성 생성 요청 보내기
+                            // create block's dubbing request
                         }
                     }
+                }
+                setOnLongClickListener {
+                    isLongclick = true
+                    // paste text
+                    if (clipBoard.hasPrimaryClip()){
+                        showContextMenu()
+                        if(clipBoard.primaryClipDescription!!.hasMimeType(MIMETYPE_TEXT_PLAIN)){
+                            setText(clipBoard.text)
+                        }
+                    }
+                    true
                 }
             }
             keyboard.showSoftInput(binding.projectEditText, 0)
             binding.projectIntervalButton.run {
-                text = when (projectInfo.intervalMinute) {
-                    0 -> "인터벌 ${projectInfo.intervalSecond}초"
-                    else -> "인터벌 ${projectInfo.intervalMinute}분 ${projectInfo.intervalSecond}초"
+                text = when (block.intervalMinute) {
+                    0 -> "인터벌 ${block.intervalSecond}초"
+                    else -> "인터벌 ${block.intervalMinute}분 ${block.intervalSecond}초"
                 }
                 // choose interval
                 setOnClickListener {
                     intervalPicker.openIntervalPicker(
                         adapterPosition,
-                        projectInfo.intervalMinute,
-                        projectInfo.intervalSecond.toInt(),
-                        ((projectInfo.intervalSecond - projectInfo.intervalSecond.toInt()) * 100).toInt()
+                        block.intervalMinute,
+                        block.intervalSecond.toInt(),
+                        ((block.intervalSecond - block.intervalSecond.toInt()) * 100).toInt()
                     )
                 }
             }
+            // add block button
             binding.projectAddButton.setOnClickListener {
-                addProjectInfo(adapterPosition + 1)
+                addBlock(adapterPosition + 1)
             }
-
+            // delete block button
             binding.projectDeleteButton.setOnClickListener {
-                deleteProjectInfo(adapterPosition)
+                if(adapterPosition == 0){
+                    // cannot delete first block
+                    Toast.makeText(context, "첫번째 텍스트입니다", Toast.LENGTH_SHORT).show()
+                }
+                else
+                    deleteBlock(adapterPosition)
             }
             // choose voice
             binding.menuLanguage.setOnClickListener {
@@ -80,29 +107,24 @@ class BlockAdapter (val context: Context, projectId: Int, var projectInfoList : 
         }
     }
     // 프로젝트 block 추가
-    fun addProjectInfo(position: Int){
-        if(position-1>=0 && projectInfoList[position-1].content=="" || position-1<0 && projectInfoList[0].content=="")
+    fun addBlock(position: Int){
+        if(position-1>=0 && blockList[position-1].text=="" || position-1<0 && blockList[0].text==""){
             Toast.makeText(context,"내용을 작성해주세요",Toast.LENGTH_SHORT).show()
+        }
         else {
-            keyboard.showSoftInput(binding.projectEditText, 0)
-            projectInfoList.add(position,ProjectInfo(projectId, 0, 0, "", 0, 0.01))
+            blockList.add(position,Block(position, "", defaultVoiceId, "", 0, 0.01))
             this@BlockAdapter.notifyItemInserted(position)
         }
     }
-    // 프로젝트 block 삭제
-    fun deleteProjectInfo(position: Int){
-        projectInfoList.removeAt(position)
+    // delete block
+    fun deleteBlock(position: Int){
+        blockList.removeAt(position)
         this@BlockAdapter.notifyItemRemoved(position)
     }
-    // 프로젝트 초기화
-    fun deleteProjectInfoAll(size: Int){
-        projectInfoList = arrayListOf(ProjectInfo(projectId,0,0,"",0,0.01))
-        this@BlockAdapter.notifyItemRangeRemoved(0,size-1)
-    }
-    // 인터벌 수정
+    // update block's interval
     fun updateInterval(position: Int, minute:Int, second: Int, msecond: Int){
-        projectInfoList[position].intervalMinute = minute
-        projectInfoList[position].intervalSecond = second+msecond*0.01
+        blockList[position].intervalMinute = minute
+        blockList[position].intervalSecond = second+msecond*0.01
         this@BlockAdapter.notifyItemChanged(position)
     }
     interface IntervalPicker{

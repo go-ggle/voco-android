@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.CreateProjectActivity"
     android:background="@color/light_purple"
-    android:fitsSystemWindows="true"
-    android:paddingTop="35dp">
+    android:fitsSystemWindows="true">
     <ImageButton
         android:id="@+id/back_button"
         android:layout_width="wrap_content"
@@ -15,7 +14,9 @@
         android:src="@drawable/ic_left"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginLeft="30dp"
+        android:paddingHorizontal="30dp"
+        android:paddingTop="35dp"
+        android:paddingBottom="20dp"
         android:background="@color/light_purple"/>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/addproject_Title"
@@ -24,7 +25,6 @@
         app:layout_constraintTop_toBottomOf="@id/back_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="20dp"
         android:paddingLeft="30dp"
         android:paddingRight="15dp">
         <EditText

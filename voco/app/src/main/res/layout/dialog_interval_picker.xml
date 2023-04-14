@@ -84,7 +84,7 @@
             android:textSize="16dp"
             android:background="@drawable/background_round_4_white"
             android:backgroundTint="@color/light_gray2"
-            android:text="@string/cancel_button"
+            android:text="@string/button_cancel"
             android:stateListAnimator="@null"/>
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/confirm_button"
@@ -92,7 +92,7 @@
             android:layout_height="45dp"
             android:layout_weight="1"
             android:layout_marginLeft="13dp"
-            android:text="@string/confirm_button"
+            android:text="@string/button_confirm"
             android:textColor="@color/white"
             android:fontFamily="@font/spoqahansansneo_regular"
             android:textSize="16dp"

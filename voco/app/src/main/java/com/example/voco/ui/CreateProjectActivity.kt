@@ -1,43 +1,47 @@
 package com.example.voco.ui
 
-import android.annotation.SuppressLint
-import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
-import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import com.example.voco.R
 import com.example.voco.data.adapter.BlockAdapter
 import com.example.voco.data.adapter.VerticalItemDecoration
-import com.example.voco.data.model.ProjectInfo
+import com.example.voco.data.model.AppDatabase
+import com.example.voco.data.model.Block
+import com.example.voco.data.model.Project
 import com.example.voco.databinding.ActivityCreateProjectBinding
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import kotlin.properties.Delegates
 
 class CreateProjectActivity : AppCompatActivity(), BlockAdapter.IntervalPicker {
+    private var projectId by Delegates.notNull<Int>()
     private lateinit var binding: ActivityCreateProjectBinding
-    private lateinit var adapter: BlockAdapter
+    private lateinit var localDb : AppDatabase
+    private lateinit var blockAdapter: BlockAdapter
+    private lateinit var project: Project
+    private lateinit var blockList : ArrayList<Block>
     private var intervalChangeItemPos = -1
-    private val projectId : Int = 0
-    private var projectInfoList = arrayListOf(ProjectInfo(projectId,0,0,"",0,0.01))
-    @RequiresApi(Build.VERSION_CODES.O)
-    var dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm 저장됨")
 
-    @SuppressLint("ResourceAsColor")
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCreateProjectBinding.inflate(layoutInflater)
+        localDb = AppDatabase.getProjectInstance(this)!!
+        projectId = intent.getIntExtra("project",0)
         setContentView(binding.root)
+        // get the project and project's text blocks
+        project = localDb.ProjectDao().selectById(projectId)
+        blockList = localDb.BlockDao().selectAll() as ArrayList<Block>
+        blockAdapter = BlockAdapter(this, project, blockList)
 
         val window = window
         window.setBackgroundDrawableResource(R.color.light_purple)
-        binding.date.text = LocalDateTime.now().format(dateFormatter)
+        // set project's title and date
+        binding.date.text = project.updatedAt
+        binding.title.setText(project.title)
 
-        adapter = BlockAdapter(this, projectId, projectInfoList)
+        // text block recycler view
         binding.addprojectList.run {
-            adapter = adapter
+            adapter = blockAdapter
             addItemDecoration(VerticalItemDecoration(20))
         }
 
@@ -64,19 +68,19 @@ class CreateProjectActivity : AppCompatActivity(), BlockAdapter.IntervalPicker {
         }
         // add new text block at last index
         binding.addprojectAddButton.setOnClickListener {
-            (binding.addprojectList.adapter as BlockAdapter).addProjectInfo(adapter.itemCount)
+            (binding.addprojectList.adapter as BlockAdapter).addBlock(blockAdapter.itemCount)
         }
     }
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         binding.addprojectList.clearFocus()
         return super.dispatchTouchEvent(ev)
     }
-    override fun openIntervalPicker(position: Int, min:Int, sec:Int, msec:Int){
+    override fun openIntervalPicker(position: Int, minute:Int, second:Int, msecond:Int){
         intervalChangeItemPos = position
         binding.intervalPicker.run {
-            minute.value = min
-            second.value = sec
-            msecond.value = msec
+            this.minute.value = minute
+            this.second.value = second
+            this.msecond.value = msecond
             root.visibility = View.VISIBLE
         }
     }

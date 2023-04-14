@@ -2,13 +2,12 @@ package com.example.voco.ui
 
 import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.example.voco.api.ApiRepository
 import com.example.voco.component.TeamBottomSheet
-import com.example.voco.data.model.Project
 import com.example.voco.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
@@ -38,7 +37,9 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        apiRepository.getHomepageData(binding, parentFragmentManager, bottomNavigationActivity)
+        apiRepository.getProject(binding, parentFragmentManager)
+        apiRepository.getTeam(binding)
+        apiRepository.getVoice()
     }
 
 }

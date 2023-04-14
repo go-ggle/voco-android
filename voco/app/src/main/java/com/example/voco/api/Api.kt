@@ -1,6 +1,8 @@
 package com.example.voco.api
 
-import com.example.voco.data.model.*
+import com.example.voco.data.model.Project
+import com.example.voco.data.model.Team
+import com.example.voco.data.model.Voice
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -32,17 +34,23 @@ interface Api {
         @Path("teamCode") teamCode: String
     ): Response<Team>
 
+    // 팀 내 모델 생성된 유저 목록 조회
+    @GET("/teams/{teamId}/voices")
+    suspend fun getVoice(
+        @Path("teamId") teamId: Int
+    ) : Response<List<Voice>>
+
     // 프로젝트 생성
     @POST("/teams/{teamId}/projects")
     suspend fun createProject(
-        @Path("teamId") teamId: String,
+        @Path("teamId") teamId: Int,
         @Body request : ApiData.CreateProjectRequest
     ) : Response<Project>
 
     // 프로젝트 목록 조회
     @GET("/teams/{teamId}/projects")
     suspend fun getProjectList(
-        @Path("teamId") teamId: String,
+        @Path("teamId") teamId: Int,
     ): Response<HashMap<String, List<Project>>>
 
     // 북마크 생성
