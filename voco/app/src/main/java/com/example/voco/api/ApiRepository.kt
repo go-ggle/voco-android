@@ -24,6 +24,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Response
 import java.util.*
 
 open class ApiRepository(private val context: Context) {
@@ -148,11 +149,18 @@ open class ApiRepository(private val context: Context) {
     fun getProject(binding: FragmentHomeBinding, fm: FragmentManager) = CoroutineScope(Default).launch {
         try{
             val projectRequest = CoroutineScope(IO).async { apiService.getProjectList(_prefs.getCurrentTeam())}
-            var projectResponse = projectRequest.await()
+            val projectResponse : Response<HashMap<String, List<Project>>>
+            val response = projectRequest.await()
             // if login session is finished
-            if (projectResponse.code() == 401){
-                refreshToken() // refresh token
-                projectResponse = projectRequest.await() // request again
+            when (response.code()){
+                401 ->{
+                    refreshToken() // refresh token
+                    projectResponse = projectRequest.await() // request again
+                }
+                else-> projectResponse = response
+            }
+            withContext(Main){
+                binding.progressBar.visibility = View.GONE
             }
             when(projectResponse.code()) {
                 200 ->{
@@ -207,7 +215,6 @@ open class ApiRepository(private val context: Context) {
                         binding.teams.run{
                             adapter = TeamAdapter(context, binding, teamResponse.body() as ArrayList<Team>)
                             addItemDecoration(HorizontalItemDecoration(12))
-                            binding.progressBar.visibility = View.GONE
                         }
                     }
                 }
@@ -274,10 +281,14 @@ open class ApiRepository(private val context: Context) {
         try {
             val projectRequest = CoroutineScope(IO).async { apiService.getProjectList(_prefs.getCurrentTeam()) }
             val voiceRequest = CoroutineScope(IO).async{ apiService.getVoice(_prefs.getCurrentTeam())}
-            var projectResponse = projectRequest.await()
-            if (projectResponse.code() == 401){
-                refreshToken() // refresh token
-                projectResponse = projectRequest.await() // request again
+            val projectResponse : Response<HashMap<String, List<Project>>>
+            val response = projectRequest.await()
+            when (response.code()){
+                401 ->{
+                    refreshToken() // refresh token
+                    projectResponse = projectRequest.await() // request again
+                }
+                else-> projectResponse = response
             }
             CoroutineScope(Default).launch {
                 when(projectResponse.code()) {
