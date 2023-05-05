@@ -13,44 +13,49 @@ import com.example.voco.data.adapter.VerticalItemDecoration
 import com.example.voco.data.model.AppDatabase
 import com.example.voco.data.model.Project
 import com.example.voco.databinding.FragmentSearchBinding
-import com.example.voco.login.GlobalApplication
+import com.example.voco.login.Glob
 
 class SearchFragment : Fragment() {
     private lateinit var binding: FragmentSearchBinding
-    private lateinit var bottomNavigationActivity : BottomNavigationActivity
-    private lateinit var searchProjectList : ArrayList<Project>
     private lateinit var localDb : AppDatabase
-    private lateinit var projectList : ArrayList<Project>
     private lateinit var apiRepository : ApiRepository
+    private lateinit var searchProjectList : ArrayList<Project>
+    private lateinit var projectList : ArrayList<Project>
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        bottomNavigationActivity = context as BottomNavigationActivity
-        localDb = AppDatabase.getProjectInstance(bottomNavigationActivity)!!
-        apiRepository = ApiRepository(bottomNavigationActivity)
+        localDb = AppDatabase.getProjectInstance(context)!!
+        apiRepository = ApiRepository(context)
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         projectList = localDb.ProjectDao().selectAll() as ArrayList<Project>
+
         binding = FragmentSearchBinding.inflate(layoutInflater)
+        binding.noProject.visibility = when(projectList.size){
+            0 -> View.VISIBLE
+            else -> View.GONE
+        }
         binding.projectList.run{
-            adapter = ProjectAdapter(bottomNavigationActivity,1, projectList)
+            adapter = ProjectAdapter(1, projectList)
             addItemDecoration(VerticalItemDecoration(28))
         }
         // create project button
         binding.projectAddButton.setOnClickListener {
-            when(GlobalApplication.prefs.getInt("defaultVoiceId", 0)){
+            when(Glob.prefs.getInt("default_voice", 0)){
                 0->{
                     Toast.makeText(context, "사용 가능한 더빙보이스가 없습니다.\n          목소리를 녹음해주세요         ", Toast.LENGTH_SHORT).show()
                 }
                 else->{
                     // title, language 작성하는 모달창 넣기
-                    apiRepository.createProject("",0)
+                    // apiRepository.createProject("",0)
+
                 }
             }
         }
-
+        // search project by title
         binding.search.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 TODO("Not yet implemented")
@@ -58,7 +63,7 @@ class SearchFragment : Fragment() {
 
             override fun onQueryTextChange(keyword: String?): Boolean {
                 searchProjectList = projectList.filter { project: Project -> project.title.contains(keyword.toString().trim()) } as ArrayList<Project>
-                binding.projectList.adapter = ProjectAdapter(bottomNavigationActivity, 1, searchProjectList)
+                binding.projectList.adapter = ProjectAdapter(1, searchProjectList)
                 return true
             }
 

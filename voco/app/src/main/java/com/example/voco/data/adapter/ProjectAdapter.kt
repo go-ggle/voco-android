@@ -10,20 +10,19 @@ import com.example.voco.R
 import com.example.voco.api.ApiRepository
 import com.example.voco.data.model.AppDatabase
 import com.example.voco.data.model.Project
-import com.example.voco.databinding.FragmentHomeBinding
 import com.example.voco.databinding.FragmentProjectBinding
-import com.example.voco.databinding.FragmentTabBinding
 
-class ProjectAdapter (val context: Context, val pageId: Int, private var projectList : List<Project>) : RecyclerView.Adapter<ProjectAdapter.ViewHolder>() {
+class ProjectAdapter (val pageId: Int, private var projectList : List<Project>) : RecyclerView.Adapter<ProjectAdapter.ViewHolder>() {
     private lateinit var binding: FragmentProjectBinding
     private lateinit var countryDb : AppDatabase
-    private val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    private val apiRepository = ApiRepository(context)
+    private lateinit var apiRepository : ApiRepository
     override fun getItemCount(): Int = projectList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val inflater = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         binding = FragmentProjectBinding.inflate(inflater, parent, false)
-        countryDb = AppDatabase.getCountryInstance(context)!!
+        countryDb = AppDatabase.getCountryInstance(parent.context)!!
+        apiRepository = ApiRepository(parent.context)
         return ViewHolder(binding)
     }
 

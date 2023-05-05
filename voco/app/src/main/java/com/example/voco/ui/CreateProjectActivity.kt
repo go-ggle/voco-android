@@ -70,6 +70,8 @@ class CreateProjectActivity : AppCompatActivity(), BlockAdapter.IntervalPicker {
         binding.addprojectAddButton.setOnClickListener {
             (binding.addprojectList.adapter as BlockAdapter).addBlock(blockAdapter.itemCount)
         }
+
+        // player with ExoPlayer
     }
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         binding.addprojectList.clearFocus()

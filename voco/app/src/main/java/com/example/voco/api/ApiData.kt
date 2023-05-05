@@ -1,6 +1,7 @@
 package com.example.voco.api
 
 import com.example.voco.data.model.Block
+import java.io.Serializable
 
 class ApiData {
     data class LoginRequest(
@@ -20,4 +21,8 @@ class ApiData {
         val title: String,
         val blockList: List<Block>
     )
+    data class SentenceResponse(
+        val textId: Int,
+        val text: String
+    ): Serializable
 }

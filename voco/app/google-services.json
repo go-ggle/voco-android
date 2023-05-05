@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "784093828296",
+    "project_id": "voco-346c0",
+    "storage_bucket": "voco-346c0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:784093828296:android:7c02567af7fefd8170c1fd",
+        "android_client_info": {
+          "package_name": "com.example.voco"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "784093828296-5av457ctujs346hn61f31oht905934h2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4OJvqRG6KnhSvVFkLiG6MdTZmQ1dkWnA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "784093828296-5av457ctujs346hn61f31oht905934h2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -90,6 +90,44 @@
         android:layout_marginHorizontal="8dp"
         app:layout_constraintTop_toBottomOf="@id/menu"
         app:layout_constraintBottom_toBottomOf="parent"/>
+    <TextView
+        android:id="@+id/no_project"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_marginHorizontal="8dp"
+        app:layout_constraintTop_toBottomOf="@id/menu"
+        android:text="프로젝트가 없습니다."
+        android:fontFamily="@font/suit_regular"
+        android:textColor="@color/dark_gray"
+        android:textSize="16dp"
+        android:textAlignment="center"
+        android:visibility="gone"/>
+    <TextView
+        android:id="@+id/network_error_team"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginHorizontal="8dp"
+        app:layout_constraintTop_toBottomOf="@id/title1"
+        android:text="네트워크를 확인해주세요."
+        android:fontFamily="@font/suit_regular"
+        android:textColor="@color/dark_gray"
+        android:textSize="16dp"
+        android:textAlignment="center"
+        android:visibility="gone"/>
+    <TextView
+        android:id="@+id/network_error_project"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        app:layout_constraintTop_toBottomOf="@id/menu"
+        android:text="네트워크를 확인해주세요."
+        android:fontFamily="@font/suit_regular"
+        android:textColor="@color/dark_gray"
+        android:textSize="16dp"
+        android:textAlignment="center"
+        android:visibility="gone"/>
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"

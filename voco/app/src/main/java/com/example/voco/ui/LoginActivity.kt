@@ -8,9 +8,13 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.voco.api.ApiData
 import com.example.voco.api.ApiRepository
 import com.example.voco.databinding.ActivityLoginBinding
-import com.example.voco.login.GlobalApplication
+import com.example.voco.login.Glob
 import com.example.voco.login.LoginCallback
 import com.kakao.sdk.auth.LoginClient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 
 class LoginActivity : AppCompatActivity() {
@@ -37,21 +41,27 @@ class LoginActivity : AppCompatActivity() {
         // local login
         viewBinding.loginButton.setOnClickListener {
             // if email and password are correct
-            if (Pattern.matches(GlobalApplication.emailValidation, viewBinding.email.text) && Pattern.matches(GlobalApplication.pwValidation, viewBinding.password.text) && viewBinding.password.text.length >= 8){
+            if (Pattern.matches(Glob.emailValidation, viewBinding.email.text) && Pattern.matches(Glob.pwValidation, viewBinding.password.text) && viewBinding.password.text.length >= 8){
                 viewBinding.warningEmail.visibility = View.INVISIBLE
                 viewBinding.warningPassword.visibility = View.INVISIBLE
+                viewBinding.progressBar.visibility = View.VISIBLE
+
                 // send login request
-                apiRepository.emailLogin(ApiData.LoginRequest(viewBinding.email.text.toString(), viewBinding.password.text.toString()))
+                CoroutineScope(Dispatchers.Default).launch{
+                    CoroutineScope(Dispatchers.IO).async { apiRepository.emailLogin(ApiData.LoginRequest(viewBinding.email.text.toString(), viewBinding.password.text.toString()))}.onAwait
+                    CoroutineScope(Dispatchers.Main).async{viewBinding.progressBar.visibility = View.GONE}
+                }
+
             }
             else {
                 // check email format
-                if(!Pattern.matches(GlobalApplication.emailValidation, viewBinding.email.text)){
+                if(!Pattern.matches(Glob.emailValidation, viewBinding.email.text)){
                     viewBinding.warningEmail.visibility = View.VISIBLE
                 }else{
                     viewBinding.warningEmail.visibility = View.INVISIBLE
                 }
                 // check password format
-                if(!Pattern.matches(GlobalApplication.pwValidation, viewBinding.password.text) || viewBinding.password.text.length < 8){
+                if(!Pattern.matches(Glob.pwValidation, viewBinding.password.text) || viewBinding.password.text.length < 8){
                     viewBinding.warningPassword.visibility = View.VISIBLE
                 }else{
                     viewBinding.warningPassword.visibility = View.INVISIBLE
@@ -68,7 +78,7 @@ class LoginActivity : AppCompatActivity() {
             }
             else{
                 // login with kakaotalk account
-                LoginClient.instance.loginWithKakaoAccount(this, callback = loginCallback.kakao)
+                LoginClient.instance.loginWithKakaoAccount(this,callback = loginCallback.kakao)
             }
         }
     }

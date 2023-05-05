@@ -12,7 +12,7 @@ import com.example.voco.data.model.Block
 import com.example.voco.data.model.Project
 import android.view.inputmethod.InputMethodManager
 import com.example.voco.databinding.FragmentBlockBinding
-import com.example.voco.login.GlobalApplication
+import com.example.voco.login.Glob
 
 class BlockAdapter (val context: Context, val project: Project, var blockList : ArrayList<Block>) : RecyclerView.Adapter<BlockAdapter.ViewHolder>() {
     private lateinit var binding: FragmentBlockBinding
@@ -20,7 +20,7 @@ class BlockAdapter (val context: Context, val project: Project, var blockList : 
     private lateinit var clipBoard: ClipboardManager
     private lateinit var keyboard : InputMethodManager
     private val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    private val defaultVoiceId = GlobalApplication.prefs.getInt("defaultVoiceId", 0)
+    private val defaultVoiceId = Glob.prefs.getInt("defaultVoiceId", 0)
     private var isLongclick = false
 
     override fun getItemCount(): Int = blockList.size

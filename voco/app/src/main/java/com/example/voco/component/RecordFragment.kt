@@ -1,24 +1,20 @@
 package com.example.voco.component
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.voco.databinding.FragmentProjectBinding
+import com.example.voco.databinding.FragmentRecordBinding
 
 
-class ProjectFragment : Fragment() {
-    private lateinit var binding: FragmentProjectBinding
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-    }
+class RecordFragment : Fragment() {
+    private lateinit var binding: FragmentRecordBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentProjectBinding.inflate(layoutInflater)
+        binding = FragmentRecordBinding.inflate(inflater)
         return binding.root
     }
 }

@@ -69,6 +69,7 @@ dependencies {
     // Retrofit2
     implementation 'com.squareup.retrofit2:retrofit:2.7.1'
     implementation 'com.squareup.retrofit2:converter-gson:2.7.1'
+    implementation 'com.google.code.gson:gson:2.8.8'
 
     // OkHttp3
     implementation 'com.squareup.okhttp3:logging-interceptor:4.3.1'
@@ -80,4 +81,11 @@ dependencies {
     // ML Kit
     implementation 'com.google.firebase:firebase-ml-natural-language:22.0.0'
     implementation 'com.google.firebase:firebase-ml-natural-language-translate-model:20.0.8'
+
+    // Firebase
+    implementation 'com.google.firebase:firebase-messaging:21.1.0'
+
+    // Adding chibde audio visualizer Library
+    implementation 'com.chibde:audiovisualizer:2.2.0'
 }
+apply plugin: 'com.google.gms.google-services'

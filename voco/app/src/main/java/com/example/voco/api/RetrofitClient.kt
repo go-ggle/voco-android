@@ -1,6 +1,6 @@
 package com.example.voco.api
 
-import com.example.voco.login.GlobalApplication
+import com.example.voco.login.Glob
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -41,7 +41,7 @@ object RetrofitClient {
         @Throws(IOException::class)
         override fun intercept(chain: Interceptor.Chain) : Response = with(chain) {
             val newRequest = request().newBuilder()
-                .addHeader("Authorization", "Bearer "+GlobalApplication.prefs.getString("token","logout"))
+                .addHeader("Authorization", "Bearer "+Glob.prefs.getString("token","logout"))
                 .build()
             proceed(newRequest)
         }

@@ -1,20 +1,16 @@
 package com.example.voco.login
 
 import android.content.Context
-import android.content.Intent
 import android.widget.Toast
-import com.example.voco.ui.LoginActivity
-import com.example.voco.ui.SplashActivity
+import com.example.voco.api.ApiRepository
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.AuthErrorCause
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.launch
 
 
 class LoginCallback(val context : Context) {
+    private val apiRepository = ApiRepository(context)
     val kakao: (OAuthToken?, Throwable?) -> Unit = { token, error ->
         if (error != null) {
             when {
@@ -51,19 +47,10 @@ class LoginCallback(val context : Context) {
             }
         }
         else if (token != null) {
-            directToHome(token.toString())
             // sns login request
+                println(token)
+            Glob.prefs.setString("refresh_token",token.accessToken)
+            apiRepository.snsLogin(token.accessToken, "kakao")
         }
-    }
-    // if already signup
-    private fun directToHome(token: String) {
-        CoroutineScope(IO).launch { GlobalApplication.prefs.setString("id",token) }
-        val intent = Intent(context, SplashActivity::class.java)
-        context.startActivity(intent)
-        (context as LoginActivity).finish()
-    }
-    // if not signup yet
-    private fun directToSignup(token: String){
-
     }
 }

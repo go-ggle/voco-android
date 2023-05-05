@@ -5,8 +5,8 @@ import android.content.SharedPreferences
 import com.example.voco.api.ApiData
 
 class PreferenceUtil(context: Context) {
-    // id, pwd, sns, token, team, workspace, defaultVoiceId
-    // if there are no value: token - logout, id - sns_user, pwd - sns_user, sns - email_user, team - 0, workspace - 0, defaultVoiceId - 0
+    // id, pwd, sns, token, refresh_token, team, workspace, default_voice
+    // if there are no value: token - logout, refresh_token - logout, id - sns_user, pwd - sns_user, sns - email_user, team - 0, workspace - 0, default_voice - 0
     private val prefs: SharedPreferences = context.getSharedPreferences("user", Context.MODE_PRIVATE)
 
     fun getString(key: String, defValue: String): String {
@@ -26,7 +26,7 @@ class PreferenceUtil(context: Context) {
     }
     // return the user's login route
     fun loginMode()= when(getString("id","sns_user")){
-            "sns_user" -> "sns"
+            "sns_user" -> getString("sns","email_user")
             else -> "email"
         }
     fun getIdAndPwd() = ApiData.LoginRequest(getString("id","sns_user"),getString("pwd","sns_user"))
@@ -35,7 +35,7 @@ class PreferenceUtil(context: Context) {
         setString("pwd", user.password)
         setString("sns", "email_user")
     }
-    fun refreshToken(token: String) {
+    fun setToken(token: String) {
         setString("token", token)
     }
     fun getCurrentTeam() = when(getInt("team", 0)){
@@ -44,11 +44,12 @@ class PreferenceUtil(context: Context) {
     }
     fun logout(){
         setString("token","logout")
-        setString("id","logout")
-        setString("pwd","logout")
-        setString("sns","logout")
+        setString("refresh_token", "logout")
+        setString("id","sns_user")
+        setString("pwd","sns_user")
+        setString("sns","email_user")
         setInt("team",0)
         setInt("workspace",0)
-        setInt("defaultVoiceId",0)
+        setInt("default_voice",0)
     }
 }

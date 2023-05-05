@@ -3,6 +3,7 @@ package com.example.voco.api
 import com.example.voco.data.model.Project
 import com.example.voco.data.model.Team
 import com.example.voco.data.model.Voice
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -12,11 +13,30 @@ interface Api {
     suspend fun login(
         @Body request : ApiData.LoginRequest
     ): Response<HashMap<String,String>>
+
+    // 카카오 로그인
+    @POST("/oauth/kakao")
+    suspend fun kakaoLogin(
+        @Body request : HashMap<String, String>
+    ): Response<HashMap<String,String>>
+
     // 회원가입
     @POST("/auth/signup")
     suspend fun signup(
         @Body request : ApiData.SignupRequest
     ): Response<HashMap<String,String>>
+
+    // 훈련용 문장 조회
+    @GET("/train-data")
+    suspend fun getSentence() : Response<HashMap<String, List<ApiData.SentenceResponse>>>
+
+    // 목소리 등록
+    @Multipart
+    @POST("/inputs/{textId}")
+    suspend fun setVoice(
+        @Path("textId") textId: Int,
+        @Part audio: MultipartBody.Part
+    ) : Response<HashMap<String,Double>>
 
     // 팀 목록 조회
     @GET("/teams")
@@ -63,5 +83,5 @@ interface Api {
     @DELETE("/bookmarks/{projectId}")
     suspend fun deleteBookmark(
         @Path("projectId") projectId: Int
-    ): Response<String>
+    ): Response<HashMap<String, String>>
 }

@@ -1,12 +1,16 @@
 <resources>
+    <!--App Info-->
     <string name="app_name">voco</string>
     <string name="kakao_app_key">8088d94fe2a14aace007f77409c82402</string>
+    <!--Menu Title-->
     <string name="title_home">홈</string>
     <string name="title_project">프로젝트</string>
     <string name="title_favorites">즐겨찾기</string>
     <string name="title_mypage">마이페이지</string>
+    <!--Button Text-->
     <string name="button_cancel">취소</string>
     <string name="button_confirm">확인</string>
+    <!--Toast Text-->
     <string name="toast_network_error">네트워크 상태를 확인해주세요</string>
     <string name="toast_request_error">   요청에 실패했습니다   \n나중에 다시 시도해주세요</string>
     <string name="toast_signup_success">성공적으로 회원가입 되었습니다</string>
@@ -14,4 +18,6 @@
     <string name="toast_wrong_id_or_pwd">   등록되지 않은 회원입니다.\n아이디와 비밀번호를 다시 확인해주세요</string>
     <string name="toast_wrong_code">잘못된 초대코드입니다</string>
     <string name="toast_already_join">이미 참여한 팀 스페이스입니다</string>
+    <!-- Training Sentence -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

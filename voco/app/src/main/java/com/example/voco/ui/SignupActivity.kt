@@ -1,18 +1,19 @@
 package com.example.voco.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.example.voco.api.ApiData
 import com.example.voco.api.ApiRepository
 import com.example.voco.databinding.ActivitySignupBinding
-import com.example.voco.login.GlobalApplication
+import com.example.voco.login.Glob
 import java.util.regex.Pattern
 
 
 class SignupActivity : AppCompatActivity() {
     private lateinit var viewBinding: ActivitySignupBinding
     private val apiRepository = ApiRepository(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         viewBinding = ActivitySignupBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
@@ -25,8 +26,8 @@ class SignupActivity : AppCompatActivity() {
         }
         viewBinding.signupButton.setOnClickListener {
             // if all formats are correct
-            if (Pattern.matches(GlobalApplication.emailValidation, viewBinding.email.text) && Pattern.matches(
-                    GlobalApplication.pwValidation, viewBinding.password.text) && viewBinding.password.text.length >= 8 &&
+            if (Pattern.matches(Glob.emailValidation, viewBinding.email.text) && Pattern.matches(
+                    Glob.pwValidation, viewBinding.password.text) && viewBinding.password.text.length >= 8 &&
                 viewBinding.password.text.toString() == viewBinding.confirmPassword.text.toString() &&
                     viewBinding.nickname.text.length in 2..8){
                 viewBinding.warningEmail.visibility = View.INVISIBLE
@@ -38,13 +39,13 @@ class SignupActivity : AppCompatActivity() {
             }
             else {
                 // check email format
-                if(!Pattern.matches(GlobalApplication.emailValidation, viewBinding.email.text)){
+                if(!Pattern.matches(Glob.emailValidation, viewBinding.email.text)){
                     viewBinding.warningEmail.visibility = View.VISIBLE
                 }else{
                     viewBinding.warningEmail.visibility = View.INVISIBLE
                 }
                 // check password format
-                if(!Pattern.matches(GlobalApplication.pwValidation, viewBinding.password.text) || viewBinding.password.text.length < 8){
+                if(!Pattern.matches(Glob.pwValidation, viewBinding.password.text) || viewBinding.password.text.length < 8){
                     viewBinding.warningPassword.visibility = View.VISIBLE
                 }else{
                     viewBinding.warningPassword.visibility = View.INVISIBLE

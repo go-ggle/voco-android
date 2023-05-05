@@ -12,14 +12,12 @@ import com.example.voco.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
-    private lateinit var bottomNavigationActivity : BottomNavigationActivity
     private lateinit var bottomSheet : TeamBottomSheet
     private lateinit var apiRepository : ApiRepository
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        bottomNavigationActivity = context as BottomNavigationActivity
-        apiRepository = ApiRepository(bottomNavigationActivity)
+        apiRepository = ApiRepository(context)
     }
 
     override fun onCreateView(
