@@ -1,8 +1,11 @@
 package com.example.voco.ui
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
+import android.view.KeyEvent
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.voco.api.ApiData
@@ -16,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.util.regex.Pattern
+import androidx.core.app.ActivityCompat
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var viewBinding: ActivityLoginBinding
@@ -47,10 +51,7 @@ class LoginActivity : AppCompatActivity() {
                 viewBinding.progressBar.visibility = View.VISIBLE
 
                 // send login request
-                CoroutineScope(Dispatchers.Default).launch{
-                    CoroutineScope(Dispatchers.IO).async { apiRepository.emailLogin(ApiData.LoginRequest(viewBinding.email.text.toString(), viewBinding.password.text.toString()))}.onAwait
-                    CoroutineScope(Dispatchers.Main).async{viewBinding.progressBar.visibility = View.GONE}
-                }
+                apiRepository.emailLogin(viewBinding,ApiData.LoginRequest(viewBinding.email.text.toString(), viewBinding.password.text.toString()))
 
             }
             else {
@@ -81,6 +82,22 @@ class LoginActivity : AppCompatActivity() {
                 LoginClient.instance.loginWithKakaoAccount(this,callback = loginCallback.kakao)
             }
         }
+    }
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            val dlg = AlertDialog.Builder(this,android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+            dlg.setTitle("VOCO 종료")
+            dlg.setMessage("VOCO를 종료하시겠습니까?")
+            dlg.setNegativeButton("아니요", DialogInterface.OnClickListener { dialog, which ->
+                dialog.dismiss()
+            })
+            dlg.setPositiveButton("종료할게요", DialogInterface.OnClickListener { dialog, which ->
+                ActivityCompat.finishAffinity(this)
+            })
+            dlg.show()
+            return true
+        }
+        return false
     }
 
 }

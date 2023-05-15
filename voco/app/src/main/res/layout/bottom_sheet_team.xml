@@ -102,7 +102,7 @@
         android:id="@+id/editText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/background_round_8_white"
+        android:background="@drawable/background_round_8"
         android:backgroundTint="@color/light_gray"
         android:hint="이름을 입력해주세요"
         android:fontFamily="@font/spoqahansansneo_regular"

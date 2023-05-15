@@ -13,6 +13,7 @@ import com.example.voco.data.adapter.VerticalItemDecoration
 import com.example.voco.data.model.AppDatabase
 import com.example.voco.data.model.Project
 import com.example.voco.databinding.FragmentSearchBinding
+import com.example.voco.dialog.CreateProjectDialog
 import com.example.voco.login.Glob
 
 class SearchFragment : Fragment() {
@@ -21,11 +22,12 @@ class SearchFragment : Fragment() {
     private lateinit var apiRepository : ApiRepository
     private lateinit var searchProjectList : ArrayList<Project>
     private lateinit var projectList : ArrayList<Project>
-
+    private lateinit var dlg : CreateProjectDialog
     override fun onAttach(context: Context) {
         super.onAttach(context)
         localDb = AppDatabase.getProjectInstance(context)!!
         apiRepository = ApiRepository(context)
+        dlg = CreateProjectDialog(context)
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,15 +52,14 @@ class SearchFragment : Fragment() {
                 }
                 else->{
                     // title, language 작성하는 모달창 넣기
-                    // apiRepository.createProject("",0)
-
+                    dlg.show()
                 }
             }
         }
         // search project by title
         binding.search.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                TODO("Not yet implemented")
+                return true
             }
 
             override fun onQueryTextChange(keyword: String?): Boolean {

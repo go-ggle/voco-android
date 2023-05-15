@@ -30,11 +30,11 @@ class TabFragment(private val projectList: List<Project>) : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.projects.run{
-            adapter = ProjectAdapter(0, projectList )
+            adapter = ProjectAdapter(0, projectList as ArrayList<Project>)
             addItemDecoration(VerticalItemDecoration(2))
         }
     }
     fun updateProjectList(newProjectList: List<Project>){
-        (binding.projects.adapter as ProjectAdapter).updateProjectList(newProjectList)
+        (binding.projects.adapter as ProjectAdapter).updateProjectList(newProjectList as ArrayList<Project>)
     }
 }

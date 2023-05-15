@@ -49,7 +49,6 @@ class LoginCallback(val context : Context) {
         else if (token != null) {
             // sns login request
                 println(token)
-            Glob.prefs.setString("refresh_token",token.accessToken)
             apiRepository.snsLogin(token.accessToken, "kakao")
         }
     }

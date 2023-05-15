@@ -44,6 +44,12 @@ class MypageFragment : Fragment() {
                         }
                     }
                 }
+                else->{
+                    val intent = Intent(context, LoginActivity::class.java)
+                    startActivity(intent)
+                    ActivityCompat.finishAffinity(requireActivity())
+                    Glob.prefs.logout()
+                }
             }
         }
         binding.voiceRecord.setOnClickListener {

@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/logo"
         android:layout_marginTop="50dp"
-        android:background="@drawable/background_round_8_white"
+        android:background="@drawable/background_round_8"
         app:searchIcon="@drawable/ic_search"
         app:searchHintIcon="@drawable/ic_search"
         app:queryHint="제목으로 검색"
@@ -32,7 +32,8 @@
         android:id="@+id/project_add_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/background_round_30_blue"
+        android:background="@drawable/background_round_30"
+        android:backgroundTint="@color/blue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -71,6 +72,15 @@
         android:textColor="@color/dark_gray"
         android:textSize="18dp"
         android:textAlignment="center"
+        android:visibility="gone"/>
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:visibility="gone"/>
 
 

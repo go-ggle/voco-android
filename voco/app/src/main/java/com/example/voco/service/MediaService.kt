@@ -21,6 +21,7 @@ object MediaService{
     private var recorder: MediaRecorder? = null // 사용하지 않을 때는 메모리 해제
     private const val audioSource = MediaRecorder.AudioSource.VOICE_RECOGNITION
     private const val sampleRate = 44100
+    private const val bitRate = 16
     private const val audioFormat = MediaRecorder.OutputFormat.MPEG_4
     private const val audioEncoder = MediaRecorder.AudioEncoder.AAC
 
@@ -33,7 +34,7 @@ object MediaService{
                 setAudioSource(audioSource)
                 setOutputFormat(audioFormat)
                 setAudioEncoder(audioEncoder)
-                setAudioEncodingBitRate(24000)
+                setAudioEncodingBitRate(bitRate)
                 setAudioChannels(1)
                 setAudioSamplingRate(sampleRate)
                 setOutputFile(fileName)

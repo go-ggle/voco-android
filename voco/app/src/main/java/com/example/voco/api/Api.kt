@@ -1,5 +1,6 @@
 package com.example.voco.api
 
+import com.example.voco.data.model.Block
 import com.example.voco.data.model.Project
 import com.example.voco.data.model.Team
 import com.example.voco.data.model.Voice
@@ -17,6 +18,12 @@ interface Api {
     // 카카오 로그인
     @POST("/oauth/kakao")
     suspend fun kakaoLogin(
+        @Body request : HashMap<String, String>
+    ): Response<HashMap<String,String>>
+
+    // 토큰 갱신
+    @POST("/auth/renew")
+    suspend fun refreshToken(
         @Body request : HashMap<String, String>
     ): Response<HashMap<String,String>>
 
@@ -67,11 +74,26 @@ interface Api {
         @Body request : ApiData.CreateProjectRequest
     ) : Response<Project>
 
+    // 프로젝트 삭제
+    @DELETE("/teams/{teamId}/projects/{projectId}")
+    suspend fun deleteProject(
+        @Path("teamId") teamId: Int,
+        @Path("projectId") projectId: Int,
+    ): Response<HashMap<String, String>>
+
     // 프로젝트 목록 조회
     @GET("/teams/{teamId}/projects")
     suspend fun getProjectList(
         @Path("teamId") teamId: Int,
     ): Response<HashMap<String, List<Project>>>
+
+    // 프로젝트 제목 수정
+    @PATCH("/teams/{teamId}/projects/{projectId}")
+    suspend fun updateProjectTitle(
+        @Path("teamId") teamId: Int,
+        @Path("projectId") projectId: Int,
+        @Body request: HashMap<String,String>
+    ): Response<Project>
 
     // 북마크 생성
     @POST("/bookmarks/{projectId}")
@@ -84,4 +106,35 @@ interface Api {
     suspend fun deleteBookmark(
         @Path("projectId") projectId: Int
     ): Response<HashMap<String, String>>
+
+    @GET("/teams/{teamId}/projects/{projectId}/blocks")
+    suspend fun getBlock(
+        @Path("teamId") teamId: Int,
+        @Path("projectId") projectId: Int,
+    ): Response<HashMap<String, List<Block>>>
+
+    // 블럭 추가
+    @POST("/teams/{teamId}/projects/{projectId}/blocks")
+    suspend fun createBlock(
+        @Path("teamId") teamId: Int,
+        @Path("projectId") projectId: Int,
+        @Body request : HashMap<String, Int>
+    ): Response<Block>
+
+    // 블럭 수정
+    @POST("/teams/{teamId}/projects/{projectId}/blocks/{blockId}")
+    suspend fun updateBlock(
+        @Path("teamId") teamId: Int,
+        @Path("projectId") projectId: Int,
+        @Path("blockId") blockId: Int,
+        @Body request : Block
+    ): Response<Block>
+
+    // 블럭 삭제
+    @DELETE("/teams/{teamId}/projects/{projectId}/blocks/{blockId}")
+    suspend fun deleteBlock(
+        @Path("teamId") teamId: Int,
+        @Path("projectId") projectId: Int,
+        @Path("blockId") blockId: Int
+    ) : Response<HashMap<String, String>>
 }

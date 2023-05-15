@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.voco.data.*
 
 @Database(entities = [Country::class, Project::class, Block::class, Voice::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {

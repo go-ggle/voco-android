@@ -34,6 +34,17 @@
         <item name="android:fontFamily">@font/suit_regular</item>
         <item name="android:textSize">13dp</item>
     </style>
+    <!-- Popup Menu theme.-->
+    <style name="MyPopupMenu" parent="Widget.Material3.PopupMenu.Overflow">
+        <item name="android:popupMenuStyle">@style/PopupMenuTheme</item>
+    </style>
+    <style name="PopupMenuTheme">
+        <item name="android:colorBackground">@color/light_orange2</item>
+        <item name="android:colorControlNormal">@color/light_orange3</item>
+        <item name="android:fontFamily">@font/suit_regular</item>
+        <item name="android:textSize">14dp</item>
+        <item name="android:layout_margin">7dp</item>
+    </style>
     <style name="language_Theme">
         <item name="android:fontFamily">@font/suit_regular</item>
         <item name="android:textSize">13dp</item>

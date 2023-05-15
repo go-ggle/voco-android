@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_download"
+        android:title="전체 다운로드"
+        android:icon="@drawable/ic_download" />
+    <item
+        android:id="@+id/menu_delete"
+        android:title="프로젝트 삭제"
+        android:icon="@drawable/ic_delete" />
+    <item
+        android:id="@+id/menu_update_language"
+        android:title="언어 변경"
+        android:icon="@drawable/ic_change" />
+</menu>

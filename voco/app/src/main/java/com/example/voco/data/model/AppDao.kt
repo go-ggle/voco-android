@@ -1,13 +1,13 @@
-package com.example.voco.data
+package com.example.voco.data.model
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.example.voco.data.model.Block
-import com.example.voco.data.model.Country
-import com.example.voco.data.model.Project
-import com.example.voco.data.model.Voice
 
+//@Dao
+//interface UserDao{
+//
+//}
 @Dao // Data Access Object
 interface CountryDao {
     @Query("SELECT * FROM Country WHERE countryId = :countryId")
@@ -19,6 +19,10 @@ interface ProjectDao {
     fun insert(projectList: List<Project>)
     @Query("UPDATE Project SET bookmarked = :isChecked WHERE id = :projectId")
     fun updateBookmark(projectId: Int, isChecked: Boolean)
+    @Query("UPDATE Project SET title = :title WHERE id = :projectId")
+    fun updateTitle(projectId: Int, title: String)
+    @Query("DELETE FROM Project WHERE id = :projectId")
+    fun delete(projectId: Int)
     @Query("DELETE FROM Project")
     fun deleteAll()
     @Query("SELECT * FROM Project")

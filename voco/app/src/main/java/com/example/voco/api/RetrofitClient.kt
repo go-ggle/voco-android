@@ -10,6 +10,7 @@ import java.io.IOException
 
 object RetrofitClient {
     private const val BASE_URL = "http://3.39.130.119:8080"
+    private const val FLASK_URL = "http://3.39.130.119:8080"
     fun getRetrofitClient(isHeader: Boolean) : Retrofit {
         return when(isHeader){
             true -> Retrofit.Builder()

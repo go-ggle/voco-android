@@ -79,7 +79,7 @@
         android:id="@+id/record_warning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/background_round_20_white"
+        android:background="@drawable/background_round_20"
         android:elevation="15dp"
         app:layout_constraintTop_toBottomOf="@id/header"
         app:layout_constraintStart_toStartOf="parent"

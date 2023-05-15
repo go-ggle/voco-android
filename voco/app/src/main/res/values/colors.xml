@@ -13,6 +13,8 @@
     <color name="regular_purple">#8667F2</color>
     <color name="orange">#F77A55</color>
     <color name="light_orange">#FFA857</color>
+    <color name="light_orange2">#FEECDB</color>
+    <color name="light_orange3">#FED3AA</color>
     <color name="dark_orange">#FB7B05</color>
     <color name="gray">#8C8098</color>
     <color name="light_gray">#F6F8FF</color>
