@@ -46,10 +46,11 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
-    // 아래 3줄의 코드 속 버전은 room db의 버전으로 한다.
+    // Room Database
     implementation("androidx.room:room-runtime:2.4.3")
     annotationProcessor("androidx.room:room-compiler:2.4.3")
     implementation("androidx.room:room-ktx:2.4.3")
+
     // To use Kotlin annotation processing tool (kapt)
     kapt("androidx.room:room-compiler:2.4.3")
 
@@ -75,8 +76,8 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:4.3.1'
 
     // Kotlin Coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.0'
 
     // ML Kit
     implementation 'com.google.firebase:firebase-ml-natural-language:22.0.0'
@@ -87,5 +88,10 @@ dependencies {
 
     // Adding chibde audio visualizer Library
     implementation 'com.chibde:audiovisualizer:2.2.0'
+
+    // Exo Player
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.11.8'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.11.8'
 }
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'idea'

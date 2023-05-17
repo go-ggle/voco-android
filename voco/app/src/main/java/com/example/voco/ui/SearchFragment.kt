@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.example.voco.R
 import com.example.voco.api.ApiRepository
 import com.example.voco.data.adapter.ProjectAdapter
 import com.example.voco.data.adapter.VerticalItemDecoration
@@ -41,7 +42,7 @@ class SearchFragment : Fragment() {
             else -> View.GONE
         }
         binding.projectList.run{
-            adapter = ProjectAdapter(1, projectList)
+            adapter = ProjectAdapter(R.id.menu_board, projectList)
             addItemDecoration(VerticalItemDecoration(28))
         }
         // create project button
@@ -64,7 +65,7 @@ class SearchFragment : Fragment() {
 
             override fun onQueryTextChange(keyword: String?): Boolean {
                 searchProjectList = projectList.filter { project: Project -> project.title.contains(keyword.toString().trim()) } as ArrayList<Project>
-                binding.projectList.adapter = ProjectAdapter(1, searchProjectList)
+                binding.projectList.adapter = ProjectAdapter(R.id.menu_board, searchProjectList)
                 return true
             }
 

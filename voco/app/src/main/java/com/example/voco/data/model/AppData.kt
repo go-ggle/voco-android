@@ -35,7 +35,7 @@ data class Project(
 data class Block(
     @ColumnInfo(name="id") val id: Int,
     @ColumnInfo(name = "text") var text: String,
-    @ColumnInfo(name="audioPath") val audioPath: String,
+    @ColumnInfo(name="audioPath") var audioPath: String,
     @ColumnInfo(name="interval") var interval: Int,
     @ColumnInfo(name="voiceId") var voiceId: Int,
     @ColumnInfo(name="order") var order: Int

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.example.voco.api.ApiRepository
+import com.example.voco.data.adapter.TeamAdapter
 import com.example.voco.databinding.BottomSheetTeamBinding
 import com.example.voco.databinding.FragmentHomeBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -72,7 +73,7 @@ class TeamBottomSheet(private val parentBinding: FragmentHomeBinding, private va
             }
             else -> {
               // send create team request
-              apiRepository.createTeam(parentBinding, viewBinding, viewBinding.editText.text.toString())
+              apiRepository.createTeam(viewBinding, viewBinding.editText.text.toString(), parentBinding.teams.adapter as TeamAdapter)
             }
           }
         }
@@ -81,7 +82,7 @@ class TeamBottomSheet(private val parentBinding: FragmentHomeBinding, private va
             Toast.makeText(requireContext(),"초대코드를 입력해주세요",Toast.LENGTH_SHORT).show()
           else {
             // send join team request
-            apiRepository.joinTeam(parentBinding, viewBinding, viewBinding.editText.text.toString())
+            apiRepository.joinTeam(viewBinding, viewBinding.editText.text.toString(), parentBinding.teams.adapter as TeamAdapter)
           }
         }
         "초대코드를 공유해주세요"->{

@@ -54,7 +54,7 @@ class MypageFragment : Fragment() {
         }
         binding.voiceRecord.setOnClickListener {
             binding.progressBar.visibility = View.VISIBLE
-            apiRepository.getSentence(binding)
+            apiRepository.getSentence(binding.progressBar)
         }
 
         return binding.root

@@ -1,12 +1,10 @@
 package com.example.voco.ui
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.text.style.BackgroundColorSpan
 import android.view.*
 import android.widget.PopupMenu
 import android.widget.Toast
@@ -20,6 +18,10 @@ import com.example.voco.data.model.AppDatabase
 import com.example.voco.data.model.Block
 import com.example.voco.data.model.Project
 import com.example.voco.databinding.ActivityCreateProjectBinding
+import com.example.voco.service.MediaService.initExoPlayer
+import com.example.voco.service.MediaService.releaseExoPlayer
+import com.example.voco.service.MediaService.setExoPlayerUrl
+import com.google.android.exoplayer2.SimpleExoPlayer
 import kotlin.properties.Delegates
 
 class CreateProjectActivity() : AppCompatActivity(), BlockAdapter.IntervalPicker, PopupMenu.OnMenuItemClickListener {
@@ -30,7 +32,8 @@ class CreateProjectActivity() : AppCompatActivity(), BlockAdapter.IntervalPicker
     private lateinit var project: Project
     private lateinit var blockList : ArrayList<Block>
     private lateinit var apiRepository: ApiRepository
-    private var intervalChangeItemPos = -1
+    private var intervalBlock : Block? = null
+    private var player: SimpleExoPlayer? = null
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,11 +42,16 @@ class CreateProjectActivity() : AppCompatActivity(), BlockAdapter.IntervalPicker
         projectId = intent.getIntExtra("project",0)
         binding = ActivityCreateProjectBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         // get the project and project's text blocks
         project = localDb.ProjectDao().selectById(projectId)
         blockList = localDb.BlockDao().selectAll() as ArrayList<Block>
-        blockAdapter = BlockAdapter(this, project, blockList)
+        blockAdapter = BlockAdapter(project, blockList)
         apiRepository = ApiRepository(this)
+
+        initExoPlayer(this, binding.audioPlayBox)
+        setExoPlayerUrl(this, "https://voco-audio.s3.ap-northeast-2.amazonaws.com/${project.team}/${projectId}/0.wav")
+
         val window = window
         window.setBackgroundDrawableResource(R.color.light_purple)
         // set project's title and date
@@ -80,11 +88,16 @@ class CreateProjectActivity() : AppCompatActivity(), BlockAdapter.IntervalPicker
 
         // add new text block at last index
         binding.addprojectAddButton.setOnClickListener {
-            val position = binding.addprojectList.childCount
-            if(position-1>=0 && (blockList[position-1].text=="" || position-1<0 && blockList[0].text=="")) {
-                Toast.makeText(this, "내용을 작성해주세요", Toast.LENGTH_SHORT).show()
+            if(binding.progressBar.visibility == View.GONE) {
+                val position = binding.addprojectList.childCount
+                if (position - 1 >= 0 && (blockList[position - 1].text == "" || position - 1 < 0 && blockList[0].text == "")) {
+                    Toast.makeText(this, "내용을 작성해주세요", Toast.LENGTH_SHORT).show()
+                } else {
+                    binding.progressBar.visibility = View.VISIBLE
+                    apiRepository.createBlock(project.team, project.id, position + 1, binding.progressBar, binding.addprojectList.adapter as BlockAdapter)
+                }
             }else{
-                apiRepository.createBlock(project.team,  project.id, position+1, binding)
+                Toast.makeText(this, "블럭 생성중입니다",Toast.LENGTH_SHORT).show()
             }
         }
         binding.title.addTextChangedListener(object : TextWatcher{
@@ -113,26 +126,33 @@ class CreateProjectActivity() : AppCompatActivity(), BlockAdapter.IntervalPicker
         }
 
         // player with ExoPlayer
+//        binding.audioPlayBox.setOnClickListener {
+//        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        releaseExoPlayer()
     }
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         binding.addprojectList.clearFocus()
         return super.dispatchTouchEvent(ev)
     }
-    override fun openIntervalPicker(position: Int, minute:Int, second:Int){
-        intervalChangeItemPos = position
+    override fun openIntervalPicker(block: Block, minute:Int, second:Int){
+        intervalBlock = block
         binding.intervalPicker.run {
             this.minute.value = minute
             this.second.value = second
             root.visibility = View.VISIBLE
         }
     }
-
     override fun onMenuItemClick(item: MenuItem?): Boolean {
         when(item?.itemId){
             R.id.menu_download->{
 
             }
             R.id.menu_delete->{
+                binding.progressBar.visibility = View.VISIBLE
                 apiRepository.deleteProject(project.team, projectId,-1,-1,null)
             }
             R.id.menu_update_language->{
@@ -152,10 +172,11 @@ class CreateProjectActivity() : AppCompatActivity(), BlockAdapter.IntervalPicker
         return false
     }
     private fun closeIntervalPicker(isUpdate: Boolean) {
-        if(isUpdate)
-            (binding.addprojectList.adapter as BlockAdapter).updateInterval(intervalChangeItemPos,binding.intervalPicker.minute.value,binding.intervalPicker.second.value)
+        if(isUpdate) {
+            apiRepository.updateBlock(project, intervalBlock!!,null, binding.addprojectList.adapter as BlockAdapter)
+        }
         binding.intervalPicker.root.visibility = View.GONE
-        intervalChangeItemPos = -1
+        intervalBlock = null
     }
 
 }

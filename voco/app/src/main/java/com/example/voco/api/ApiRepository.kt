@@ -1,20 +1,16 @@
 package com.example.voco.api
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.view.LayoutInflater
+import android.util.Log
 import android.view.View
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentManager
 import com.example.voco.R
-import com.example.voco.api.Api
-import com.example.voco.api.ApiData
-import com.example.voco.api.RetrofitClient
 import com.example.voco.data.adapter.*
 import com.example.voco.data.model.*
 import com.example.voco.databinding.*
@@ -28,26 +24,23 @@ import kotlinx.coroutines.Dispatchers.Main
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import retrofit2.Response
 import java.io.*
-import java.sql.DriverManager.println
 import java.util.*
-import kotlin.collections.HashMap
-import android.widget.ProgressBar
+import kotlin.collections.*
 
-open class ApiRepository(private val context: Context) {
-    private var apiService = RetrofitClient.getRetrofitClient(true).create(Api::class.java)
+open class ApiRepository(private val context: Context) { // get activity context
+    private var apiService = RetrofitClient.getRetrofitClient(true).create(Api::class.java) // retrofit client which has header
 
     // signup request coroutine
     fun signup(user: ApiData.SignupRequest) = CoroutineScope(Default).launch {
-        apiService = RetrofitClient.getRetrofitClient(false).create(Api::class.java)
+        apiService = RetrofitClient.getRetrofitClient(false).create(Api::class.java) // retrofit client which doesn't have header
         try {
             val request = CoroutineScope(IO).async { apiService.signup(user) }
             val response = request.await()
             when (response.code()) {
                 201 -> {
                     showToast(R.string.toast_signup_success)
-                    startLoginActivity()
+                    startLoginActivity() // move to login activity
                 }
                 409 -> showToast(R.string.toast_already_signup)
                 else -> showToast(R.string.toast_request_error)
@@ -58,12 +51,12 @@ open class ApiRepository(private val context: Context) {
     }
 
     // login request coroutine
-    fun emailLogin(binding: ActivityLoginBinding, user: ApiData.LoginRequest) = CoroutineScope(Default).launch {
-        apiService = RetrofitClient.getRetrofitClient(false).create(Api::class.java)
+    fun emailLogin(user: ApiData.LoginRequest, progressBar: ProgressBar) = CoroutineScope(Default).launch {
+        apiService = RetrofitClient.getRetrofitClient(false).create(Api::class.java) // retrofit client which doesn't have header
         try {
             val request = CoroutineScope(IO).async { apiService.login(user) }
             val response = request.await()
-            endLoading(binding.progressBar)
+            endLoading(progressBar)
             when (response.code()) {
                 200 -> {
                     withContext(IO) {
@@ -77,7 +70,7 @@ open class ApiRepository(private val context: Context) {
                 else -> showToast(R.string.toast_request_error)
             }
         } catch (e: Exception) {
-            endLoading(binding.progressBar)
+            endLoading(progressBar)
             showToast(R.string.toast_network_error)
         }
     }
@@ -124,35 +117,24 @@ open class ApiRepository(private val context: Context) {
     // create new project request
     fun createProject(title: String, language: Language) = CoroutineScope(Default).launch {
         try {
-            val languageId = when(language){
-                Language.AMERICA -> 0
-                Language.UK -> 1
-                Language.GERMANY -> 2
-                Language.CHINA -> 3
-                Language.JAPAN -> 4
-                Language.FRANCE -> 5
-            }
+            val languageId = language.ordinal
             val request = CoroutineScope(IO).async { apiService.createProject(
                 Glob.prefs.getCurrentTeam(),
                 ApiData.CreateProjectRequest(title, languageId)
             ) }
             val response = request.await()
             when (response.code()) {
-                200 -> {
+                201-> {
                     val localDao = AppDatabase.getProjectInstance(context)!!.ProjectDao()
-                    val blockLocalDao = AppDatabase.getBlockInstance(context)!!.BlockDao()
-//                    val initialBlock =
-//                        Block(1, "", "", 0, Glob.prefs.getInt("default_voice", 0), 1)
                     val newProject: Project = response.body()!!
-                    val newProjectId = response.body()!!.id
 
                     localDao.insert(listOf(newProject)) // save new project
-//                    blockLocalDao.insert(listOf(initialBlock)) // save initial block
-                    startProjectActivity(newProjectId) // move to create project page
+                    startProjectActivity(newProject.id) // move to create project page
                 }
                 else-> showToast(R.string.toast_request_error)
             }
         } catch (e: Exception) {
+            println(e)
             showToast(R.string.toast_network_error)
         }
     }
@@ -171,30 +153,36 @@ open class ApiRepository(private val context: Context) {
             showToast(R.string.toast_network_error)
         }
     }
-    fun deleteProject(teamId: Int, projectId: Int, pageId:Int,  pos: Int, binding: FragmentSearchBinding?) = CoroutineScope(Default).launch{
+    fun deleteProject(teamId: Int, projectId: Int, pageId:Int,  pos: Int, projectAdapter: ProjectAdapter?) = CoroutineScope(Default).launch{
         try{
             val request= CoroutineScope(IO).async{ apiService.deleteProject(teamId, projectId)}
             val response = request.await()
+
             when(response.code()){
                 200->{
                     val localDao = AppDatabase.getProjectInstance(context)!!.ProjectDao()
+                    val blockDao = AppDatabase.getBlockInstance(context)!!.BlockDao()
                     localDao.delete(projectId)
+                    blockDao.deleteAll()
 
                     when(pageId){
-                        -1, 0-> backMainActivity()
-                        else->(binding!!.projectList.adapter as ProjectAdapter).deleteProject(pos)
+                        R.id.menu_home, -1 -> backMainActivity(pageId)
+                        else->withContext(Main){
+                            projectAdapter!!.deleteProject(pos)
+                        }
                     }
                     showToast(R.string.toast_delete_project)
                 }
                 else-> showToast(R.string.toast_request_error)
             }
         }catch(e:Exception){
+            println(e)
             showToast(R.string.toast_network_error)
         }
     }
 
     // get training sentence request
-    fun getSentence(binding: FragmentMypageBinding) = CoroutineScope(Default).launch {
+    fun getSentence(progressBar: ProgressBar) = CoroutineScope(Default).launch {
         try {
             val request = CoroutineScope(IO).async { apiService.getSentence() }
             val response = request.await()
@@ -205,12 +193,12 @@ open class ApiRepository(private val context: Context) {
                     intent.putExtra("sentences", sentenceList)
                     context.startActivity(intent)
 
-                    endLoading(binding.progressBar)
+                    endLoading(progressBar)
                 }
             }
         } catch (e: Exception) {
             showToast(R.string.toast_request_error)
-            endLoading(binding.progressBar)
+            endLoading(progressBar)
         }
     }
 
@@ -362,9 +350,9 @@ open class ApiRepository(private val context: Context) {
 
     // create team workspace request
     fun createTeam(
-        parentBinding: FragmentHomeBinding,
         binding: BottomSheetTeamBinding,
-        teamName: String
+        teamName: String,
+        teamAdapter: TeamAdapter
     ) = CoroutineScope(Default).launch {
         try {
             val request = CoroutineScope(IO).async { apiService.createTeam(hashMapOf(Pair("name", teamName))) }
@@ -381,7 +369,7 @@ open class ApiRepository(private val context: Context) {
                             visibility = View.VISIBLE
                         }
                         // update team list
-                        (parentBinding.teams.adapter as TeamAdapter).addTeam(response.body()!!)
+                        teamAdapter.addTeam(response.body()!!)
                     }
                 }
                 else -> showToast(R.string.toast_request_error)
@@ -392,9 +380,9 @@ open class ApiRepository(private val context: Context) {
     }
 
     fun joinTeam(
-        parentBinding: FragmentHomeBinding,
         binding: BottomSheetTeamBinding,
-        code: String
+        code: String,
+        teamAdapter: TeamAdapter
     ) = CoroutineScope(Default).launch {
         try {
             val request = CoroutineScope(IO).async { apiService.joinTeam(code) }
@@ -412,7 +400,7 @@ open class ApiRepository(private val context: Context) {
                         }
                     }
                     // update team list
-                    (parentBinding.teams.adapter as TeamAdapter).addTeam(response.body()!!)
+                    teamAdapter.addTeam(response.body()!!)
                 }
                 404 -> showToast(R.string.toast_wrong_code)
                 409 -> showToast(R.string.toast_already_join)
@@ -468,6 +456,7 @@ open class ApiRepository(private val context: Context) {
                                         voiceResponse.body()!![0].id
                                     )
                                 }
+
                             }
                         }
                     }
@@ -500,11 +489,11 @@ open class ApiRepository(private val context: Context) {
             showToast(R.string.toast_network_error)
         }
     }
-    fun getBlock(teamId:Int, projectId:Int, binding: FragmentSearchBinding) = CoroutineScope(Default).launch{
+    fun getBlock(teamId:Int, projectId:Int, progressBar: ProgressBar) = CoroutineScope(Default).launch{
         try{
             val request = CoroutineScope(IO).async{apiService.getBlock(teamId, projectId)}
             val response = request.await()
-            endLoading(binding.progressBar)
+            endLoading(progressBar)
             when(response.code()){
                 200->{
                     updateLocalDb("block", response.body()?.get("blocks")!!)
@@ -513,47 +502,19 @@ open class ApiRepository(private val context: Context) {
                 else-> showToast(R.string.toast_request_error)
             }
         }catch (e: Exception) {
-            endLoading(binding.progressBar)
+            endLoading(progressBar)
             showToast(R.string.toast_network_error)
         }
     }
-    fun createBlock(teamId: Int, projectId: Int, order:Int, binding: ActivityCreateProjectBinding) = CoroutineScope(Default).launch{
+    fun createBlock(teamId: Int, projectId: Int, order:Int, progressBar: ProgressBar, blockAdapter: BlockAdapter) = CoroutineScope(Default).launch{
         try{
             val request = CoroutineScope(IO).async{ apiService.createBlock(teamId, projectId, hashMapOf(Pair("order",order),Pair("voiceId",Glob.prefs.getInt("default_voice",0))))}
             val response = request.await()
+            endLoading(progressBar)
             when(response.code()){
-                201-> {
-                    withContext(Main){
-                        (binding.addprojectList.adapter as BlockAdapter).addBlock(response.body()!!, order-1)
+                201-> withContext(Main){
+                        blockAdapter.addBlock(response.body()!!, order-1)
                     }
-                }
-                else->showToast(R.string.toast_request_error)
-            }
-        }catch (e: Exception) {
-            println(e)
-            showToast(R.string.toast_network_error)
-        }
-    }
-    fun updateBlock(teamId:Int, projectId:Int, blockId:Int, block: Block) = CoroutineScope(Default).launch{
-        try{
-            val request = CoroutineScope(IO).async{ apiService.updateBlock(teamId,projectId,blockId,block)}
-            val response = request.await()
-            when(response.code()){
-                200->{
-
-                }
-
-            }
-        }catch (e: Exception) {
-            showToast(R.string.toast_network_error)
-        }
-    }
-    fun deleteBlock(teamId:Int, projectId:Int, blockId:Int, binding: ActivityCreateProjectBinding) = CoroutineScope(Default).launch{
-        try{
-            val request = CoroutineScope(IO).async{ apiService.deleteBlock(teamId,projectId,blockId)}
-            val response = request.await()
-            when(response.code()){
-                200->(binding.addprojectList.adapter as BlockAdapter).deleteBlock(blockId)
                 else->{
                     println(response.code())
                     showToast(R.string.toast_request_error)
@@ -561,6 +522,61 @@ open class ApiRepository(private val context: Context) {
             }
         }catch (e: Exception) {
             println(e)
+            endLoading(progressBar)
+            showToast(R.string.toast_network_error)
+        }
+    }
+    fun updateBlock(project: Project, block:Block, progressBar: ProgressBar?, blockAdapter: BlockAdapter) = CoroutineScope(Default).launch{
+        try{
+            val body = ApiData.UpdateBlockRequest(block.id,block.text,block.audioPath,block.interval,block.voiceId,project.language,block.order)
+            val request = CoroutineScope(IO).async{ apiService.updateBlock(project.team,project.id,block.id,body)}
+            val response = request.await()
+            if(progressBar != null) {
+                endLoading(progressBar)
+            }
+            when(response.code()){
+                200->{
+                    withContext(Main) {
+                        blockAdapter.updateBlock(block)
+                    }
+                }
+                else-> {
+                    println(response.code())
+                    showToast(R.string.toast_request_error)
+                }
+
+            }
+        }catch (e: Exception) {
+            println(e)
+            if(progressBar != null) {
+                endLoading(progressBar)
+            }
+            showToast(R.string.toast_network_error)
+        }
+    }
+    fun deleteBlock(teamId:Int, projectId:Int, blockId:Int, progressBar: ProgressBar, blockAdapter: BlockAdapter) = CoroutineScope(Default).launch{
+        try{
+            Log.i("REQUEST_ERROR",Glob.prefs.getString("token","error"))
+            Log.i("REQUEST_ERROR",teamId.toString())
+            Log.i("REQUEST_ERROR",projectId.toString())
+            Log.i("REQUEST_ERROR",blockId.toString())
+            val request = CoroutineScope(IO).async{ apiService.deleteBlock(teamId,projectId,blockId)}
+            val response = request.await()
+            endLoading(progressBar)
+            when(response.code()){
+                200->{
+                    withContext(Main){
+                        blockAdapter.deleteBlock(blockId)
+                    }
+                }
+                else->{
+                    Log.i("REQUEST_ERROR",response.code().toString())
+                    showToast(R.string.toast_request_error)
+                }
+            }
+        }catch (e: Exception) {
+            println(e)
+            endLoading(progressBar)
             showToast(R.string.toast_network_error)
         }
     }
@@ -604,10 +620,13 @@ open class ApiRepository(private val context: Context) {
         ActivityCompat.finishAffinity(context as LoginActivity)
     }
 
-    private fun backMainActivity(){
+    private fun backMainActivity(pageId: Int){
         val intent = Intent(context, BottomNavigationActivity::class.java)
         context.startActivity(intent)
-        (context as CreateProjectActivity).finish()
+        when(pageId){
+            R.id.menu_home->(context as BottomNavigationActivity).finish()
+            else-> (context as CreateProjectActivity).finish()
+        }
     }
 
     private fun startProjectActivity(projectId: Int) {

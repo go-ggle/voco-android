@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.voco.R
 import com.example.voco.data.adapter.ProjectAdapter
 import com.example.voco.data.adapter.VerticalItemDecoration
 import com.example.voco.data.model.Project
@@ -30,7 +31,7 @@ class TabFragment(private val projectList: List<Project>) : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.projects.run{
-            adapter = ProjectAdapter(0, projectList as ArrayList<Project>)
+            adapter = ProjectAdapter(R.id.menu_home, projectList as ArrayList<Project>)
             addItemDecoration(VerticalItemDecoration(2))
         }
     }

@@ -21,6 +21,15 @@ class ApiData {
         val title: String,
         val blockList: List<Block>
     )
+    data class UpdateBlockRequest(
+        val id: Int,
+        val text: String,
+        val audioPath: String,
+        val interval: Int,
+        val voiceId: Int,
+        val language: Int,
+        val order: Int
+    )
     data class SentenceResponse(
         val textId: Int,
         val text: String

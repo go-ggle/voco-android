@@ -122,12 +122,12 @@ interface Api {
     ): Response<Block>
 
     // 블럭 수정
-    @POST("/teams/{teamId}/projects/{projectId}/blocks/{blockId}")
+    @PATCH("/teams/{teamId}/projects/{projectId}/blocks/{blockId}")
     suspend fun updateBlock(
         @Path("teamId") teamId: Int,
         @Path("projectId") projectId: Int,
         @Path("blockId") blockId: Int,
-        @Body request : Block
+        @Body request : ApiData.UpdateBlockRequest
     ): Response<Block>
 
     // 블럭 삭제

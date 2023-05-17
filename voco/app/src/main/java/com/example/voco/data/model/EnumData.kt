@@ -2,7 +2,7 @@ package com.example.voco.data.model
 
 
 enum class Language {
-    AMERICA, UK, FRANCE, JAPAN, CHINA, GERMANY
+    AMERICA, UK, GERMANY, CHINA, JAPAN,  FRANCE,
 }
 enum class SNS {
     KAKAO, NAVER, GOOGLE, EMAIL
