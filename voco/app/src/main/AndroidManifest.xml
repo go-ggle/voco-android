@@ -6,6 +6,8 @@
   <uses-permission android:name="android.permission.INTERNET" />
   <!-- 오디오 권한 설정-->
   <uses-permission android:name="android.permission.RECORD_AUDIO" />
+  <!-- 파일 저장 권한 설정-->
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   <application
       android:name=".login.Glob"
       android:allowBackup="true"
@@ -61,7 +63,7 @@
 
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
-
+        <!-- Redirect URI: "kakao{NATIVE_APP_KEY}://oauth“ -->
         <data
             android:host="oauth"
             android:scheme="kakao8088d94fe2a14aace007f77409c82402" />

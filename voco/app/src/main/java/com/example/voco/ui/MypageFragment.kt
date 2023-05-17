@@ -11,6 +11,7 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.example.voco.R
 import com.example.voco.api.ApiRepository
+import com.example.voco.data.model.SNS
 import com.example.voco.databinding.FragmentMypageBinding
 import com.example.voco.login.Glob
 import com.kakao.sdk.user.UserApiClient
@@ -29,7 +30,7 @@ class MypageFragment : Fragment() {
         binding = FragmentMypageBinding.inflate(inflater)
         binding.logout.setOnClickListener {
             when(Glob.prefs.loginMode()){
-                "kakao"->{
+                SNS.KAKAO.ordinal->{
                     UserApiClient.instance.logout { error ->
                         when(error){
                             null ->{

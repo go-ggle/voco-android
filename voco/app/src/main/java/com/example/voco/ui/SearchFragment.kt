@@ -36,13 +36,13 @@ class SearchFragment : Fragment() {
     ): View {
         projectList = localDb.ProjectDao().selectAll() as ArrayList<Project>
 
-        binding = FragmentSearchBinding.inflate(layoutInflater)
+        binding = FragmentSearchBinding.inflate(inflater)
         binding.noProject.visibility = when(projectList.size){
             0 -> View.VISIBLE
             else -> View.GONE
         }
         binding.projectList.run{
-            adapter = ProjectAdapter(R.id.menu_board, projectList)
+            adapter = ProjectAdapter(R.id.menu_board, projectList, binding.progressBar)
             addItemDecoration(VerticalItemDecoration(28))
         }
         // create project button
@@ -65,7 +65,7 @@ class SearchFragment : Fragment() {
 
             override fun onQueryTextChange(keyword: String?): Boolean {
                 searchProjectList = projectList.filter { project: Project -> project.title.contains(keyword.toString().trim()) } as ArrayList<Project>
-                binding.projectList.adapter = ProjectAdapter(R.id.menu_board, searchProjectList)
+                binding.projectList.adapter = ProjectAdapter(R.id.menu_board, searchProjectList, binding.progressBar)
                 return true
             }
 

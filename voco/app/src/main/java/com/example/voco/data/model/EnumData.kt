@@ -5,5 +5,5 @@ enum class Language {
     AMERICA, UK, GERMANY, CHINA, JAPAN,  FRANCE,
 }
 enum class SNS {
-    KAKAO, NAVER, GOOGLE, EMAIL
+    EMAIL, KAKAO, NAVER, GOOGLE
 }

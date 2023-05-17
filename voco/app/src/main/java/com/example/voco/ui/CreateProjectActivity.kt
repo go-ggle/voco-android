@@ -18,14 +18,17 @@ import com.example.voco.data.model.AppDatabase
 import com.example.voco.data.model.Block
 import com.example.voco.data.model.Project
 import com.example.voco.databinding.ActivityCreateProjectBinding
+import com.example.voco.service.MediaService
 import com.example.voco.service.MediaService.initExoPlayer
 import com.example.voco.service.MediaService.releaseExoPlayer
 import com.example.voco.service.MediaService.setExoPlayerUrl
 import com.google.android.exoplayer2.SimpleExoPlayer
+import java.util.*
 import kotlin.properties.Delegates
 
 class CreateProjectActivity() : AppCompatActivity(), BlockAdapter.IntervalPicker, PopupMenu.OnMenuItemClickListener {
     private var projectId by Delegates.notNull<Int>()
+    private lateinit var dubbingUrl : String
     private lateinit var binding: ActivityCreateProjectBinding
     private lateinit var localDb : AppDatabase
     private lateinit var blockAdapter: BlockAdapter
@@ -48,9 +51,9 @@ class CreateProjectActivity() : AppCompatActivity(), BlockAdapter.IntervalPicker
         blockList = localDb.BlockDao().selectAll() as ArrayList<Block>
         blockAdapter = BlockAdapter(project, blockList)
         apiRepository = ApiRepository(this)
-
+        dubbingUrl = "https://voco-audio.s3.ap-northeast-2.amazonaws.com/${project.team}/${projectId}/0.wav"
         initExoPlayer(this, binding.audioPlayBox)
-        setExoPlayerUrl(this, "https://voco-audio.s3.ap-northeast-2.amazonaws.com/${project.team}/${projectId}/0.wav")
+        setExoPlayerUrl(this, dubbingUrl)
 
         val window = window
         window.setBackgroundDrawableResource(R.color.light_purple)
@@ -149,7 +152,11 @@ class CreateProjectActivity() : AppCompatActivity(), BlockAdapter.IntervalPicker
     override fun onMenuItemClick(item: MenuItem?): Boolean {
         when(item?.itemId){
             R.id.menu_download->{
-
+                val regex = Regex("[^A-Za-z_]")
+                MediaService.downloadAudio(this,
+                    regex.replace(project.title.replace(" ","_"),"").lowercase(Locale.getDefault()),
+                    dubbingUrl
+                )
             }
             R.id.menu_delete->{
                 binding.progressBar.visibility = View.VISIBLE

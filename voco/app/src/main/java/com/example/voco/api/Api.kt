@@ -107,11 +107,19 @@ interface Api {
         @Path("projectId") projectId: Int
     ): Response<HashMap<String, String>>
 
+    // 블럭 목록 조회
     @GET("/teams/{teamId}/projects/{projectId}/blocks")
     suspend fun getBlock(
         @Path("teamId") teamId: Int,
         @Path("projectId") projectId: Int,
     ): Response<HashMap<String, List<Block>>>
+
+    // 블럭 음성 조회
+    @Multipart
+    @GET("/inputs/{textId}")
+    suspend fun getBlockVoice(
+        @Path("textId") textId: Int
+    ): Response<MultipartBody.Part>
 
     // 블럭 추가
     @POST("/teams/{teamId}/projects/{projectId}/blocks")

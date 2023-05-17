@@ -12,30 +12,26 @@ import com.example.voco.databinding.FragmentRecordBinding
 class RecordAdapter(private val sentenceList: List<ApiData.SentenceResponse>): RecyclerView.Adapter<RecordAdapter.RecordViewHolder>() {
     private lateinit var binding: FragmentRecordBinding
 
+    override fun getItemCount(): Int = sentenceList.size
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecordViewHolder {
+        val inflater = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        binding = FragmentRecordBinding.inflate(inflater, parent, false)
+
+        return RecordViewHolder(binding)
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onBindViewHolder(holder: RecordAdapter.RecordViewHolder, position: Int) {
+        holder.bind(sentenceList[position])
+    }
     inner class RecordViewHolder(private val binding: FragmentRecordBinding) : RecyclerView.ViewHolder(binding.root) {
         @RequiresApi(Build.VERSION_CODES.O)
         fun bind(sentence: ApiData.SentenceResponse) {
             val recordProgress = (1.25*sentence.textId).toFloat()
 
-            binding.recordText.text = sentence.text
-            binding.recordPercent.setProgress(recordProgress, false)
+            binding.run{
+                recordText.text = sentence.text
+                recordPercent.setProgress(recordProgress, false)
+            }
         }
-    }
-    // Called when RecyclerView needs a new RecyclerView
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecordViewHolder {
-        val inflater = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        binding = FragmentRecordBinding.inflate(inflater, parent, false)
-        return RecordViewHolder(binding)
-    }
-    // Called by RecyclerView to display the data at the specified position.
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onBindViewHolder(holder: RecordAdapter.RecordViewHolder, position: Int) {
-        holder.bind(sentenceList[position])
-    }
-
-    override fun getItemCount(): Int = sentenceList.size
-
-    public fun getSentence(position: Int): String{
-        return sentenceList[position].text
     }
 }

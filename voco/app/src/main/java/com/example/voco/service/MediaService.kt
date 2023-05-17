@@ -8,28 +8,27 @@ import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Build
+import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.chibde.visualizer.LineBarVisualizer
 import com.example.voco.R
 import com.example.voco.databinding.ActivityRecordBinding
-import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerControlView
-import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.video.VideoListener
 import okhttp3.internal.userAgent
 import java.io.File
+import java.io.FileOutputStream
 
 
 object MediaService{
     var player: MediaPlayer? = null // 사용하지 않을 때는 메모리 해제
-    private lateinit var binding : ActivityRecordBinding
     private var recorder: MediaRecorder? = null // 사용하지 않을 때는 메모리 해제
     private var exoPlayer: SimpleExoPlayer? = null // 사용하지 않을 때는 메모리 해제
     private const val audioSource = MediaRecorder.AudioSource.VOICE_RECOGNITION
@@ -40,14 +39,13 @@ object MediaService{
 
     @RequiresApi(Build.VERSION_CODES.S)
     fun startRecording(fileName: String, recordBinding : ActivityRecordBinding){
-        binding = recordBinding
-        binding.recordWarning.visibility = View.GONE
+        recordBinding.recordWarning.visibility = View.GONE
         recorder = MediaRecorder()
             .apply {
                 setAudioSource(audioSource)
                 setOutputFormat(audioFormat)
-                setAudioEncoder(audioEncoder)
-                setAudioEncodingBitRate(bitRate)
+                //0setAudioEncoder(audioEncoder)
+                //setAudioEncodingBitRate(bitRate)
                 setAudioChannels(1)
                 setAudioSamplingRate(sampleRate)
                 setOutputFile(fileName)
@@ -61,7 +59,6 @@ object MediaService{
     }
     fun stopRecording() {
         recorder?.run {
-            stop()
             release()
         }
         recorder = null
@@ -97,7 +94,7 @@ object MediaService{
     }
     @SuppressLint("ResourceAsColor")
     private fun lineBarVisualization(view: View) {
-        var lineBarVisualizer = view.findViewById<LineBarVisualizer>(R.id.visualizer)
+        val lineBarVisualizer = view.findViewById<LineBarVisualizer>(R.id.visualizer)
 
         // setting the custom color to the line.
         lineBarVisualizer.setColor(R.color.pure_white)
@@ -129,13 +126,55 @@ object MediaService{
         val mediaSourceFactory = ProgressiveMediaSource.Factory(dataSourceFactory)
         val mediaSource = mediaSourceFactory.createMediaSource(Uri.parse(mediaUrl))
 
-        // MediaSource로 플레이 할 미디어를 준비했으면 player에 넣어주자
-        exoPlayer?.prepare(mediaSource)
+        // MediaSource로 플레이 할 미디어를 player에 넣어줌
+        exoPlayer?.prepare(mediaSource, true, false)
 
     }
     fun releaseExoPlayer(){
         exoPlayer?.release()
         exoPlayer = null
     }
+    fun downloadAudio(context:Context, title: String, mediaUrl: String){
+        val fileUri = Uri.parse(mediaUrl)
 
+        val values = ContentValues()
+        values.put(MediaStore.Audio.Media.DISPLAY_NAME, title)
+        values.put(MediaStore.Audio.Media.MIME_TYPE, "audio/mpeg")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            values.put(MediaStore.Audio.Media.RELATIVE_PATH, "Music")
+            values.put(MediaStore.Audio.Media.IS_PENDING, 1);
+        }
+
+        val contentResolver = context.contentResolver
+        val collection = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+        val insertUri = contentResolver.insert(collection, values)
+
+        try {
+            val fileDescriptor = context.contentResolver.openFileDescriptor(insertUri!!, "w")
+            val outputStream = FileOutputStream(fileDescriptor?.fileDescriptor)
+            val inputStream = context.contentResolver.openInputStream(Uri.parse(mediaUrl))
+            val bytes = ByteArray(8192)
+            while (true) {
+                val read = inputStream?.read(bytes)
+                if (read == -1) {
+                    break
+                }
+                outputStream.write(bytes, 0, read!!)
+            }
+            outputStream.close()
+            inputStream?.close()
+            fileDescriptor?.close()
+            values.clear()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                values.put(MediaStore.Audio.Media.IS_PENDING, 0)
+                values.put(MediaStore.Audio.Media.IS_PENDING, 0)
+            }
+
+            context.contentResolver.update(insertUri, values, null, null)
+
+            Toast.makeText(context, "더빙이 저장되었습니다", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show()
+        }
+    }
 }

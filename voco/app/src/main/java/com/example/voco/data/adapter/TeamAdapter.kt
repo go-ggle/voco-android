@@ -13,22 +13,20 @@ import com.example.voco.login.Glob
 
 class TeamAdapter(private val parentBinding: FragmentHomeBinding, var teamList :ArrayList<Team>) : RecyclerView.Adapter<TeamAdapter.ViewHolder>() {
     private lateinit var binding: FragmentTeamBinding
-    private var currentPos : Int = 0
     private lateinit var apiRepository : ApiRepository
+    private var currentPos : Int = 0
 
     override fun getItemCount(): Int = teamList.size
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TeamAdapter.ViewHolder {
         val inflater = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         apiRepository = ApiRepository(parent.context)
         binding = FragmentTeamBinding.inflate(inflater, parent, false)
+
         return ViewHolder(binding)
     }
-
     override fun onBindViewHolder(holder: TeamAdapter.ViewHolder, position: Int) {
         holder.bind(teamList[position])
     }
-
     inner class ViewHolder(private val binding: FragmentTeamBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(team: Team){
             binding.teamName.text = team.name

@@ -19,6 +19,7 @@
     <string name="toast_wrong_code">잘못된 초대코드입니다</string>
     <string name="toast_already_join">이미 참여한 팀 스페이스입니다</string>
     <string name="toast_delete_project">프로젝트가 삭제되었습니다</string>
+    <string name="toast_update_title_error">제목이 수정되지 않았습니다.\n나중에 다시 시도해주세요</string>
     <!-- Training Sentence -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

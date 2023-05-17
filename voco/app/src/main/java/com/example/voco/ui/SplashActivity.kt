@@ -4,23 +4,24 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.voco.login.Glob
 import com.example.voco.api.ApiRepository
+import com.example.voco.login.Glob
 
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val intent = when(Glob.prefs.getString("token","logout")){
-            "logout" -> Intent(this, LoginActivity::class.java)
-            else -> {
+        when(Glob.prefs.getString("token","logout")){
+            "logout" -> {
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+            else -> { // if already login
                 val apiRepository = ApiRepository(this)
-                apiRepository.refreshToken()
-                Intent(this, BottomNavigationActivity::class.java)
-            } // if already login
+                apiRepository.refreshToken(this, true)
+            }
         }
-        startActivity(intent)
-        finish()
     }
 }

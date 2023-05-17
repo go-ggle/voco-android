@@ -6,17 +6,16 @@ import android.content.DialogInterface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import androidx.recyclerview.widget.RecyclerView
 import com.example.voco.R
 import com.example.voco.api.ApiRepository
 import com.example.voco.data.model.Language
 import com.example.voco.data.model.Project
 import com.example.voco.databinding.FragmentProjectBinding
-import com.example.voco.databinding.FragmentSearchBinding
 
-class ProjectAdapter (val pageId: Int, private var projects : ArrayList<Project>) : RecyclerView.Adapter<ProjectAdapter.ViewHolder>() {
+class ProjectAdapter (val pageId: Int, private var projects : ArrayList<Project>, val progressBar: ProgressBar) : RecyclerView.Adapter<ProjectAdapter.ViewHolder>() {
     private lateinit var binding: FragmentProjectBinding
-    private lateinit var parentBinding: FragmentSearchBinding
     private lateinit var apiRepository : ApiRepository
     private lateinit var dlg : AlertDialog.Builder
 
@@ -25,7 +24,6 @@ class ProjectAdapter (val pageId: Int, private var projects : ArrayList<Project>
         val inflater = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
         binding = FragmentProjectBinding.inflate(inflater, parent, false)
-        parentBinding = FragmentSearchBinding.inflate(inflater)
         apiRepository = ApiRepository(parent.context)
         dlg = AlertDialog.Builder(parent.context,android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
 
@@ -37,17 +35,21 @@ class ProjectAdapter (val pageId: Int, private var projects : ArrayList<Project>
 
     inner class ViewHolder(private val binding: FragmentProjectBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(project: Project){
-            binding.title.text = project.title
-            binding.date.text = project.updatedAt
-            binding.icon.setBackgroundResource(when(project.language){
-                Language.AMERICA.ordinal->R.drawable.ic_america
-                Language.UK.ordinal->R.drawable.ic_united_kingdom
-                Language.GERMANY.ordinal-> R.drawable.ic_germany
-                Language.CHINA.ordinal->R.drawable.ic_china
-                Language.JAPAN.ordinal->R.drawable.ic_japan
-                Language.FRANCE.ordinal->R.drawable.ic_france
-                else->R.drawable.background_circle
-            })
+            binding.run {
+                title.text = project.title
+                date.text = project.updatedAt
+                icon.setBackgroundResource(
+                    when (project.language) {
+                        Language.AMERICA.ordinal -> R.drawable.ic_america
+                        Language.UK.ordinal -> R.drawable.ic_united_kingdom
+                        Language.GERMANY.ordinal -> R.drawable.ic_germany
+                        Language.CHINA.ordinal -> R.drawable.ic_china
+                        Language.JAPAN.ordinal -> R.drawable.ic_japan
+                        Language.FRANCE.ordinal -> R.drawable.ic_france
+                        else -> R.drawable.background_circle
+                    }
+                )
+            }
             when(pageId){
                 R.id.menu_home->{
                     binding.project.background = null
@@ -74,7 +76,8 @@ class ProjectAdapter (val pageId: Int, private var projects : ArrayList<Project>
             }
             binding.root.run{
                 setOnClickListener {
-                    apiRepository.getBlock(project.team, project.id, parentBinding.progressBar)
+                    progressBar.visibility = View.VISIBLE
+                    apiRepository.getBlock(project.team, project.id, progressBar)
                 }
                 setOnLongClickListener {
                     dlg.run{
@@ -84,7 +87,7 @@ class ProjectAdapter (val pageId: Int, private var projects : ArrayList<Project>
                             dialog.dismiss()
                         })
                         setPositiveButton("삭제할게요", DialogInterface.OnClickListener { _, _ ->
-                            apiRepository.deleteProject(project.team, project.id, pageId, adapterPosition, parentBinding.projectList.adapter as ProjectAdapter)
+                            apiRepository.deleteProject(project.team, project.id, pageId, adapterPosition, this@ProjectAdapter)
                         })
                         show()
                     }

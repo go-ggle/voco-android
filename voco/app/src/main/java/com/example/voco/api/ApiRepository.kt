@@ -1,9 +1,9 @@
 package com.example.voco.api
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
@@ -15,6 +15,7 @@ import com.example.voco.data.adapter.*
 import com.example.voco.data.model.*
 import com.example.voco.databinding.*
 import com.example.voco.login.Glob
+import com.example.voco.login.SnsLogin
 import com.example.voco.ui.*
 import com.google.android.gms.common.util.CollectionUtils.listOf
 import kotlinx.coroutines.*
@@ -51,31 +52,40 @@ open class ApiRepository(private val context: Context) { // get activity context
     }
 
     // login request coroutine
-    fun emailLogin(user: ApiData.LoginRequest, progressBar: ProgressBar) = CoroutineScope(Default).launch {
+    fun emailLogin(user: ApiData.LoginRequest, currentActivity: Activity, isFinished: Boolean, progressBar: ProgressBar?) = CoroutineScope(Default).launch {
         apiService = RetrofitClient.getRetrofitClient(false).create(Api::class.java) // retrofit client which doesn't have header
         try {
             val request = CoroutineScope(IO).async { apiService.login(user) }
             val response = request.await()
-            endLoading(progressBar)
+
+            if(progressBar != null)
+                endLoading(progressBar)
             when (response.code()) {
                 200 -> {
                     withContext(IO) {
-                        Glob.prefs.setString("token", response.body()?.get("accessToken")!!)
-                        Glob.prefs.setInt("workspace", response.body()?.get("privateTeamId")!!.toInt())
-                        Glob.prefs.setIdAndPwd(user)
+                        Glob.prefs.run{
+                            setString("token", response.body()?.get("accessToken")!!)
+                            setInt("workspace", response.body()?.get("privateTeamId")!!.toInt())
+                            setIdAndPwd(user)
+                        }
                     }
-                    startMainActivity()
+                    if(isFinished)
+                        startMainActivity(currentActivity)
+                    //else backActivity(currentActivity)
+
                 }
                 404 -> showToast(R.string.toast_wrong_id_or_pwd)
                 else -> showToast(R.string.toast_request_error)
             }
         } catch (e: Exception) {
-            endLoading(progressBar)
+            if(progressBar != null)
+                endLoading(progressBar)
+            println(e)
             showToast(R.string.toast_network_error)
         }
     }
 
-    fun snsLogin(accessToken: String, type: String) = CoroutineScope(Default).launch {
+    fun snsLogin(accessToken: String, type: Int, currentActivity: Activity, isFinished: Boolean) = CoroutineScope(Default).launch {
         apiService = RetrofitClient.getRetrofitClient(false).create(Api::class.java)
         try {
             val request = CoroutineScope(IO).async { apiService.kakaoLogin(hashMapOf(Pair("accessToken", accessToken))) }
@@ -84,12 +94,16 @@ open class ApiRepository(private val context: Context) { // get activity context
             when (response.code()) {
                 200 -> {
                     withContext(IO) {
-                        Glob.prefs.setString("token", response.body()?.get("accessToken")!!)
-                        Glob.prefs.setInt("workspace", response.body()?.get("privateTeamId")!!.toInt())
-                        Glob.prefs.setString("id", "sns_user")
-                        Glob.prefs.setString("sns", type)
+                        Glob.prefs.run {
+                            setString("token", response.body()?.get("accessToken")!!)
+                            setInt("workspace", response.body()?.get("privateTeamId")!!.toInt())
+                            setString("id", "sns_user")
+                            setInt("sns", type)
+                        }
                     }
-                    startMainActivity()
+                    if(isFinished)
+                        startMainActivity(currentActivity)
+                    //else backActivity(currentActivity)
                 }
                 else -> showToast(R.string.toast_request_error)
             }
@@ -98,8 +112,8 @@ open class ApiRepository(private val context: Context) { // get activity context
         }
     }
 
-    // refreshToken coroutine
-    fun refreshToken() = CoroutineScope(Default).launch {
+    // refresh accessToken with refreshToken
+    fun refreshToken(currentActivity: Activity, isFinished: Boolean) = CoroutineScope(Default).launch {
         apiService = RetrofitClient.getRetrofitClient(false).create(Api::class.java)
         try {
             val refreshToken = Glob.prefs.getString("refresh_token", "logout")
@@ -107,7 +121,26 @@ open class ApiRepository(private val context: Context) { // get activity context
             val response = request.await()
             when (response.code()) {
                 200 -> Glob.prefs.setToken(response.body()?.get("accessToken")!!)
-                401 -> backLoginActivity()
+                401 -> {
+                    // if refresh token expired
+                    when(Glob.prefs.loginMode()){
+                        SNS.EMAIL.ordinal ->{
+                            emailLogin(Glob.prefs.getIdAndPwd(), currentActivity, isFinished,null)
+                        }
+                        SNS.KAKAO.ordinal->{
+                            val snsLogin = SnsLogin(context, currentActivity, isFinished)
+                            snsLogin.kakao()
+                        }
+                        SNS.GOOGLE.ordinal->{
+                            val snsLogin = SnsLogin(context, currentActivity, isFinished)
+                            snsLogin.kakao()
+                        }
+                        SNS.NAVER.ordinal->{
+                        val snsLogin = SnsLogin(context, currentActivity, isFinished)
+                        snsLogin.kakao()
+                    }
+                    }
+                }
             }
         } catch (e: Exception) {
             return@launch
@@ -117,17 +150,25 @@ open class ApiRepository(private val context: Context) { // get activity context
     // create new project request
     fun createProject(title: String, language: Language) = CoroutineScope(Default).launch {
         try {
-            val languageId = language.ordinal
             val request = CoroutineScope(IO).async { apiService.createProject(
                 Glob.prefs.getCurrentTeam(),
-                ApiData.CreateProjectRequest(title, languageId)
+                ApiData.CreateProjectRequest(title, language.ordinal)
             ) }
-            val response = request.await()
+            var response = request.await()
+            response = when (response.code()) {
+                401 -> {
+                    refreshToken(context as BottomNavigationActivity, false)
+                    request.await()
+                }
+                else-> response
+            }
             when (response.code()) {
                 201-> {
                     val localDao = AppDatabase.getProjectInstance(context)!!.ProjectDao()
+                    val blockDao = AppDatabase.getBlockInstance(context)!!.BlockDao()
                     val newProject: Project = response.body()!!
 
+                    blockDao.deleteAll()
                     localDao.insert(listOf(newProject)) // save new project
                     startProjectActivity(newProject.id) // move to create project page
                 }
@@ -141,13 +182,21 @@ open class ApiRepository(private val context: Context) { // get activity context
     fun updateProjectTitle(teamId: Int, projectId: Int, title: String) = CoroutineScope(Default).launch{
         try{
             val request = CoroutineScope(IO).async{ apiService.updateProjectTitle(teamId, projectId, hashMapOf(Pair("title",title)))}
-            val response = request.await()
+            var response = request.await()
+            response = when (response.code()) {
+                401 -> {
+                    refreshToken(context as CreateProjectActivity, false)
+                    request.await()
+                }
+                else-> response
+            }
+
             when(response.code()){
                 200->{
                     val localDao = AppDatabase.getProjectInstance(context)!!.ProjectDao()
                     localDao.updateTitle(projectId, title)
                 }
-                else -> showToast(R.string.toast_request_error)
+                else -> showToast(R.string.toast_update_title_error)
             }
         }catch (e:Exception){
             showToast(R.string.toast_network_error)
@@ -156,7 +205,17 @@ open class ApiRepository(private val context: Context) { // get activity context
     fun deleteProject(teamId: Int, projectId: Int, pageId:Int,  pos: Int, projectAdapter: ProjectAdapter?) = CoroutineScope(Default).launch{
         try{
             val request= CoroutineScope(IO).async{ apiService.deleteProject(teamId, projectId)}
-            val response = request.await()
+            var response = request.await()
+            response = when (response.code()) {
+                401 -> {
+                    when(pageId){
+                        -1 -> refreshToken(context as CreateProjectActivity, false)
+                        else -> refreshToken(context as BottomNavigationActivity, false)
+                    }
+                    request.await()
+                }
+                else-> response
+            }
 
             when(response.code()){
                 200->{
@@ -166,7 +225,7 @@ open class ApiRepository(private val context: Context) { // get activity context
                     blockDao.deleteAll()
 
                     when(pageId){
-                        R.id.menu_home, -1 -> backMainActivity(pageId)
+                        -1 -> backMainActivity(pageId)
                         else->withContext(Main){
                             projectAdapter!!.deleteProject(pos)
                         }
@@ -185,7 +244,15 @@ open class ApiRepository(private val context: Context) { // get activity context
     fun getSentence(progressBar: ProgressBar) = CoroutineScope(Default).launch {
         try {
             val request = CoroutineScope(IO).async { apiService.getSentence() }
-            val response = request.await()
+            var response = request.await()
+            response = when (response.code()) {
+                401 -> {
+                    refreshToken(context as BottomNavigationActivity, false)
+                    request.await()
+                }
+                else-> response
+            }
+
             when (response.code()) {
                 200 -> {
                     val sentenceList = response.body()?.get("trainData")!! as Serializable
@@ -207,8 +274,10 @@ open class ApiRepository(private val context: Context) { // get activity context
         CoroutineScope(Default).launch {
             try {
                 withContext(Main) {
-                    binding.recordProgressBar.visibility = View.VISIBLE
-                    binding.recordButton.alpha = 0.3F
+                    binding.run {
+                        recordProgressBar.visibility = View.VISIBLE
+                        recordButton.alpha = 0.3F
+                    }
                 }
                 val file = File(audioPath)
                 val requestFile = file.asRequestBody("audio/wav".toMediaTypeOrNull())
@@ -216,8 +285,10 @@ open class ApiRepository(private val context: Context) { // get activity context
                 val request = CoroutineScope(IO).async { apiService.setVoice(textId, body) }
                 val response = request.await()
                 withContext(Main) {
-                    binding.recordProgressBar.visibility = View.GONE
-                    binding.recordButton.alpha = 1F
+                    binding.run{
+                        recordProgressBar.visibility = View.GONE
+                        recordButton.alpha = 1F
+                    }
                 }
                 when (response.code()) {
                     200 -> {
@@ -234,8 +305,10 @@ open class ApiRepository(private val context: Context) { // get activity context
                                 file.delete()
                             } else {
                                 withContext(Main) {
-                                    binding.recordWarning.visibility = View.GONE
-                                    binding.nextRecord.alpha = 1F
+                                    binding.run{
+                                        recordWarning.visibility = View.GONE
+                                        nextRecord.alpha = 1F
+                                    }
                                 }
                             }
                         }
@@ -258,7 +331,14 @@ open class ApiRepository(private val context: Context) { // get activity context
         CoroutineScope(Default).launch {
             try {
                 val request = CoroutineScope(IO).async {apiService.getProjectList(Glob.prefs.getCurrentTeam()) }
-                val response = request.await()
+                var response = request.await()
+                response = when (response.code()) {
+                    401 -> {
+                        refreshToken(context as BottomNavigationActivity, false)
+                        request.await()
+                    }
+                    else-> response
+                }
 
                 endLoading(binding.progressBar)
                 when (response.code()) {
@@ -266,12 +346,13 @@ open class ApiRepository(private val context: Context) { // get activity context
                         val projects = response.body()?.get("projects")!!
                         // connect with project adapter
                         withContext(Main) {
-                            binding.networkErrorProject.visibility = View.GONE
-                            binding.networkErrorTeam.visibility = View.GONE
-                            if (projects.isEmpty()) {
-                                binding.noProject.visibility = View.VISIBLE
-                            } else {
-                                binding.noProject.visibility = View.GONE
+                            binding.run {
+                                networkErrorProject.visibility = View.GONE
+                                networkErrorTeam.visibility = View.GONE
+                                noProject.visibility = when(projects.isEmpty()){
+                                    true -> View.VISIBLE
+                                    else -> View.GONE
+                                }
                             }
                             binding.projects.run {
                                 adapter = TabAdapter(fm, projects)
@@ -290,23 +371,30 @@ open class ApiRepository(private val context: Context) { // get activity context
     // get dubbing voice list request
     fun getVoice() = CoroutineScope(Default).launch {
         try {
-            val voiceRequest =
-                CoroutineScope(IO).async { apiService.getVoice(Glob.prefs.getCurrentTeam()) }
-            val voiceResponse = voiceRequest.await()
-            when (voiceResponse.code()) {
+            val request = CoroutineScope(IO).async { apiService.getVoice(Glob.prefs.getCurrentTeam()) }
+            var response = request.await()
+            response = when (response.code()) {
+                401 -> {
+                    refreshToken(context as BottomNavigationActivity, false)
+                    request.await()
+                }
+                else-> response
+            }
+
+            when (response.code()) {
                 200 -> {
-                    when (voiceResponse.body()?.isEmpty()) {
+                    when (response.body()?.isEmpty()) {
                         true -> {
                             // if no available dubbing voice
                             withContext(IO) { Glob.prefs.setInt("default_voice", 0) }
                         }
                         else -> {
-                            updateLocalDb("voice", voiceResponse.body()!!)
+                            updateLocalDb("voice", response.body()!!)
                             // set default dubbing voice
                             withContext(IO) {
                                 Glob.prefs.setInt(
                                     "default_voice",
-                                    voiceResponse.body()!![0].id
+                                    response.body()!![0].id
                                 )
                             }
                         }
@@ -325,7 +413,7 @@ open class ApiRepository(private val context: Context) { // get activity context
             var response = request.await()
             response = when (response.code()) {
                 401 -> {
-                    refreshToken()
+                    refreshToken(context as BottomNavigationActivity, false)
                     request.await()
                 }
                 else-> response
@@ -352,29 +440,40 @@ open class ApiRepository(private val context: Context) { // get activity context
     fun createTeam(
         binding: BottomSheetTeamBinding,
         teamName: String,
-        teamAdapter: TeamAdapter
+        teamAdapter: TeamAdapter,
+        progressBar: ProgressBar
     ) = CoroutineScope(Default).launch {
         try {
             val request = CoroutineScope(IO).async { apiService.createTeam(hashMapOf(Pair("name", teamName))) }
-            val response = request.await()
-
+            var response = request.await()
+            response = when (response.code()) {
+                401 -> {
+                    refreshToken(context as BottomNavigationActivity, true)
+                    request.await()
+                }
+                else-> response
+            }
+            endLoading(progressBar)
             when (response.code()) {
                 201 -> {
                     withContext(Main) {
-                        binding.subTitle.text = "초대코드를 공유해주세요"
-                        binding.btn.btnRect.text = "초대코드 복사하기"
-                        binding.editText.visibility = View.GONE
-                        binding.boldText.run {
-                            text = response.body()?.teamCode // 초대코드
-                            visibility = View.VISIBLE
+                        binding.run{
+                            subTitle.text = "초대코드를 공유해주세요"
+                            btn.btnRect.text = "초대코드 복사하기"
+                            editText.visibility = View.GONE
+                            boldText.run {
+                                text = response.body()?.teamCode // 초대코드
+                                visibility = View.VISIBLE
+                            }
+
                         }
-                        // update team list
-                        teamAdapter.addTeam(response.body()!!)
+                        teamAdapter.addTeam(response.body()!!) // update team list
                     }
                 }
                 else -> showToast(R.string.toast_request_error)
             }
         } catch (e: Exception) {
+            endLoading(progressBar)
             showToast(R.string.toast_network_error)
         }
     }
@@ -386,21 +485,29 @@ open class ApiRepository(private val context: Context) { // get activity context
     ) = CoroutineScope(Default).launch {
         try {
             val request = CoroutineScope(IO).async { apiService.joinTeam(code) }
-            val response = request.await()
+            var response = request.await()
+            response = when (response.code()) {
+                401 -> {
+                    refreshToken(context as BottomNavigationActivity, true)
+                    request.await()
+                }
+                else-> response
+            }
 
             when (response.code()) {
                 201 -> {
                     withContext(Main) {
-                        binding.subTitle.text = "팀 스페이스에 참여되었습니다"
-                        binding.btn.btnRect.text = "홈으로 이동하기"
-                        binding.editText.visibility = View.GONE
-                        binding.boldText.run {
-                            visibility = View.VISIBLE
-                            text = response.body()?.name // 팀 이름
+                        binding.run{
+                            subTitle.text = "팀 스페이스에 참여되었습니다"
+                            btn.btnRect.text = "홈으로 이동하기"
+                            editText.visibility = View.GONE
+                            boldText.run {
+                                visibility = View.VISIBLE
+                                text = response.body()?.name // 팀 이름
+                            }
                         }
+                        teamAdapter.addTeam(response.body()!!) // update team list
                     }
-                    // update team list
-                    teamAdapter.addTeam(response.body()!!)
                 }
                 404 -> showToast(R.string.toast_wrong_code)
                 409 -> showToast(R.string.toast_already_join)
@@ -414,33 +521,16 @@ open class ApiRepository(private val context: Context) { // get activity context
     // update project list at home page
     fun updateCurrentTeam(binding: FragmentHomeBinding) = CoroutineScope(Default).launch {
         try {
-            var projectRequest = CoroutineScope(IO).async { apiService.getProjectList(Glob.prefs.getCurrentTeam()) }
             val voiceRequest = CoroutineScope(IO).async { apiService.getVoice(Glob.prefs.getCurrentTeam()) }
-
-            CoroutineScope(Default).launch {
-                val projectResponse = projectRequest.await()
-                when (projectResponse.code()) {
-                    200 -> {
-                        val projects = projectResponse.body()?.get("projects")!!
-                        withContext(Main) {
-                            binding.networkErrorProject.visibility = View.GONE
-                            binding.networkErrorTeam.visibility = View.GONE
-                            (binding.projects.adapter as TabAdapter).updateProjectList(projects)
-                            if (projects.isEmpty()) {
-                                binding.noProject.visibility = View.VISIBLE
-                            } else {
-                                binding.noProject.visibility = View.GONE
-                            }
-                        }
-                        updateLocalDb("project", projectResponse.body()?.get("projects")!!)
-                    }
-                    else -> {
-
-                    }
+            var voiceResponse = voiceRequest.await()
+            voiceResponse = when (voiceResponse.code()) {
+                401 -> {
+                    refreshToken(context as BottomNavigationActivity, false)
+                    voiceRequest.await()
                 }
+                else-> voiceResponse
             }
             CoroutineScope(Default).launch {
-                val voiceResponse = voiceRequest.await()
                 when (voiceResponse.code()) {
                     200 -> {
                         when (voiceResponse.body()!!.isEmpty()) {
@@ -463,6 +553,31 @@ open class ApiRepository(private val context: Context) { // get activity context
                     else -> showToast(R.string.toast_request_error)
                 }
             }
+            CoroutineScope(Default).launch {
+                val projectRequest = CoroutineScope(IO).async { apiService.getProjectList(Glob.prefs.getCurrentTeam()) }
+                val projectResponse = projectRequest.await()
+                when (projectResponse.code()) {
+                    200 -> {
+                        val projects = projectResponse.body()?.get("projects")!!
+                        withContext(Main) {
+                            binding.run {
+                                networkErrorProject.visibility = View.GONE
+                                networkErrorTeam.visibility = View.GONE
+                                noProject.visibility = when(projects.isEmpty()){
+                                    true -> View.VISIBLE
+                                    else -> View.GONE
+                                }
+                            }
+
+                            (binding.projects.adapter as TabAdapter).updateProjectList(projects)
+                        }
+                        updateLocalDb("project", projectResponse.body()?.get("projects")!!)
+                    }
+                    else -> {
+
+                    }
+                }
+            }
         } catch (e: Exception) {
             showToast(R.string.toast_network_error)
         }
@@ -476,7 +591,15 @@ open class ApiRepository(private val context: Context) { // get activity context
                     else -> apiService.deleteBookmark(projectId)
                 }
             }
-            val response = request.await()
+            var response = request.await()
+            response = when (response.code()) {
+                401 -> {
+                    refreshToken(context as BottomNavigationActivity, false)
+                    request.await()
+                }
+                else-> response
+            }
+
             when (response.code()) {
                 200 -> withContext(IO) {
                     val localDb = AppDatabase.getProjectInstance(context)
@@ -492,7 +615,15 @@ open class ApiRepository(private val context: Context) { // get activity context
     fun getBlock(teamId:Int, projectId:Int, progressBar: ProgressBar) = CoroutineScope(Default).launch{
         try{
             val request = CoroutineScope(IO).async{apiService.getBlock(teamId, projectId)}
-            val response = request.await()
+            var response = request.await()
+            response = when (response.code()) {
+                401 -> {
+                    refreshToken(context as BottomNavigationActivity, false)
+                    request.await()
+                }
+                else-> response
+            }
+
             endLoading(progressBar)
             when(response.code()){
                 200->{
@@ -506,16 +637,49 @@ open class ApiRepository(private val context: Context) { // get activity context
             showToast(R.string.toast_network_error)
         }
     }
+    fun getBlockVoice(textId: Int) = CoroutineScope(Default).launch {
+        try{
+            val request = CoroutineScope(IO).async { apiService.getBlockVoice(textId) }
+            var response = request.await()
+            response = when(response.code()){
+                401 -> {
+                    refreshToken(context as CreateProjectActivity, false)
+                    request.await()
+                }
+                else-> response
+            }
+            when(response.code()){
+                200->{
+
+                }
+                404->{
+
+
+                }
+                else->{
+
+                }
+            }
+        }catch(e: Exception){
+
+        }
+    }
     fun createBlock(teamId: Int, projectId: Int, order:Int, progressBar: ProgressBar, blockAdapter: BlockAdapter) = CoroutineScope(Default).launch{
         try{
             val request = CoroutineScope(IO).async{ apiService.createBlock(teamId, projectId, hashMapOf(Pair("order",order),Pair("voiceId",Glob.prefs.getInt("default_voice",0))))}
-            val response = request.await()
+            var response = request.await()
+            response = when (response.code()) {
+                401 -> {
+                    refreshToken(context as CreateProjectActivity, false)
+                    request.await()
+                }
+                else-> response
+            }
+
             endLoading(progressBar)
             when(response.code()){
-                201-> withContext(Main){
-                        blockAdapter.addBlock(response.body()!!, order-1)
-                    }
-                else->{
+                201-> withContext(Main){ blockAdapter.addBlock(response.body()!!, order-1) }
+                else-> {
                     println(response.code())
                     showToast(R.string.toast_request_error)
                 }
@@ -530,24 +694,28 @@ open class ApiRepository(private val context: Context) { // get activity context
         try{
             val body = ApiData.UpdateBlockRequest(block.id,block.text,block.audioPath,block.interval,block.voiceId,project.language,block.order)
             val request = CoroutineScope(IO).async{ apiService.updateBlock(project.team,project.id,block.id,body)}
-            val response = request.await()
+            var response = request.await()
+            response = when (response.code()) {
+                401 -> {
+                    refreshToken(context as CreateProjectActivity, false)
+                    request.await()
+                }
+                else-> response
+            }
+
             if(progressBar != null) {
                 endLoading(progressBar)
             }
             when(response.code()){
-                200->{
-                    withContext(Main) {
-                        blockAdapter.updateBlock(block)
-                    }
+                200-> withContext(Main) {
+                    blockAdapter.updateBlock(block)
                 }
                 else-> {
                     println(response.code())
                     showToast(R.string.toast_request_error)
                 }
-
             }
         }catch (e: Exception) {
-            println(e)
             if(progressBar != null) {
                 endLoading(progressBar)
             }
@@ -556,33 +724,28 @@ open class ApiRepository(private val context: Context) { // get activity context
     }
     fun deleteBlock(teamId:Int, projectId:Int, blockId:Int, progressBar: ProgressBar, blockAdapter: BlockAdapter) = CoroutineScope(Default).launch{
         try{
-            Log.i("REQUEST_ERROR",Glob.prefs.getString("token","error"))
-            Log.i("REQUEST_ERROR",teamId.toString())
-            Log.i("REQUEST_ERROR",projectId.toString())
-            Log.i("REQUEST_ERROR",blockId.toString())
             val request = CoroutineScope(IO).async{ apiService.deleteBlock(teamId,projectId,blockId)}
-            val response = request.await()
+            var response = request.await()
+            response = when (response.code()) {
+                401 -> {
+                    refreshToken(context as CreateProjectActivity, false)
+                    request.await()
+                }
+                else-> response
+            }
+
             endLoading(progressBar)
             when(response.code()){
-                200->{
-                    withContext(Main){
-                        blockAdapter.deleteBlock(blockId)
-                    }
-                }
+                200->withContext(Main){ blockAdapter.deleteBlock(blockId) }
                 else->{
-                    Log.i("REQUEST_ERROR",response.code().toString())
+                    println(response.code())
                     showToast(R.string.toast_request_error)
                 }
             }
         }catch (e: Exception) {
-            println(e)
             endLoading(progressBar)
             showToast(R.string.toast_network_error)
         }
-    }
-
-    private suspend fun showToast(textId: Int) = withContext(Main) {
-        Toast.makeText(context, context.resources.getString(textId), Toast.LENGTH_SHORT).show()
     }
 
     private fun updateLocalDb(type: String, data: List<Any>) = CoroutineScope(IO).launch {
@@ -593,7 +756,7 @@ open class ApiRepository(private val context: Context) { // get activity context
                 CoroutineScope(IO).async {
                     localDao.deleteAll()
                     localDao.insert(data as List<Project>)
-                }.onAwait
+                }
             }
             // update voice db
             "voice" -> {
@@ -601,7 +764,7 @@ open class ApiRepository(private val context: Context) { // get activity context
                 CoroutineScope(IO).async {
                     localDao.deleteAll()
                     localDao.insert(data as List<Voice>)
-                }.onAwait
+                }
             }
             // update block db
             else -> {
@@ -609,17 +772,15 @@ open class ApiRepository(private val context: Context) { // get activity context
                 CoroutineScope(IO).async {
                     localDao.deleteAll()
                     localDao.insert(data as List<Block>)
-                }.onAwait
+                }
             }
         }
     }
-
-    private fun startMainActivity() {
+    private fun startMainActivity(currentActivity: Activity) {
         val intent = Intent(context, BottomNavigationActivity::class.java)
         context.startActivity(intent)
-        ActivityCompat.finishAffinity(context as LoginActivity)
+        currentActivity.finish()
     }
-
     private fun backMainActivity(pageId: Int){
         val intent = Intent(context, BottomNavigationActivity::class.java)
         context.startActivity(intent)
@@ -628,30 +789,30 @@ open class ApiRepository(private val context: Context) { // get activity context
             else-> (context as CreateProjectActivity).finish()
         }
     }
-
+    private fun backActivity(activity: Activity){
+        val intent = Intent(context, BottomNavigationActivity::class.java)
+        context.startActivity(intent)
+        activity.finish()
+    }
     private fun startProjectActivity(projectId: Int) {
         val intent = Intent(context, CreateProjectActivity::class.java)
         intent.putExtra("project", projectId) // project id 넘기기
         context.startActivity(intent)
     }
-
     private fun startLoginActivity(){
         val intent = Intent(context, LoginActivity::class.java)
         context.startActivity(intent)
         (context as SignupActivity).finish()
     }
-
     private fun backLoginActivity(){
         val intent = Intent(context, LoginActivity::class.java)
         context.startActivity(intent)
         ActivityCompat.finishAffinity(context as BottomNavigationActivity)
         Glob.prefs.logout()
     }
-
-    private suspend fun startLoading(progressBar: ProgressBar) = withContext(Main) {
-        progressBar.visibility = View.VISIBLE
+    private suspend fun showToast(textId: Int) = withContext(Main) {
+        Toast.makeText(context, context.resources.getString(textId), Toast.LENGTH_SHORT).show()
     }
-
     private suspend fun endLoading(progressBar: ProgressBar) = withContext(Main) {
         progressBar.visibility = View.GONE
     }

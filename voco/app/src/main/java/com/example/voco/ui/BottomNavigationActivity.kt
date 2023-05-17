@@ -2,19 +2,14 @@ package com.example.voco.ui
 
 import android.app.AlertDialog
 import android.content.DialogInterface
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import com.example.voco.R
 import com.example.voco.databinding.ActivityBottomNavigationBinding
-import com.example.voco.api.ApiRepository
-import java.lang.Exception
-import java.sql.DriverManager.println
-import androidx.core.app.ActivityCompat
 
 class BottomNavigationActivity : AppCompatActivity() {
     private lateinit var viewBinding: ActivityBottomNavigationBinding
@@ -24,12 +19,12 @@ class BottomNavigationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityBottomNavigationBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
+
         supportFragmentManager
             .beginTransaction()
             .replace(viewBinding.navContainer.id, HomeFragment())
             .commitAllowingStateLoss()
 
-        val window = window
         // run을 쓰면 연결된 요소에 코드를 바로 작성 가능
         viewBinding.bottomNav.run{
             setOnItemSelectedListener {
@@ -71,15 +66,17 @@ class BottomNavigationActivity : AppCompatActivity() {
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if(keyCode == KeyEvent.KEYCODE_BACK){
             val dlg = AlertDialog.Builder(this,android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
-            dlg.setTitle("VOCO 종료")
-            dlg.setMessage("VOCO를 종료하시겠습니까?")
-            dlg.setNegativeButton("아니요", DialogInterface.OnClickListener { dialog, which ->
-                dialog.dismiss()
-            })
-            dlg.setPositiveButton("종료할게요", DialogInterface.OnClickListener { dialog, which ->
-                ActivityCompat.finishAffinity(this)
-            })
-            dlg.show()
+            dlg.run{
+                setTitle("VOCO 종료")
+                setMessage("VOCO를 종료하시겠습니까?")
+                setNegativeButton("아니요", DialogInterface.OnClickListener { dialog, which ->
+                    dialog.dismiss()
+                })
+                setPositiveButton("종료할게요", DialogInterface.OnClickListener { dialog, which ->
+                    ActivityCompat.finishAffinity(this@BottomNavigationActivity)
+                })
+                show()
+            }
             return true
         }
         return false

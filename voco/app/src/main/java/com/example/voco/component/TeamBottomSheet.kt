@@ -73,7 +73,8 @@ class TeamBottomSheet(private val parentBinding: FragmentHomeBinding, private va
             }
             else -> {
               // send create team request
-              apiRepository.createTeam(viewBinding, viewBinding.editText.text.toString(), parentBinding.teams.adapter as TeamAdapter)
+              parentBinding.progressBar.visibility = View.VISIBLE
+              apiRepository.createTeam(viewBinding, viewBinding.editText.text.toString(), parentBinding.teams.adapter as TeamAdapter, parentBinding.progressBar)
             }
           }
         }

@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import com.example.voco.api.ApiRepository
 import com.example.voco.component.TeamBottomSheet
 import com.example.voco.databinding.FragmentHomeBinding
-import androidx.core.app.ActivityCompat
 
 class HomeFragment : androidx.fragment.app.Fragment() {
     private lateinit var binding: FragmentHomeBinding
@@ -24,7 +23,7 @@ class HomeFragment : androidx.fragment.app.Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentHomeBinding.inflate(layoutInflater)
+        binding = FragmentHomeBinding.inflate(inflater)
         bottomSheet = TeamBottomSheet(binding, apiRepository)
         binding.addTeamButton.setOnClickListener {
             bottomSheet.show(parentFragmentManager, bottomSheet.tag)
@@ -32,12 +31,14 @@ class HomeFragment : androidx.fragment.app.Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onStart() {
+        super.onStart()
 
-        apiRepository.getTeam(binding)
-        apiRepository.getProject(binding, parentFragmentManager)
-        apiRepository.getVoice()
+        apiRepository.run{
+            getTeam(binding)
+            getProject(binding, parentFragmentManager)
+            getVoice()
+        }
     }
 
 }

@@ -12,13 +12,12 @@ import com.example.voco.api.ApiData
 import com.example.voco.api.ApiRepository
 import com.example.voco.databinding.ActivityLoginBinding
 import com.example.voco.login.Glob
-import com.example.voco.login.LoginCallback
-import com.kakao.sdk.auth.LoginClient
+import com.example.voco.login.SnsLogin
 import java.util.regex.Pattern
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var viewBinding: ActivityLoginBinding
-    private val loginCallback = LoginCallback(this)
+    private val snsLogin = SnsLogin(this, this, true)
     private val apiRepository = ApiRepository(this)
     override fun onCreate(savedInstanceState: Bundle?) {
         viewBinding = ActivityLoginBinding.inflate(layoutInflater)
@@ -47,10 +46,12 @@ class LoginActivity : AppCompatActivity() {
                 viewBinding.warningEmail.visibility = View.INVISIBLE
                 viewBinding.warningPassword.visibility = View.INVISIBLE
                 viewBinding.progressBar.visibility = View.VISIBLE
-
+                finish()
                 // send login request
                 apiRepository.emailLogin(
                     ApiData.LoginRequest(viewBinding.email.text.toString(), viewBinding.password.text.toString()),
+                    this,
+                    true,
                     viewBinding.progressBar
                 )
 
@@ -63,19 +64,12 @@ class LoginActivity : AppCompatActivity() {
                 viewBinding.warningPassword.visibility = if(!Pattern.matches(Glob.pwValidation, viewBinding.password.text) || viewBinding.password.text.length < 8) View.VISIBLE
                                                          else View.INVISIBLE
             }
-
         }
         // kakao login
         viewBinding.snsLoginKakao.setOnClickListener {
-            // if kakaotalk application is available
-            if(LoginClient.instance.isKakaoTalkLoginAvailable(this)){
-                // login with kakaotalk application
-                LoginClient.instance.loginWithKakaoTalk(this, callback = loginCallback.kakao)
-            }
-            else{
-                // login with kakaotalk account
-                LoginClient.instance.loginWithKakaoAccount(this,callback = loginCallback.kakao)
-            }
+            viewBinding.progressBar.visibility = View.VISIBLE
+            finish()
+            snsLogin.kakao()
         }
     }
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {

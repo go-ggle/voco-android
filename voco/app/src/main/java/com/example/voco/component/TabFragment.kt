@@ -10,28 +10,29 @@ import com.example.voco.R
 import com.example.voco.data.adapter.ProjectAdapter
 import com.example.voco.data.adapter.VerticalItemDecoration
 import com.example.voco.data.model.Project
+import com.example.voco.databinding.ActivityBottomNavigationBinding
 import com.example.voco.databinding.FragmentTabBinding
-import com.example.voco.ui.BottomNavigationActivity
 
 class TabFragment(private val projectList: List<Project>) : Fragment() {
     private lateinit var binding : FragmentTabBinding
-    private lateinit var bottomNavigationActivity : BottomNavigationActivity
+    private lateinit var parentBinding : ActivityBottomNavigationBinding
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        bottomNavigationActivity = context as BottomNavigationActivity
+        parentBinding = ActivityBottomNavigationBinding.inflate(LayoutInflater.from(context))
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentTabBinding.inflate(layoutInflater)
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.projects.run{
-            adapter = ProjectAdapter(R.id.menu_home, projectList as ArrayList<Project>)
+            adapter = ProjectAdapter(R.id.menu_home, projectList as ArrayList<Project>, parentBinding.progressBar)
             addItemDecoration(VerticalItemDecoration(2))
         }
     }

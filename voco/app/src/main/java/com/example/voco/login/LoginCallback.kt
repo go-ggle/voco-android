@@ -1,15 +1,17 @@
 package com.example.voco.login
 
+import android.app.Activity
 import android.content.Context
 import android.widget.Toast
 import com.example.voco.api.ApiRepository
+import com.example.voco.data.model.SNS
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.AuthErrorCause
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 
 
-class LoginCallback(val context : Context) {
+class LoginCallback(val context : Context, private val currentActivity: Activity, isFinished: Boolean) {
     private val apiRepository = ApiRepository(context)
     val kakao: (OAuthToken?, Throwable?) -> Unit = { token, error ->
         if (error != null) {
@@ -48,8 +50,7 @@ class LoginCallback(val context : Context) {
         }
         else if (token != null) {
             // sns login request
-                println(token)
-            apiRepository.snsLogin(token.accessToken, "kakao")
+            apiRepository.snsLogin(token.accessToken, SNS.KAKAO.ordinal, currentActivity, isFinished)
         }
     }
 }
