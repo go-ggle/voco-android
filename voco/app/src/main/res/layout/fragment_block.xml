@@ -24,10 +24,10 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent">
             <TextView
-                android:id="@+id/language"
+                android:id="@+id/voice_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="정민정"
+                android:text="보이스"
                 android:textColor="@color/purple"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/language"
+                app:layout_constraintStart_toEndOf="@id/voice_name"
                 android:src="@drawable/ic_toggle_down"
                 android:background="@color/light_purple"
                 android:layout_marginLeft="6dp"/>

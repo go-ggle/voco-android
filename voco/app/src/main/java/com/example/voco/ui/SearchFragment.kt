@@ -53,7 +53,8 @@ class SearchFragment : Fragment() {
                 }
                 else->{
                     // title, language 작성하는 모달창
-                    dlg.show()
+                    if(binding.progressBar.visibility == View.GONE)
+                        dlg.show(binding.progressBar)
                 }
             }
         }

@@ -7,8 +7,10 @@
   <!-- 오디오 권한 설정-->
   <uses-permission android:name="android.permission.RECORD_AUDIO" />
   <!-- 파일 저장 권한 설정-->
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage"/>
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
   <application
       android:name=".login.Glob"
       android:allowBackup="true"

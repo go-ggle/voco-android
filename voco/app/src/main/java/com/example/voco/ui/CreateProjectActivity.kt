@@ -1,6 +1,7 @@
 package com.example.voco.ui
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -10,6 +11,8 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import com.amazonaws.regions.Regions
 import com.example.voco.R
 import com.example.voco.api.ApiRepository
 import com.example.voco.data.adapter.BlockAdapter
@@ -19,18 +22,20 @@ import com.example.voco.data.model.Block
 import com.example.voco.data.model.Project
 import com.example.voco.databinding.ActivityCreateProjectBinding
 import com.example.voco.service.MediaService
-import com.example.voco.service.MediaService.initExoPlayer
 import com.example.voco.service.MediaService.releaseExoPlayer
 import com.example.voco.service.MediaService.setExoPlayerUrl
 import com.google.android.exoplayer2.SimpleExoPlayer
 import java.util.*
 import kotlin.properties.Delegates
+import kotlin.system.exitProcess
 
 class CreateProjectActivity() : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
     private var projectId by Delegates.notNull<Int>()
     private lateinit var dubbingUrl : String
     private lateinit var binding: ActivityCreateProjectBinding
     private lateinit var localDb : AppDatabase
+    private lateinit var blockDb : AppDatabase
+    private lateinit var voiceDb : AppDatabase
     private lateinit var blockAdapter: BlockAdapter
     private lateinit var project: Project
     private lateinit var blockList : ArrayList<Block>
@@ -41,18 +46,27 @@ class CreateProjectActivity() : AppCompatActivity(), PopupMenu.OnMenuItemClickLi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         localDb = AppDatabase.getProjectInstance(this)!!
+        blockDb = AppDatabase.getBlockInstance(this)!!
+        voiceDb = AppDatabase.getVoiceInstance(this)!!
         projectId = intent.getIntExtra("project",0)
         binding = ActivityCreateProjectBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         // get the project and project's text blocks
         project = localDb.ProjectDao().selectById(projectId)
-        blockList = localDb.BlockDao().selectAll() as ArrayList<Block>
-        blockAdapter = BlockAdapter(project, blockList)
+        blockList = blockDb.BlockDao().selectAll() as ArrayList<Block>
+        blockAdapter = BlockAdapter(project, blockList, voiceDb.VoiceDao().selectAll(), binding.audioPlayBox)
         apiRepository = ApiRepository(this)
+
+        if(blockAdapter.itemCount==0){
+            binding.noProject.visibility = View.VISIBLE
+        }
+
+        getPermission()
+
         dubbingUrl = "https://voco-audio.s3.ap-northeast-2.amazonaws.com/${project.team}/${projectId}/0.wav"
-        initExoPlayer(this, binding.audioPlayBox)
-        setExoPlayerUrl(this, dubbingUrl)
+        //initExoPlayer(this, binding.audioPlayBox)
+        setExoPlayerUrl(this, binding.audioPlayBox, dubbingUrl) // prepare dubbing audio source
 
         val window = window
         window.setBackgroundDrawableResource(R.color.light_purple)
@@ -131,10 +145,14 @@ class CreateProjectActivity() : AppCompatActivity(), PopupMenu.OnMenuItemClickLi
     override fun onMenuItemClick(item: MenuItem?): Boolean {
         when(item?.itemId){
             R.id.menu_download->{
-                val regex = Regex("[^A-Za-z_]")
-                MediaService.downloadAudio(this,
-                    regex.replace(project.title.replace(" ","_"),"").lowercase(Locale.getDefault()),
-                    dubbingUrl
+
+                MediaService.downloadAudio(LayoutInflater.from(this).inflate(R.layout.activity_create_project, null),
+                    "ap-northeast-2:3fb11ae4-58dc-46ba-be51-7aeb9b20f0c2",
+                    Regions.AP_NORTHEAST_2,
+                    "voco-audio",
+                    project,
+                    null,
+                    "${project.team}/${projectId}/0.wav"
                 )
             }
             R.id.menu_delete->{
@@ -159,6 +177,32 @@ class CreateProjectActivity() : AppCompatActivity(), PopupMenu.OnMenuItemClickLi
             return true
         }
         return false
+    }
+    private fun getPermission(){
+        if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+            ||ActivityCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+            val permissions = arrayOf(
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+            )
+            ActivityCompat.requestPermissions(this, permissions, 100)
+        }
+    }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == 100) {
+            if (grantResults.isNotEmpty()) {
+                for (grant in grantResults) {
+                    if (grant != PackageManager.PERMISSION_GRANTED)
+                        exitProcess(0)
+                }
+            }
+        }
     }
 
 }

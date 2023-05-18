@@ -51,7 +51,7 @@ class IntervalDialog(val context: Context) {
             }
             else {
                 progressBar.visibility = View.VISIBLE
-                apiRepository.updateBlock(project, block, progressBar, blockAdapter)
+                apiRepository.updateBlock(null ,project, block, progressBar, blockAdapter)
             }
             dlg.dismiss()
         }

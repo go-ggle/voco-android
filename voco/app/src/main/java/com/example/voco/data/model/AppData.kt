@@ -50,6 +50,6 @@ data class Team(
 @Entity(tableName="Voice", primaryKeys = ["id"])
 data class Voice(
     @ColumnInfo(name="id") val id: Int,
-    @ColumnInfo(name="nickname") val name: String,
+    @ColumnInfo(name="nickname") val nickname: String,
 )
 

@@ -40,12 +40,12 @@ class ProjectAdapter (val pageId: Int, private var projects : ArrayList<Project>
                 date.text = project.updatedAt
                 icon.setBackgroundResource(
                     when (project.language) {
-                        Language.AMERICA.ordinal -> R.drawable.ic_america
-                        Language.UK.ordinal -> R.drawable.ic_united_kingdom
-                        Language.GERMANY.ordinal -> R.drawable.ic_germany
-                        Language.CHINA.ordinal -> R.drawable.ic_china
-                        Language.JAPAN.ordinal -> R.drawable.ic_japan
-                        Language.FRANCE.ordinal -> R.drawable.ic_france
+                        Language.ENGLISH.ordinal -> R.drawable.ic_america
+                        Language.ENGLISH_UK.ordinal -> R.drawable.ic_united_kingdom
+                        Language.GERMAN.ordinal -> R.drawable.ic_germany
+                        Language.CHINESE.ordinal -> R.drawable.ic_china
+                        Language.JAPANESE.ordinal -> R.drawable.ic_japan
+                        Language.FRENCH.ordinal -> R.drawable.ic_france
                         else -> R.drawable.background_circle
                     }
                 )

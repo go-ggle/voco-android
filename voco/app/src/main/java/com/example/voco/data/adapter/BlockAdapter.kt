@@ -13,22 +13,26 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
+import com.amazonaws.regions.Regions
 import com.example.voco.R
 import com.example.voco.api.ApiRepository
 import com.example.voco.data.model.Block
 import com.example.voco.data.model.Project
+import com.example.voco.data.model.Voice
 import com.example.voco.databinding.ActivityCreateProjectBinding
 import com.example.voco.databinding.FragmentBlockBinding
 import com.example.voco.dialog.IntervalDialog
+import com.example.voco.service.MediaService
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
+import com.google.android.exoplayer2.ui.PlayerControlView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import okhttp3.internal.userAgent
 
 
-class BlockAdapter (val project: Project, var blocks : ArrayList<Block>) : RecyclerView.Adapter<BlockAdapter.ViewHolder>() {
+class BlockAdapter (val project: Project, var blocks : ArrayList<Block>, val voices : List<Voice>, private val playView: PlayerControlView) : RecyclerView.Adapter<BlockAdapter.ViewHolder>() {
     private lateinit var binding: FragmentBlockBinding
     private lateinit var parentBinding: ActivityCreateProjectBinding
     private lateinit var apiRepository : ApiRepository
@@ -72,7 +76,7 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>) : Recyc
                         true -> {
                             keyboard.showSoftInput(v, 0)
                             if(binding.progressBar.visibility == View.VISIBLE){
-                                binding.progressBar.visibility == View.GONE
+                                binding.progressBar.visibility = View.GONE
                             }
                         } // keyboard up
                         false -> {
@@ -83,10 +87,12 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>) : Recyc
                             val updatedText = binding.projectEditText.text.trim().toString()
                             block.text = updatedText
                             if(block.text != "" && prevText != updatedText) {
+                                binding.projectEditText.isFocusable = false
                                 binding.progressBar.visibility = View.VISIBLE
                                 // create block's dubbing request
-                                apiRepository.updateBlock(project, block, binding.progressBar, this@BlockAdapter)
+                                apiRepository.updateBlock(binding.projectEditText, project, block, binding.progressBar, this@BlockAdapter)
                             }
+
                         }
                     }
                 }
@@ -100,6 +106,22 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>) : Recyc
                     true
                 }
             }
+            binding.projectDownloadButton.setOnClickListener{
+                if(binding.progressBar.visibility == View.VISIBLE){
+                    Toast.makeText(it.context, R.string.toast_please_wait, Toast.LENGTH_SHORT).show()
+                }else if(it.alpha == 1F){
+                    it.alpha = 0.3F
+                    MediaService.downloadAudio(
+                        it,
+                        "ap-northeast-2:3fb11ae4-58dc-46ba-be51-7aeb9b20f0c2",
+                        Regions.AP_NORTHEAST_2,
+                        "voco-audio",
+                        project,
+                        block,
+                        "${project.team}/${project.id}/${block.id}.wav"
+                    )
+                }
+            }
             binding.projectIntervalButton.run {
                 val intervalMinute = block.interval/60
                 val intervalSecond = block.interval%60
@@ -110,22 +132,36 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>) : Recyc
                 }
                 // choose interval
                 setOnClickListener {
-                    dlg.show(project, block, binding.progressBar, this@BlockAdapter, intervalMinute, intervalSecond)
+                    if(binding.progressBar.visibility == View.VISIBLE){
+                        Toast.makeText(it.context, R.string.toast_please_wait, Toast.LENGTH_SHORT).show()
+                    }
+                    else{
+                        dlg.show(project, block, binding.progressBar, this@BlockAdapter, intervalMinute, intervalSecond)
+                    }
                 }
             }
+            binding.voiceName.text = voices.find{it.id == block.voiceId}!!.nickname
             binding.popupNickname.setOnClickListener {
-                // choose voice pop up menu
-                val popup = PopupMenu(themeWrapper, it)
-                popup.run{
-                    gravity = Gravity.END
-                    menuInflater.inflate(R.menu.menu_voice, popup.menu)
-                    setOnMenuItemClickListener { item ->
-                        when (item?.itemId) {
-
-                        }
-                        false
+                if(binding.progressBar.visibility == View.GONE){
+                    // choose voice pop up menu
+                    val popup = PopupMenu(themeWrapper, it)
+                    voices.forEachIndexed { index, voice ->
+                        // add pop up menu item
+                        popup.menu.add(0, voice.id, index, voice.nickname)
                     }
-                    show()
+                    popup.run{
+                        gravity = Gravity.END
+                        setOnMenuItemClickListener { item ->
+                            block.voiceId = item.itemId
+                            binding.voiceName.text = item.title
+                            apiRepository.updateBlock(binding.projectEditText, project, block, binding.progressBar, this@BlockAdapter)
+
+                            false
+                        }
+                        show()
+                    }
+                }else{
+                    Toast.makeText(it.context, R.string.toast_please_wait, Toast.LENGTH_SHORT).show()
                 }
             }
             binding.projectAddButton.setOnClickListener {
@@ -176,8 +212,6 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>) : Recyc
             binding.projectPlayButton.setOnClickListener {
                 if(block.audioPath != "" && player==null){
                     streamBlock(it.context,block.audioPath, it)
-                }else{
-                    println(block.audioPath)
                 }
             }
         }
@@ -235,6 +269,8 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>) : Recyc
             }
             notifyItemRangeChanged(pos, blocks.size-pos)
         }
+        val dubbingUrl = "https://voco-audio.s3.ap-northeast-2.amazonaws.com/${project.team}/${project.id}/0.wav"
+        MediaService.setExoPlayerUrl(playView.context, playView, dubbingUrl)
     }
     // update block's interval
     fun updateBlock(block:Block){
@@ -242,9 +278,13 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>) : Recyc
         blocks[pos].run{
             text = block.text
             interval = block.interval
-            if(blocks[pos].audioPath == "")
-                audioPath = block.audioPath
+            voiceId = block.voiceId
         }
+        if(blocks[pos].audioPath == "") {
+            blocks[pos].audioPath = block.audioPath
+        }
+        val dubbingUrl = "https://voco-audio.s3.ap-northeast-2.amazonaws.com/${project.team}/${project.id}/0.wav"
+        MediaService.setExoPlayerUrl(playView.context, playView, dubbingUrl)
         notifyItemChanged(pos)
     }
     fun showToast(context: Context, string: String){

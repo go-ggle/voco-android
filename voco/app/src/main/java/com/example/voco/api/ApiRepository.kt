@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.view.View
+import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -136,9 +137,9 @@ open class ApiRepository(private val context: Context) { // get activity context
                             snsLogin.kakao()
                         }
                         SNS.NAVER.ordinal->{
-                        val snsLogin = SnsLogin(context, currentActivity, isFinished)
-                        snsLogin.kakao()
-                    }
+                            val snsLogin = SnsLogin(context, currentActivity, isFinished)
+                            snsLogin.kakao()
+                        }
                     }
                 }
                 else ->{
@@ -152,7 +153,7 @@ open class ApiRepository(private val context: Context) { // get activity context
     }
 
     // create new project request
-    fun createProject(title: String, language: Language) = CoroutineScope(Default).launch {
+    fun createProject(title: String, language: Language, progressBar: ProgressBar) = CoroutineScope(Default).launch {
         try {
             val request = CoroutineScope(IO).async { apiService.createProject(
                 Glob.prefs.getCurrentTeam(),
@@ -166,6 +167,7 @@ open class ApiRepository(private val context: Context) { // get activity context
                 }
                 else-> response
             }
+            endLoading(progressBar)
             when (response.code()) {
                 201-> {
                     val localDao = AppDatabase.getProjectInstance(context)!!.ProjectDao()
@@ -180,6 +182,7 @@ open class ApiRepository(private val context: Context) { // get activity context
             }
         } catch (e: Exception) {
             println(e)
+            endLoading(progressBar)
             showToast(R.string.toast_network_error)
         }
     }
@@ -695,7 +698,7 @@ open class ApiRepository(private val context: Context) { // get activity context
             showToast(R.string.toast_network_error)
         }
     }
-    fun updateBlock(project: Project, block:Block, progressBar: ProgressBar?, blockAdapter: BlockAdapter) = CoroutineScope(Default).launch{
+    fun updateBlock(editBlock: EditText?, project: Project, block:Block, progressBar: ProgressBar?, blockAdapter: BlockAdapter) = CoroutineScope(Default).launch{
         try{
             val body = ApiData.UpdateBlockRequest(block.id,block.text,block.audioPath,block.interval,block.voiceId,project.language,block.order)
             val request = CoroutineScope(IO).async{ apiService.updateBlock(project.team,project.id,block.id,body)}
@@ -707,13 +710,15 @@ open class ApiRepository(private val context: Context) { // get activity context
                 }
                 else-> response
             }
-
+            withContext(Main) {
+                if(editBlock != null)  editBlock.isFocusable = true
+            }
             if(progressBar != null) {
                 endLoading(progressBar)
             }
             when(response.code()){
                 200-> withContext(Main) {
-                    blockAdapter.updateBlock(block)
+                    blockAdapter.updateBlock(response.body()!!)
                 }
                 else-> {
                     println(response.code())
@@ -723,6 +728,9 @@ open class ApiRepository(private val context: Context) { // get activity context
         }catch (e: Exception) {
             if(progressBar != null) {
                 endLoading(progressBar)
+            }
+            withContext(Main) {
+                if(editBlock != null)  editBlock.isFocusable = true
             }
             showToast(R.string.toast_network_error)
         }
@@ -770,6 +778,7 @@ open class ApiRepository(private val context: Context) { // get activity context
                     localDao.deleteAll()
                     localDao.insert(data as List<Voice>)
                 }
+                println(localDao.selectAll())
             }
             // update block db
             else -> {
