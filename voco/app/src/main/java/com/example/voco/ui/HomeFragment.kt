@@ -33,7 +33,6 @@ class HomeFragment : androidx.fragment.app.Fragment() {
 
     override fun onStart() {
         super.onStart()
-
         apiRepository.run{
             getTeam(binding)
             getProject(binding, parentFragmentManager)

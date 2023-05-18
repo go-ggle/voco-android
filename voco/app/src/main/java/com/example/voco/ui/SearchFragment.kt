@@ -52,7 +52,7 @@ class SearchFragment : Fragment() {
                     Toast.makeText(context, "사용 가능한 더빙보이스가 없습니다.\n          목소리를 녹음해주세요         ", Toast.LENGTH_SHORT).show()
                 }
                 else->{
-                    // title, language 작성하는 모달창 넣기
+                    // title, language 작성하는 모달창
                     dlg.show()
                 }
             }

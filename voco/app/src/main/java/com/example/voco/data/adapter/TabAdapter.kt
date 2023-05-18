@@ -1,14 +1,15 @@
 package com.example.voco.data.adapter
 
+import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import com.example.voco.component.TabFragment
 import com.example.voco.data.model.Project
 
-class TabAdapter (fm : FragmentManager, projectList: List<Project>): FragmentStatePagerAdapter(fm) {
-    private val tabFragment1 = TabFragment(projectList)
-    private val tabFragment2 = TabFragment(projectList.filter{ it.bookmarked } as ArrayList<Project>)
+class TabAdapter (fm : FragmentManager, projectList: List<Project>, progressBar: ProgressBar): FragmentStatePagerAdapter(fm) {
+    private val tabFragment1 = TabFragment(projectList, progressBar)
+    private val tabFragment2 = TabFragment(projectList.filter{ it.bookmarked } as ArrayList<Project>, progressBar)
 
     override fun getCount(): Int = 2
     override fun getItem(position: Int): Fragment =  when(position) {

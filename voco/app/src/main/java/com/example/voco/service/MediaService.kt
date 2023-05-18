@@ -8,11 +8,17 @@ import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Build
-import android.provider.MediaStore
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.annotation.RequiresApi
+import com.amazonaws.auth.CognitoCachingCredentialsProvider
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferNetworkLossHandler
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
+import com.amazonaws.regions.Region
+import com.amazonaws.regions.Regions
+import com.amazonaws.services.s3.AmazonS3Client
 import com.chibde.visualizer.LineBarVisualizer
 import com.example.voco.R
 import com.example.voco.databinding.ActivityRecordBinding
@@ -24,7 +30,6 @@ import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import okhttp3.internal.userAgent
 import java.io.File
-import java.io.FileOutputStream
 
 
 object MediaService{
@@ -135,46 +140,46 @@ object MediaService{
         exoPlayer = null
     }
     fun downloadAudio(context:Context, title: String, mediaUrl: String){
-        val fileUri = Uri.parse(mediaUrl)
+        // Cognito 샘플 코드. CredentialsProvider 객체 생성
+        val credentialsProvider = CognitoCachingCredentialsProvider(
+            context.applicationContext,
+            "ap-northeast-2:167efb36-dea5-4724-935d-0c419fc48f12", // 자격 증명 풀 ID
+            Regions.AP_NORTHEAST_2 // 리전
+        )
 
-        val values = ContentValues()
-        values.put(MediaStore.Audio.Media.DISPLAY_NAME, title)
-        values.put(MediaStore.Audio.Media.MIME_TYPE, "audio/mpeg")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            values.put(MediaStore.Audio.Media.RELATIVE_PATH, "Music")
-            values.put(MediaStore.Audio.Media.IS_PENDING, 1);
-        }
+        // 반드시 호출해야 한다.
+        TransferNetworkLossHandler.getInstance(context.applicationContext)
 
-        val contentResolver = context.contentResolver
-        val collection = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-        val insertUri = contentResolver.insert(collection, values)
+        // TransferUtility 객체 생성
+        val transferUtility = TransferUtility.builder()
+            .context(context.applicationContext)
+            .defaultBucket("Bucket_Name") // 디폴트 버킷 이름.
+            .s3Client(AmazonS3Client(credentialsProvider, Region.getRegion(Regions.AP_NORTHEAST_2)))
+            .build()
 
-        try {
-            val fileDescriptor = context.contentResolver.openFileDescriptor(insertUri!!, "w")
-            val outputStream = FileOutputStream(fileDescriptor?.fileDescriptor)
-            val inputStream = context.contentResolver.openInputStream(Uri.parse(mediaUrl))
-            val bytes = ByteArray(8192)
-            while (true) {
-                val read = inputStream?.read(bytes)
-                if (read == -1) {
-                    break
+        // 다운로드 실행. object: "SomeFile.mp4". 두 번째 파라메터는 Local경로 File 객체.
+        val downloadObserver = transferUtility.download("SomeFile.mp4", File("/SomeFile.mp4"))
+        // 다운로드 과정을 알 수 있도록 Listener를 추가할 수 있다.
+        downloadObserver.setTransferListener(object : TransferListener {
+            override fun onStateChanged(id: Int, state: TransferState) {
+                if (state == TransferState.COMPLETED) {
+                    Log.d("AWS", "DOWNLOAD Completed!")
                 }
-                outputStream.write(bytes, 0, read!!)
-            }
-            outputStream.close()
-            inputStream?.close()
-            fileDescriptor?.close()
-            values.clear()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                values.put(MediaStore.Audio.Media.IS_PENDING, 0)
-                values.put(MediaStore.Audio.Media.IS_PENDING, 0)
             }
 
-            context.contentResolver.update(insertUri, values, null, null)
+            override fun onProgressChanged(id: Int, current: Long, total: Long) {
+                try {
+                    val done = (((current.toDouble() / total) * 100.0).toInt()) //as Int
+                    Log.d("AWS", "DOWNLOAD - - ID: $id, percent done = $done")
+                }
+                catch (e: Exception) {
+                    Log.d("AWS", "Trouble calculating progress percent", e)
+                }
+            }
 
-            Toast.makeText(context, "더빙이 저장되었습니다", Toast.LENGTH_SHORT).show()
-        } catch (e: Exception) {
-            Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show()
-        }
+            override fun onError(id: Int, ex: Exception) {
+                Log.d("AWS", "DOWNLOAD ERROR - - ID: $id - - EX: ${ex.message.toString()}")
+            }
+        })
     }
 }

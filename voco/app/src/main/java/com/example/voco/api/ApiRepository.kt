@@ -141,8 +141,12 @@ open class ApiRepository(private val context: Context) { // get activity context
                     }
                     }
                 }
+                else ->{
+                    backLoginActivity(currentActivity)
+                }
             }
         } catch (e: Exception) {
+            backLoginActivity(currentActivity)
             return@launch
         }
     }
@@ -199,6 +203,7 @@ open class ApiRepository(private val context: Context) { // get activity context
                 else -> showToast(R.string.toast_update_title_error)
             }
         }catch (e:Exception){
+            println(e)
             showToast(R.string.toast_network_error)
         }
     }
@@ -355,7 +360,7 @@ open class ApiRepository(private val context: Context) { // get activity context
                                 }
                             }
                             binding.projects.run {
-                                adapter = TabAdapter(fm, projects)
+                                adapter = TabAdapter(fm, projects, binding.progressBar)
                                 binding.menu.setupWithViewPager(binding.projects)
                             }
                         }
@@ -432,7 +437,7 @@ open class ApiRepository(private val context: Context) { // get activity context
         } catch (e: Exception) {
             //showToast(R.string.toast_request_error)
             endLoading(binding.progressBar)
-            backLoginActivity()
+            backLoginActivity(null)
         }
     }
 
@@ -804,10 +809,13 @@ open class ApiRepository(private val context: Context) { // get activity context
         context.startActivity(intent)
         (context as SignupActivity).finish()
     }
-    private fun backLoginActivity(){
+    private fun backLoginActivity(currentActivity: Activity?){
         val intent = Intent(context, LoginActivity::class.java)
         context.startActivity(intent)
-        ActivityCompat.finishAffinity(context as BottomNavigationActivity)
+        if(currentActivity != null)
+            currentActivity.finish()
+        else
+            ActivityCompat.finishAffinity(context as BottomNavigationActivity)
         Glob.prefs.logout()
     }
     private suspend fun showToast(textId: Int) = withContext(Main) {

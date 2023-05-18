@@ -92,6 +92,11 @@ dependencies {
     // Exo Player
     implementation 'com.google.android.exoplayer:exoplayer-core:2.11.8'
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.11.8'
+
+    // S3 audio download
+    implementation 'com.amazonaws:aws-android-sdk-mobile-client:2.13.5'
+    implementation 'com.amazonaws:aws-android-sdk-cognito:2.13.5'
+    implementation 'com.amazonaws:aws-android-sdk-s3:2.13.5'
 }
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'idea'

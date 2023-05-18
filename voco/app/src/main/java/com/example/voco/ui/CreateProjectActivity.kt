@@ -26,7 +26,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import java.util.*
 import kotlin.properties.Delegates
 
-class CreateProjectActivity() : AppCompatActivity(), BlockAdapter.IntervalPicker, PopupMenu.OnMenuItemClickListener {
+class CreateProjectActivity() : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
     private var projectId by Delegates.notNull<Int>()
     private lateinit var dubbingUrl : String
     private lateinit var binding: ActivityCreateProjectBinding
@@ -35,7 +35,6 @@ class CreateProjectActivity() : AppCompatActivity(), BlockAdapter.IntervalPicker
     private lateinit var project: Project
     private lateinit var blockList : ArrayList<Block>
     private lateinit var apiRepository: ApiRepository
-    private var intervalBlock : Block? = null
     private var player: SimpleExoPlayer? = null
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -67,23 +66,11 @@ class CreateProjectActivity() : AppCompatActivity(), BlockAdapter.IntervalPicker
             addItemDecoration(VerticalItemDecoration(20))
         }
 
-        // interval picker
-        binding.intervalPicker.run {
-            minute.minValue=0
-            minute.maxValue=99
-            second.minValue =0
-            second.maxValue=59
-
-            cancelButton.setOnClickListener {
-                closeIntervalPicker(false)
-            }
-            dialogButton.setOnClickListener {
-                closeIntervalPicker(true)
-            }
-        }
-
         // back button
         binding.backButton.setOnClickListener {
+            player?.stop()
+            player?.release()
+            player = null
             val intent = Intent(this, BottomNavigationActivity::class.java)
             startActivity(intent)
             finish()
@@ -141,14 +128,6 @@ class CreateProjectActivity() : AppCompatActivity(), BlockAdapter.IntervalPicker
         binding.addprojectList.clearFocus()
         return super.dispatchTouchEvent(ev)
     }
-    override fun openIntervalPicker(block: Block, minute:Int, second:Int){
-        intervalBlock = block
-        binding.intervalPicker.run {
-            this.minute.value = minute
-            this.second.value = second
-            root.visibility = View.VISIBLE
-        }
-    }
     override fun onMenuItemClick(item: MenuItem?): Boolean {
         when(item?.itemId){
             R.id.menu_download->{
@@ -171,19 +150,15 @@ class CreateProjectActivity() : AppCompatActivity(), BlockAdapter.IntervalPicker
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if(keyCode == KeyEvent.KEYCODE_BACK){
+            player?.stop()
+            player?.release()
+            player = null
             val intent = Intent(this, BottomNavigationActivity::class.java)
             startActivity(intent)
             finish()
             return true
         }
         return false
-    }
-    private fun closeIntervalPicker(isUpdate: Boolean) {
-        if(isUpdate) {
-            apiRepository.updateBlock(project, intervalBlock!!,null, binding.addprojectList.adapter as BlockAdapter)
-        }
-        binding.intervalPicker.root.visibility = View.GONE
-        intervalBlock = null
     }
 
 }

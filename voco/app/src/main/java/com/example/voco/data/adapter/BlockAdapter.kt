@@ -19,6 +19,7 @@ import com.example.voco.data.model.Block
 import com.example.voco.data.model.Project
 import com.example.voco.databinding.ActivityCreateProjectBinding
 import com.example.voco.databinding.FragmentBlockBinding
+import com.example.voco.dialog.IntervalDialog
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
@@ -31,11 +32,11 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>) : Recyc
     private lateinit var binding: FragmentBlockBinding
     private lateinit var parentBinding: ActivityCreateProjectBinding
     private lateinit var apiRepository : ApiRepository
-    private lateinit var intervalPicker: IntervalPicker
     private lateinit var themeWrapper : ContextThemeWrapper
     private lateinit var trackSelector: DefaultTrackSelector
     private lateinit var clipBoard: ClipboardManager
     private lateinit var keyboard : InputMethodManager
+    private lateinit var dlg : IntervalDialog
     private var player: SimpleExoPlayer? = null // make player nullable
 
     override fun getItemCount(): Int = blocks.size
@@ -45,11 +46,11 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>) : Recyc
         binding = FragmentBlockBinding.inflate(inflater, parent, false)
         parentBinding = ActivityCreateProjectBinding.inflate(inflater)
         apiRepository = ApiRepository(parent.context)
-        intervalPicker = parent.context as IntervalPicker
         themeWrapper = ContextThemeWrapper(parent.context, R.style.PopupMenuTheme)
         trackSelector = DefaultTrackSelector(parent.context)
         clipBoard = parent.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         keyboard = parent.context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        dlg = IntervalDialog(parent.context)
         blocks.sortBy { it.order } // id가 아닌 order 순으로 정렬
 
         return ViewHolder(binding)
@@ -68,7 +69,12 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>) : Recyc
                 setText(block.text)
                 setOnFocusChangeListener { v, hasFocus ->
                     when (hasFocus) {
-                        true -> keyboard.showSoftInput(v, 0) // keyboard up
+                        true -> {
+                            keyboard.showSoftInput(v, 0)
+                            if(binding.progressBar.visibility == View.VISIBLE){
+                                binding.progressBar.visibility == View.GONE
+                            }
+                        } // keyboard up
                         false -> {
                             keyboard.hideSoftInputFromWindow(binding.root.windowToken, 0) // keyboard down
                             player = null
@@ -104,11 +110,7 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>) : Recyc
                 }
                 // choose interval
                 setOnClickListener {
-                    intervalPicker.openIntervalPicker(
-                        block,
-                        intervalMinute,
-                        intervalSecond
-                    )
+                    dlg.show(project, block, binding.progressBar, this@BlockAdapter, intervalMinute, intervalSecond)
                 }
             }
             binding.popupNickname.setOnClickListener {
@@ -128,7 +130,7 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>) : Recyc
             }
             binding.projectAddButton.setOnClickListener {
                 when(parentBinding.progressBar.visibility){
-                    View.VISIBLE -> showToast(this.itemView.context, "블럭 생성중입니다")
+                    View.VISIBLE -> Toast.makeText(it.context, R.string.toast_please_wait, Toast.LENGTH_SHORT).show()
                     else -> {
                         if (adapterPosition >= 0 && blocks[adapterPosition].text == "" || adapterPosition < 0 && blocks[0].text == ""
                             || (blocks.size > adapterPosition+1 && blocks[adapterPosition+1].text=="") ){
@@ -156,7 +158,7 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>) : Recyc
                 }
                 else {
                     if(binding.progressBar.visibility == View.VISIBLE){
-                        Toast.makeText(it.context, "블럭 삭제중입니다", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(it.context, R.string.toast_please_wait, Toast.LENGTH_SHORT).show()
                     }
                     else {
                         binding.progressBar.visibility = View.VISIBLE
@@ -247,9 +249,6 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>) : Recyc
     }
     fun showToast(context: Context, string: String){
         Toast.makeText(context, string, Toast.LENGTH_SHORT).show()
-    }
-    interface IntervalPicker{
-        fun openIntervalPicker(block: Block, minute:Int, second:Int)
     }
 }
 
