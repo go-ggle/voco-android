@@ -1,9 +1,8 @@
-package com.example.voco.api
+package com.example.voco.data.model
 
-import com.example.voco.data.model.Block
 import java.io.Serializable
 
-class ApiData {
+class Dto {
     data class LoginRequest(
         val email:String,
         val password: String,

@@ -1,11 +1,8 @@
 package com.example.voco.service
 
 import android.annotation.SuppressLint
-import android.content.ContentValues
 import android.content.Context
-import android.media.AudioAttributes
-import android.media.MediaPlayer
-import android.media.MediaRecorder
+import android.media.*
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -23,115 +20,148 @@ import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.chibde.visualizer.LineBarVisualizer
 import com.example.voco.R
+import com.example.voco.data.adapter.BlockAdapter
 import com.example.voco.data.model.Block
 import com.example.voco.data.model.Language
 import com.example.voco.data.model.Project
 import com.example.voco.databinding.ActivityRecordBinding
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerControlView
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.internal.userAgent
-import java.io.File
+import java.io.*
 import java.util.*
 
 
 object MediaService{
-    var player: MediaPlayer? = null // 사용하지 않을 때는 메모리 해제
-    private var recorder: MediaRecorder? = null // 사용하지 않을 때는 메모리 해제
-    private var exoPlayer: SimpleExoPlayer? = null // 사용하지 않을 때는 메모리 해제
+    var player: AudioTrack? = null // 사용하지 않을 때는 메모리 해제
+    var exoPlayer: SimpleExoPlayer? = null // 사용하지 않을 때는 메모리 해제
+    private var recorder: AudioRecord? = null // 사용하지 않을 때는 메모리 해제
+    private var isRecording : Boolean? = null
+    private var isPlaying : Boolean? = null
+    private var lineBarVisualizer : LineBarVisualizer? = null
     private lateinit var dataSourceFactory : DataSource.Factory
-    private const val audioSource = MediaRecorder.AudioSource.VOICE_RECOGNITION
+    private const val audioSource = MediaRecorder.AudioSource.VOICE_RECOGNITION // for Active noise cancellation
     private const val sampleRate = 44100
+    private const val channelCount = AudioFormat.CHANNEL_IN_STEREO
     private const val bitRate = 16
-    private const val audioFormat = MediaRecorder.OutputFormat.MPEG_4
-    private const val audioEncoder = MediaRecorder.AudioEncoder.AAC
+    private const val audioFormat = AudioFormat.ENCODING_PCM_16BIT
+    private val bufferSize = AudioTrack.getMinBufferSize(sampleRate, channelCount, audioFormat)
 
+    @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.S)
-    fun startRecording(fileName: String, recordBinding : ActivityRecordBinding){
+    fun startRecording(filePath: String, recordBinding : ActivityRecordBinding){
         recordBinding.recordWarning.visibility = View.GONE
-        recorder = MediaRecorder()
-            .apply {
-                setAudioSource(audioSource)
-                setOutputFormat(audioFormat)
-                //0setAudioEncoder(audioEncoder)
-                //setAudioEncodingBitRate(bitRate)
-                setAudioChannels(1)
-                setAudioSamplingRate(sampleRate)
-                setOutputFile(fileName)
-                try{
-                    prepare()
-                    start()
-                }catch (e: Exception){
-                    Log.e(ContentValues.TAG, "startRecording() failed")
-                }
+        recorder = AudioRecord(audioSource, sampleRate, channelCount, audioFormat, bufferSize)
+        recorder!!.startRecording()
+        isRecording = true
+        readRecording(filePath)
+    }
+    private fun readRecording(filePath: String) = CoroutineScope(Dispatchers.Default).launch {
+        val readData = ByteArray(bufferSize)
+        var fos: FileOutputStream? = null
+        try {
+            withContext(Dispatchers.IO) {
+                fos = FileOutputStream (filePath)
             }
+
+            while (isRecording!!) {
+                val ret: Int = recorder!!.read(readData, 0, bufferSize) //  AudioRecord의 read 함수를 통해 pcm data 를 읽어옴
+
+                withContext(Dispatchers.IO) {
+                    fos?.write(readData, 0, bufferSize)
+                } //  읽어온 readData 를 파일에 write
+            }
+
+            //recorder?.stop()
+            recorder?.release()
+            recorder = null
+
+            withContext(Dispatchers.IO) {
+                fos?.close()
+            }
+
+        }catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
     fun stopRecording() {
+        isRecording = false
         recorder?.run {
             release()
         }
         recorder = null
     }
-    fun startPlaying(page: View, fileName: String) {
-        if(File(fileName).exists()){
-            player = MediaPlayer()
-                .apply{
-                    try {
-                        setAudioAttributes(
-                            AudioAttributes. Builder()
-                                .setUsage(AudioAttributes.USAGE_MEDIA)
-                                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                                .build()
-                        )
-                        setDataSource(fileName)
-                        prepare()
-                        start()
-                    } catch (e: Exception) {
-                        Log.e(ContentValues.TAG, "startPlaying() failed")
-                    }
-                }
+    fun startPlaying(page: View, filePath: String) {
+        if(File(filePath).exists()){
+            isPlaying = true
+            player = AudioTrack(AudioManager.STREAM_MUSIC, sampleRate, channelCount, audioFormat, bufferSize, AudioTrack.MODE_STREAM)
+
+            lineBarVisualizer?.release()
             lineBarVisualization(page)
-            player?.setOnCompletionListener {
-                stopPlaying()
-                lineBarVisualization(page)
+
+            readPlaying(filePath)
+        }
+    }
+    private fun readPlaying(filePath: String) = CoroutineScope(Dispatchers.Default).launch {
+        try{
+            val writeData = ByteArray(bufferSize)
+            var fis: FileInputStream? = null
+            withContext(Dispatchers.IO){
+                fis = FileInputStream(filePath)
             }
+            val dis = DataInputStream(fis)
+            player?.play()
+
+            while(isPlaying!!){
+                val ret = dis.read(writeData, 0, bufferSize)
+                if(ret <= 0){
+                    isPlaying = false
+                    break
+                }
+                player?.write(writeData, 0, ret)
+            }
+
+            stopPlaying()
+
+            withContext(Dispatchers.IO){
+                dis.close()
+                fis?.close()
+            }
+        }catch(e: Exception){
+
         }
     }
     private fun stopPlaying() {
+        player?.stop()
         player?.release()
         player = null
     }
     @SuppressLint("ResourceAsColor")
     private fun lineBarVisualization(view: View) {
-        val lineBarVisualizer = view.findViewById<LineBarVisualizer>(R.id.visualizer)
+        lineBarVisualizer = view.findViewById<LineBarVisualizer>(R.id.visualizer)
 
         // setting the custom color to the line.
-        lineBarVisualizer.setColor(R.color.pure_white)
+        lineBarVisualizer!!.setColor(R.color.pure_white)
 
         // define the custom number of bars we want in the visualizer between (10 - 256).
-        lineBarVisualizer.setDensity(60F)
+        lineBarVisualizer!!.setDensity(60F)
 
         // Setting the media player to the visualizer.
-        if(player != null)
-            lineBarVisualizer.setPlayer(player!!.audioSessionId)
-        else
-            lineBarVisualizer.release()
-    }
-    fun initExoPlayer(context: Context, playerView: PlayerControlView?){
-        val trackSelector = DefaultTrackSelector(context)
-        // Global settings.
-        exoPlayer = SimpleExoPlayer.Builder(context)
-            .setTrackSelector(trackSelector)
-            .build()
-
-        playerView?.player = exoPlayer
-        // 미디어 데이터가 로드되는 DataSource.Factory 인스턴스 생성
-        dataSourceFactory = DefaultDataSourceFactory(context, userAgent)
+        lineBarVisualizer!!.setPlayer(player!!.audioSessionId)
     }
     fun setExoPlayerUrl(context: Context, playerView: PlayerControlView?,mediaUrl: String){
+        exoPlayer?.stop()
+        exoPlayer?.release()
+
         val trackSelector = DefaultTrackSelector(context)
         // Global settings.
         exoPlayer = SimpleExoPlayer.Builder(context)
@@ -147,8 +177,17 @@ object MediaService{
         val mediaSource = mediaSourceFactory.createMediaSource(Uri.parse(mediaUrl))
 
         // MediaSource로 플레이 할 미디어를 player에 넣어줌
-        exoPlayer?.prepare(mediaSource, false, false)
-
+        exoPlayer?.run{
+            prepare(mediaSource, false, false)
+            addListener(object : Player.EventListener {
+                override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+                    if(isPlaying){
+                        // change to play button
+                        BlockAdapter.player?.stop()
+                    }
+                }
+            })
+        }
     }
     fun releaseExoPlayer(){
         exoPlayer?.release()

@@ -10,6 +10,7 @@ import com.example.voco.login.Glob
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
+    val apiRepository = ApiRepository(this)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         when(Glob.prefs.getString("token","logout")){
@@ -19,8 +20,7 @@ class SplashActivity : AppCompatActivity() {
                 finish()
             }
             else -> { // if already login
-                val apiRepository = ApiRepository(this)
-                apiRepository.refreshToken(this, true)
+                apiRepository.refreshToken()
             }
         }
     }

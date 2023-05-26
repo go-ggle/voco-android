@@ -1,4 +1,4 @@
-package com.example.voco.component
+package com.example.voco.ui.component
 
 import android.content.Context
 import android.os.Bundle
@@ -31,7 +31,8 @@ class TabFragment(private val projectList: List<Project>, val progressBar: Progr
         super.onViewCreated(view, savedInstanceState)
         binding.projects.run{
             adapter = ProjectAdapter(R.id.menu_home, projectList as ArrayList<Project>, progressBar)
-            addItemDecoration(VerticalItemDecoration(2))
+            if(binding.projects.itemDecorationCount==0)
+                addItemDecoration(VerticalItemDecoration(2))
         }
     }
     fun updateProjectList(newProjectList: List<Project>){

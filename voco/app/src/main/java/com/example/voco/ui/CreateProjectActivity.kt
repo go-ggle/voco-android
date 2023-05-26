@@ -27,7 +27,6 @@ import com.example.voco.service.MediaService.setExoPlayerUrl
 import com.google.android.exoplayer2.SimpleExoPlayer
 import java.util.*
 import kotlin.properties.Delegates
-import kotlin.system.exitProcess
 
 class CreateProjectActivity() : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
     private var projectId by Delegates.notNull<Int>()
@@ -65,7 +64,6 @@ class CreateProjectActivity() : AppCompatActivity(), PopupMenu.OnMenuItemClickLi
         getPermission()
 
         dubbingUrl = "https://voco-audio.s3.ap-northeast-2.amazonaws.com/${project.team}/${projectId}/0.wav"
-        //initExoPlayer(this, binding.audioPlayBox)
         setExoPlayerUrl(this, binding.audioPlayBox, dubbingUrl) // prepare dubbing audio source
 
         val window = window
@@ -77,7 +75,8 @@ class CreateProjectActivity() : AppCompatActivity(), PopupMenu.OnMenuItemClickLi
         // text block recycler view
         binding.addprojectList.run {
             adapter = blockAdapter
-            addItemDecoration(VerticalItemDecoration(20))
+            if(binding.addprojectList.itemDecorationCount==0)
+                addItemDecoration(VerticalItemDecoration(20))
         }
 
         // back button
@@ -98,7 +97,7 @@ class CreateProjectActivity() : AppCompatActivity(), PopupMenu.OnMenuItemClickLi
                     Toast.makeText(this, "내용을 작성해주세요", Toast.LENGTH_SHORT).show()
                 } else {
                     binding.progressBar.visibility = View.VISIBLE
-                    apiRepository.createBlock(project.team, project.id, position + 1, binding.progressBar, binding.addprojectList.adapter as BlockAdapter)
+                    apiRepository.createBlock(project.team, project.id, position + 1, binding.progressBar, binding.addprojectList.adapter as BlockAdapter, binding.noProject)
                 }
             }else{
                 Toast.makeText(this, "블럭 생성중입니다",Toast.LENGTH_SHORT).show()
@@ -159,9 +158,9 @@ class CreateProjectActivity() : AppCompatActivity(), PopupMenu.OnMenuItemClickLi
                 binding.progressBar.visibility = View.VISIBLE
                 apiRepository.deleteProject(project.team, projectId,-1,-1,null)
             }
-            R.id.menu_update_language->{
-
-            }
+//            R.id.menu_update_language->{
+//
+//            }
         }
         return false
     }
@@ -199,7 +198,7 @@ class CreateProjectActivity() : AppCompatActivity(), PopupMenu.OnMenuItemClickLi
             if (grantResults.isNotEmpty()) {
                 for (grant in grantResults) {
                     if (grant != PackageManager.PERMISSION_GRANTED)
-                        exitProcess(0)
+                        super.onBackPressed()
                 }
             }
         }

@@ -3,7 +3,7 @@ package com.example.voco.ui
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.example.voco.api.ApiData
+import com.example.voco.data.model.Dto
 import com.example.voco.api.ApiRepository
 import com.example.voco.databinding.ActivitySignupBinding
 import com.example.voco.login.Glob
@@ -35,7 +35,7 @@ class SignupActivity : AppCompatActivity() {
                 viewBinding.warningConfirmPassword.visibility = View.INVISIBLE
                 viewBinding.warningNickname.visibility = View.INVISIBLE
                 // send signup request
-                apiRepository.signup(ApiData.SignupRequest(viewBinding.email.text.toString(), viewBinding.nickname.text.toString(), viewBinding.password.text.toString()))
+                apiRepository.signup(Dto.SignupRequest(viewBinding.email.text.toString(), viewBinding.nickname.text.toString(), viewBinding.password.text.toString()))
             }
             else {
                 // check email format

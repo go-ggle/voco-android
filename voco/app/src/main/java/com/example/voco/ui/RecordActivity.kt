@@ -14,20 +14,19 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.example.voco.R
-import com.example.voco.api.ApiData
 import com.example.voco.api.ApiRepository
 import com.example.voco.data.adapter.RecordAdapter
+import com.example.voco.data.model.Dto
 import com.example.voco.databinding.ActivityRecordBinding
 import com.example.voco.service.MediaService
 import com.ramijemli.percentagechartview.PercentageChartView
 import java.io.File
 import java.util.*
 import kotlin.math.abs
-import kotlin.system.exitProcess
 
 class RecordActivity : AppCompatActivity() {
     private lateinit var viewBinding: ActivityRecordBinding
-    private lateinit var sentenceList : List<ApiData.SentenceResponse>
+    private lateinit var sentenceList : List<Dto.SentenceResponse>
     private val apiRepository = ApiRepository(this)
     private var currItem = 1
     @RequiresApi(Build.VERSION_CODES.S)
@@ -36,7 +35,7 @@ class RecordActivity : AppCompatActivity() {
         viewBinding = ActivityRecordBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
-        sentenceList = intent.getSerializableExtra("sentences") as List<ApiData.SentenceResponse>
+        sentenceList = intent.getSerializableExtra("sentences") as List<Dto.SentenceResponse>
         getPermission() // get record permission
 
         val callback: OnPageChangeCallback = object : OnPageChangeCallback() {
@@ -66,18 +65,13 @@ class RecordActivity : AppCompatActivity() {
         viewBinding.nextRecord.run {
             setOnClickListener {
                 if(it.alpha == 1F) nextSentence()
-                val fileName = "${externalCacheDir?.absolutePath}/${currItem}" + ".wav"
+                val fileName = "${externalCacheDir?.absolutePath}/${currItem}" + ".pcm"
                 it.alpha = if(File(fileName).exists())
                     1F
                 else
                     0.3F
 
             }
-            val fileName = "${externalCacheDir?.absolutePath}/${currItem}" + ".wav"
-            alpha = if(File(fileName).exists())
-                1F
-            else
-                0.3F
         }
 
         val display = this.display
@@ -109,7 +103,7 @@ class RecordActivity : AppCompatActivity() {
                         else -> View.INVISIBLE
                     }
                     (findViewById<AppCompatButton>(R.id.record_play_button)).run {
-                        val fileName = "${externalCacheDir?.absolutePath}/${currItem}" + ".wav"
+                        val fileName = "${externalCacheDir?.absolutePath}/${currItem}" + ".pcm"
                         visibility = when(position){
                             0F -> View.VISIBLE
                             else -> View.GONE
@@ -143,12 +137,13 @@ class RecordActivity : AppCompatActivity() {
         }
 
         viewBinding.recordButton.setOnCheckedChangeListener { buttonView, isChecked ->
-            val fileName = "${externalCacheDir?.absolutePath}/${currItem}" + ".wav"
+            val fileName = "${externalCacheDir?.absolutePath}/${currItem}" + ".pcm"
             when(buttonView.alpha){
                 1F->{
                     if(isChecked){
                         MediaService.startRecording(fileName, viewBinding)
-                    }else{
+                    }
+                    else{
                         MediaService.stopRecording()
                         apiRepository.setVoice(currItem, fileName, viewBinding)
                     }
@@ -181,7 +176,7 @@ class RecordActivity : AppCompatActivity() {
             if (grantResults.isNotEmpty()) {
                 for (grant in grantResults) {
                     if (grant != PackageManager.PERMISSION_GRANTED)
-                        exitProcess(0)
+                        super.onBackPressed()
                 }
             }
         }

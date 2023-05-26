@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".component.BlockFragment">
+    tools:context=".ui.component.BlockFragment">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/project_menu_container"
         android:layout_width="0dp"

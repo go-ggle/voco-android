@@ -1,9 +1,6 @@
 package com.example.voco.api
 
-import com.example.voco.data.model.Block
-import com.example.voco.data.model.Project
-import com.example.voco.data.model.Team
-import com.example.voco.data.model.Voice
+import com.example.voco.data.model.*
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.*
@@ -12,7 +9,7 @@ interface Api {
     // 로그인
     @POST("/auth/login")
     suspend fun login(
-        @Body request : ApiData.LoginRequest
+        @Body request : Dto.LoginRequest
     ): Response<HashMap<String,String>>
 
     // 카카오 로그인
@@ -30,12 +27,12 @@ interface Api {
     // 회원가입
     @POST("/auth/signup")
     suspend fun signup(
-        @Body request : ApiData.SignupRequest
+        @Body request : Dto.SignupRequest
     ): Response<HashMap<String,String>>
 
     // 훈련용 문장 조회
     @GET("/train-data")
-    suspend fun getSentence() : Response<HashMap<String, List<ApiData.SentenceResponse>>>
+    suspend fun getSentence() : Response<HashMap<String, List<Dto.SentenceResponse>>>
 
     // 목소리 등록
     @Multipart
@@ -71,7 +68,7 @@ interface Api {
     @POST("/teams/{teamId}/projects")
     suspend fun createProject(
         @Path("teamId") teamId: Int,
-        @Body request : ApiData.CreateProjectRequest
+        @Body request : Dto.CreateProjectRequest
     ) : Response<Project>
 
     // 프로젝트 삭제
@@ -135,7 +132,7 @@ interface Api {
         @Path("teamId") teamId: Int,
         @Path("projectId") projectId: Int,
         @Path("blockId") blockId: Int,
-        @Body request : ApiData.UpdateBlockRequest
+        @Body request : Dto.UpdateBlockRequest
     ): Response<Block>
 
     // 블럭 삭제

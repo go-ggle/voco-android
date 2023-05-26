@@ -1,4 +1,4 @@
-package com.example.voco.component
+package com.example.voco.ui.component
 
 import android.content.Context
 import android.os.Bundle

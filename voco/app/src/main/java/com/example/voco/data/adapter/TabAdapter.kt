@@ -4,7 +4,7 @@ import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
-import com.example.voco.component.TabFragment
+import com.example.voco.ui.component.TabFragment
 import com.example.voco.data.model.Project
 
 class TabAdapter (fm : FragmentManager, projectList: List<Project>, progressBar: ProgressBar): FragmentStatePagerAdapter(fm) {

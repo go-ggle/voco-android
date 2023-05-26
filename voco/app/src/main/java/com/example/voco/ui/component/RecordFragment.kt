@@ -1,4 +1,4 @@
-package com.example.voco.component
+package com.example.voco.ui.component
 
 import android.os.Bundle
 import android.view.LayoutInflater

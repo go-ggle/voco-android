@@ -34,26 +34,76 @@ class CreateProjectDialog(val context: Context) {
             createAmerica.setOnClickListener {
                 selectedLanguage = Language.ENGLISH
                 binding.row2.clearCheck()
+                binding.row3.clearCheck()
+                binding.row4.clearCheck()
             }
             createUk.setOnClickListener {
                 selectedLanguage = Language.ENGLISH_UK
                 binding.row2.clearCheck()
+                binding.row3.clearCheck()
+                binding.row4.clearCheck()
+            }
+            createIndia.setOnClickListener {
+                selectedLanguage = Language.ENGLISH_INDIA
+                binding.row2.clearCheck()
+                binding.row3.clearCheck()
+                binding.row4.clearCheck()
+            }
+            createSpain.setOnClickListener {
+                selectedLanguage = Language.SPANISH
+                binding.row1.clearCheck()
+                binding.row3.clearCheck()
+                binding.row4.clearCheck()
             }
             createFrance.setOnClickListener {
                 selectedLanguage = Language.FRENCH
+                binding.row1.clearCheck()
+                binding.row3.clearCheck()
+                binding.row4.clearCheck()
+            }
+            createItaly.setOnClickListener {
+                selectedLanguage = Language.ITALIAN
+                binding.row1.clearCheck()
+                binding.row3.clearCheck()
+                binding.row4.clearCheck()
+            }
+
+            createGermany.setOnClickListener {
+                selectedLanguage = Language.GERMAN
+                binding.row1.clearCheck()
                 binding.row2.clearCheck()
+                binding.row4.clearCheck()
+            }
+            createRussian.setOnClickListener {
+                selectedLanguage = Language.RUSSIAN
+                binding.row1.clearCheck()
+                binding.row2.clearCheck()
+                binding.row4.clearCheck()
+            }
+            createArab.setOnClickListener {
+                selectedLanguage = Language.ARABIC
+                binding.row1.clearCheck()
+                binding.row2.clearCheck()
+                binding.row4.clearCheck()
+            }
+
+            createChina.setOnClickListener {
+                selectedLanguage = Language.CHINESE
+                binding.row1.clearCheck()
+                binding.row2.clearCheck()
+                binding.row3.clearCheck()
             }
             createJapan.setOnClickListener {
                 selectedLanguage = Language.JAPANESE
                 binding.row1.clearCheck()
+                binding.row2.clearCheck()
+                binding.row3.clearCheck()
             }
-            createChina.setOnClickListener {
-                selectedLanguage = Language.CHINESE
+            createIndonesia.setOnClickListener {
+                selectedLanguage = Language.INDONESIAN
                 binding.row1.clearCheck()
-            }
-            createGermany.setOnClickListener {
-                selectedLanguage = Language.GERMAN
-                binding.row1.clearCheck()
+                binding.row2.clearCheck()
+                binding.row3.clearCheck()
             }
         }
         dialogResize()

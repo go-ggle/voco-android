@@ -28,7 +28,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         // send token to server
-
+        println(token)
     }
     // 클라우드 서버에서 메시지를 전송하면 자동으로 호출됨
     override fun onMessageReceived(remoteMessage: RemoteMessage) {

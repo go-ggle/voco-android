@@ -1,15 +1,15 @@
 package com.example.voco.ui
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
 import android.view.KeyEvent
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.example.voco.api.ApiData
 import com.example.voco.api.ApiRepository
+import com.example.voco.data.model.Dto
 import com.example.voco.databinding.ActivityLoginBinding
 import com.example.voco.login.Glob
 import com.example.voco.login.SnsLogin
@@ -46,15 +46,12 @@ class LoginActivity : AppCompatActivity() {
                 viewBinding.warningEmail.visibility = View.INVISIBLE
                 viewBinding.warningPassword.visibility = View.INVISIBLE
                 viewBinding.progressBar.visibility = View.VISIBLE
-                finish()
+
                 // send login request
                 apiRepository.emailLogin(
-                    ApiData.LoginRequest(viewBinding.email.text.toString(), viewBinding.password.text.toString()),
-                    this,
-                    true,
+                    Dto.LoginRequest(viewBinding.email.text.toString(), viewBinding.password.text.toString()),
                     viewBinding.progressBar
                 )
-
             }
             else {
                 // check email format

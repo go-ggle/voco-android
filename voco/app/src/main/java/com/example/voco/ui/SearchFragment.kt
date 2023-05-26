@@ -34,7 +34,11 @@ class SearchFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        projectList = localDb.ProjectDao().selectAll() as ArrayList<Project>
+        projectList = try {
+            localDb.ProjectDao().selectAll() as ArrayList<Project>
+        }catch (e: Exception){
+            arrayListOf()
+        }
 
         binding = FragmentSearchBinding.inflate(inflater)
         binding.noProject.visibility = when(projectList.size){
@@ -43,7 +47,8 @@ class SearchFragment : Fragment() {
         }
         binding.projectList.run{
             adapter = ProjectAdapter(R.id.menu_board, projectList, binding.progressBar)
-            addItemDecoration(VerticalItemDecoration(28))
+            if(binding.projectList.itemDecorationCount==0)
+                addItemDecoration(VerticalItemDecoration(28))
         }
         // create project button
         binding.projectAddButton.setOnClickListener {

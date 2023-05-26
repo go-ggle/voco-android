@@ -50,7 +50,7 @@ class LoginCallback(val context : Context, private val currentActivity: Activity
         }
         else if (token != null) {
             // sns login request
-            apiRepository.snsLogin(token.accessToken, SNS.KAKAO.ordinal, currentActivity, isFinished)
+            apiRepository.snsLogin(token.accessToken, SNS.KAKAO.ordinal)
         }
     }
 }

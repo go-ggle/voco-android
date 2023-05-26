@@ -6,10 +6,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
-import com.example.voco.api.ApiData
+import com.example.voco.data.model.Dto
 import com.example.voco.databinding.FragmentRecordBinding
 
-class RecordAdapter(private val sentenceList: List<ApiData.SentenceResponse>): RecyclerView.Adapter<RecordAdapter.RecordViewHolder>() {
+class RecordAdapter(private val sentenceList: List<Dto.SentenceResponse>): RecyclerView.Adapter<RecordAdapter.RecordViewHolder>() {
     private lateinit var binding: FragmentRecordBinding
 
     override fun getItemCount(): Int = sentenceList.size
@@ -25,7 +25,7 @@ class RecordAdapter(private val sentenceList: List<ApiData.SentenceResponse>): R
     }
     inner class RecordViewHolder(private val binding: FragmentRecordBinding) : RecyclerView.ViewHolder(binding.root) {
         @RequiresApi(Build.VERSION_CODES.O)
-        fun bind(sentence: ApiData.SentenceResponse) {
+        fun bind(sentence: Dto.SentenceResponse) {
             val recordProgress = (1.25*sentence.textId).toFloat()
 
             binding.run{

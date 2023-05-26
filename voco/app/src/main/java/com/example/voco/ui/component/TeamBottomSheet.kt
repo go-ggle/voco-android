@@ -1,4 +1,4 @@
-package com.example.voco.component
+package com.example.voco.ui.component
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -83,7 +83,8 @@ class TeamBottomSheet(private val parentBinding: FragmentHomeBinding, private va
             Toast.makeText(requireContext(),"초대코드를 입력해주세요",Toast.LENGTH_SHORT).show()
           else {
             // send join team request
-            apiRepository.joinTeam(viewBinding, viewBinding.editText.text.toString(), parentBinding.teams.adapter as TeamAdapter)
+            parentBinding.progressBar.visibility = View.VISIBLE
+            apiRepository.joinTeam(viewBinding, viewBinding.editText.text.toString(), parentBinding.teams.adapter as TeamAdapter, parentBinding.progressBar)
           }
         }
         "초대코드를 공유해주세요"->{

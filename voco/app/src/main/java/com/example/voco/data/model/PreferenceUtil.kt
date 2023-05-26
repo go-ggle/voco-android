@@ -2,11 +2,10 @@ package com.example.voco.data.model
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.voco.api.ApiData
 
 class PreferenceUtil(context: Context) {
-    // id, pwd, sns, token, refresh_token, team, workspace, default_voice
-    // if there are no value: token - logout, refresh_token - logout, id - sns_user, pwd - sns_user, sns - 0, team - 0, workspace - 0, default_voice - 0
+    // id, pwd, sns, token, refresh_token, team, private_team, default_voice
+    // default value: token - logout, refresh_token - logout, id - sns_user, pwd - sns_user, sns - 0, team - 0, workspace - 0, default_voice - 0
     private val prefs: SharedPreferences = context.getSharedPreferences("user", Context.MODE_PRIVATE)
 
     fun getString(key: String, defValue: String): String {
@@ -26,28 +25,27 @@ class PreferenceUtil(context: Context) {
     }
     // return the user's login route
     fun loginMode()= getInt("sns", SNS.EMAIL.ordinal)
-    fun getIdAndPwd() = ApiData.LoginRequest(getString("id","sns_user"),getString("pwd","sns_user"))
-    fun setIdAndPwd(user: ApiData.LoginRequest){
+    fun setIdAndPwd(user: Dto.LoginRequest){
         setString("id", user.email)
         setString("pwd", user.password)
-        setInt("sns", SNS.EMAIL.ordinal)
     }
-    fun setToken(token: String) {
-        setString("token", token)
+    fun setToken(accessToken: String, refreshToken: String) {
+        setString("token", accessToken)
+        setString("refresh_token", refreshToken)
     }
     fun getCurrentTeam() = when(getInt("team", 0)){
-        0 -> getInt("workspace", 0)
+        0 -> getInt("private_team", 0) // if there is no selected team, return the user's private workspace
         else -> getInt("team", 0)
     }
     fun logout(){
-        prefs.edit().clear().commit()
-        setString("token","logout")
-        setString("refresh_token", "logout")
-        setString("id","sns_user")
-        setString("pwd","sns_user")
-        setInt("sns",0)
-        setInt("team",0)
-        setInt("workspace",0)
-        setInt("default_voice",0)
+        prefs.edit().clear().apply()
+//        setString("token","logout")
+//        setString("refresh_token", "logout")
+//        setString("id","sns_user")
+//        setString("pwd","sns_user")
+//        setInt("sns",0)
+//        setInt("team",0)
+//        setInt("workspace",0)
+//        setInt("default_voice",0)
     }
 }

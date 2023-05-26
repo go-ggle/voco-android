@@ -6,9 +6,9 @@ import android.content.Context
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.net.Uri
 import android.os.Build
-import android.support.v4.media.session.PlaybackStateCompat
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -41,7 +41,9 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>, val voi
     private lateinit var clipBoard: ClipboardManager
     private lateinit var keyboard : InputMethodManager
     private lateinit var dlg : IntervalDialog
-    private var player: SimpleExoPlayer? = null // make player nullable
+    companion object{
+        var player: SimpleExoPlayer? = null // make player nullable
+    }
 
     override fun getItemCount(): Int = blocks.size
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -74,42 +76,50 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>, val voi
                 setOnFocusChangeListener { v, hasFocus ->
                     when (hasFocus) {
                         true -> {
-                            keyboard.showSoftInput(v, 0)
-                            if(binding.progressBar.visibility == View.VISIBLE){
-                                binding.progressBar.visibility = View.GONE
+                            if(binding.progressBar.visibility == View.GONE){
+                                keyboard.showSoftInput(v, 0)
+                            }
+                            else{
+                                clearFocus()
                             }
                         } // keyboard up
                         false -> {
                             keyboard.hideSoftInputFromWindow(binding.root.windowToken, 0) // keyboard down
-                            player = null
+                            stopStreamBlock(binding.projectPlayButton)
 
                             val prevText = block.text
                             val updatedText = binding.projectEditText.text.trim().toString()
                             block.text = updatedText
                             if(block.text != "" && prevText != updatedText) {
-                                binding.projectEditText.isFocusable = false
                                 binding.progressBar.visibility = View.VISIBLE
                                 // create block's dubbing request
-                                apiRepository.updateBlock(binding.projectEditText, project, block, binding.progressBar, this@BlockAdapter)
+                                apiRepository.updateBlock(project, block, binding.progressBar,this@BlockAdapter)
                             }
 
                         }
                     }
                 }
                 setOnLongClickListener {
-                    if (clipBoard.hasPrimaryClip()){
-                        showContextMenu()
-                        if(clipBoard.primaryClipDescription!!.hasMimeType(MIMETYPE_TEXT_PLAIN)){
-                            setText(block.text+clipBoard.text) // paste text
+                    if(binding.progressBar.visibility != View.VISIBLE){
+                        if (clipBoard.hasPrimaryClip()){
+                            showContextMenu()
+                            if(clipBoard.primaryClipDescription!!.hasMimeType(MIMETYPE_TEXT_PLAIN)){
+                                setText(block.text+clipBoard.text) // paste text
+                            }
                         }
+                        setSelection(binding.projectEditText.length())
                     }
                     true
                 }
             }
             binding.projectDownloadButton.setOnClickListener{
                 if(binding.progressBar.visibility == View.VISIBLE){
-                    Toast.makeText(it.context, R.string.toast_please_wait, Toast.LENGTH_SHORT).show()
-                }else if(it.alpha == 1F){
+                    Toast.makeText(it.context, R.string.toast_please_wait_block, Toast.LENGTH_SHORT).show()
+                }
+                else if(block.audioPath==""){
+                    Toast.makeText(it.context, R.string.toast_please_create_dubbing, Toast.LENGTH_SHORT).show()
+                }
+                else if(it.alpha == 1F){
                     it.alpha = 0.3F
                     MediaService.downloadAudio(
                         it,
@@ -133,7 +143,7 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>, val voi
                 // choose interval
                 setOnClickListener {
                     if(binding.progressBar.visibility == View.VISIBLE){
-                        Toast.makeText(it.context, R.string.toast_please_wait, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(it.context, R.string.toast_please_wait_block, Toast.LENGTH_SHORT).show()
                     }
                     else{
                         dlg.show(project, block, binding.progressBar, this@BlockAdapter, intervalMinute, intervalSecond)
@@ -154,19 +164,20 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>, val voi
                         setOnMenuItemClickListener { item ->
                             block.voiceId = item.itemId
                             binding.voiceName.text = item.title
-                            apiRepository.updateBlock(binding.projectEditText, project, block, binding.progressBar, this@BlockAdapter)
+                            binding.progressBar.visibility = View.VISIBLE
+                            apiRepository.updateBlock(project, block, binding.progressBar, this@BlockAdapter)
 
                             false
                         }
                         show()
                     }
                 }else{
-                    Toast.makeText(it.context, R.string.toast_please_wait, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(it.context, R.string.toast_please_wait_block, Toast.LENGTH_SHORT).show()
                 }
             }
             binding.projectAddButton.setOnClickListener {
                 when(parentBinding.progressBar.visibility){
-                    View.VISIBLE -> Toast.makeText(it.context, R.string.toast_please_wait, Toast.LENGTH_SHORT).show()
+                    View.VISIBLE -> Toast.makeText(it.context, R.string.toast_please_wait_block, Toast.LENGTH_SHORT).show()
                     else -> {
                         if (adapterPosition >= 0 && blocks[adapterPosition].text == "" || adapterPosition < 0 && blocks[0].text == ""
                             || (blocks.size > adapterPosition+1 && blocks[adapterPosition+1].text=="") ){
@@ -180,7 +191,8 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>, val voi
                                 project.id,
                                 adapterPosition + 2,
                                 parentBinding.progressBar,
-                                this@BlockAdapter
+                                this@BlockAdapter,
+                                null
                             )
                         }
                     }
@@ -194,7 +206,7 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>, val voi
                 }
                 else {
                     if(binding.progressBar.visibility == View.VISIBLE){
-                        Toast.makeText(it.context, R.string.toast_please_wait, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(it.context, R.string.toast_please_wait_block, Toast.LENGTH_SHORT).show()
                     }
                     else {
                         binding.progressBar.visibility = View.VISIBLE
@@ -209,15 +221,35 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>, val voi
                 }
             }
             // play block button
-            binding.projectPlayButton.setOnClickListener {
-                if(block.audioPath != "" && player==null){
-                    streamBlock(it.context,block.audioPath, it)
+            binding.projectPlayButton.run{
+                setOnClickListener {
+                    if(binding.progressBar.visibility == View.VISIBLE){
+                        Toast.makeText(it.context, R.string.toast_please_wait_block, Toast.LENGTH_SHORT).show()
+                    }
+                    else if(block.audioPath == ""){
+                        Toast.makeText(it.context, R.string.toast_please_create_dubbing, Toast.LENGTH_SHORT).show()
+                    }
+                    else if(player==null){
+                        // change to stop button
+                        this.setImageResource(R.drawable.ic_substop)
+                        // start streaming
+                        streamBlock(it.context, block.audioPath, binding.projectPlayButton)
+                    }
+                    else{
+                        // stop streaming
+                        stopStreamBlock(binding.projectPlayButton)
+                        this.setImageResource(R.drawable.ic_subplay)
+                    }
                 }
             }
         }
     }
     // stream block dubbing audio
-    fun streamBlock(context: Context, mediaUrl: String, view: View){
+    fun streamBlock(context: Context, mediaUrl: String, playButton: ImageButton){
+        stopStreamBlock(null)
+        val dubbingUrl = "https://voco-audio.s3.ap-northeast-2.amazonaws.com/${project.team}/${project.id}/0.wav"
+        if(playView.player!= null && playView.player!!.isPlaying)
+            MediaService.setExoPlayerUrl(playView.context, playView, dubbingUrl)
 
         val dataSourceFactory = DefaultDataSourceFactory(context, userAgent)
         val mediaSourceFactory = ProgressiveMediaSource.Factory(dataSourceFactory)
@@ -231,22 +263,22 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>, val voi
             playWhenReady = true // play the media source
             addListener(object : Player.EventListener {
                 override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-                    when(playbackState){
-                        PlaybackStateCompat.STATE_PLAYING ->{
-                            view.alpha = 0.3F
-                        }
-                        else ->{
-                            view.alpha = 1F
-                            release()
-                            player = null
-                        }
+                    if(!isPlaying){
+                        // change to play button
+                        stopStreamBlock(playButton)
                     }
                 }
             })
         }
     }
+    fun stopStreamBlock(playButton: ImageButton?){
+        playButton?.setImageResource(R.drawable.ic_subplay)
+        player?.stop(true)
+        player?.release()
+        player = null
+    }
     // add block
-    fun addBlock(block: Block, pos: Int){
+    fun addBlock(block: Block, pos: Int, introView: View?){
         blocks.run{
             add(pos, block)
             notifyItemInserted(pos)
@@ -256,6 +288,9 @@ class BlockAdapter (val project: Project, var blocks : ArrayList<Block>, val voi
                 }
                 notifyItemRangeChanged(pos + 1, blocks.size - pos - 1)
             }
+        }
+        if(pos==0){
+            introView!!.visibility = View.GONE
         }
     }
     // delete block

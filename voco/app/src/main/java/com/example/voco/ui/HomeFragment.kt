@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.voco.api.ApiRepository
-import com.example.voco.component.TeamBottomSheet
+import com.example.voco.ui.component.TeamBottomSheet
 import com.example.voco.databinding.FragmentHomeBinding
 
 class HomeFragment : androidx.fragment.app.Fragment() {

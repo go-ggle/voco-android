@@ -46,6 +46,12 @@ class ProjectAdapter (val pageId: Int, private var projects : ArrayList<Project>
                         Language.CHINESE.ordinal -> R.drawable.ic_china
                         Language.JAPANESE.ordinal -> R.drawable.ic_japan
                         Language.FRENCH.ordinal -> R.drawable.ic_france
+                        Language.ARABIC.ordinal -> R.drawable.ic_arab_emirates
+                        Language.ENGLISH_INDIA.ordinal -> R.drawable.ic_india
+                        Language.INDONESIAN.ordinal -> R.drawable.ic_indonesia
+                        Language.ITALIAN.ordinal -> R.drawable.ic_italy
+                        Language.RUSSIAN.ordinal -> R.drawable.ic_russian
+                        Language.SPANISH.ordinal -> R.drawable.ic_spain
                         else -> R.drawable.background_circle
                     }
                 )
