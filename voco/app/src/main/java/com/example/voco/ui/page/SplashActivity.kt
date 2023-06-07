@@ -1,4 +1,4 @@
-package com.example.voco.ui
+package com.example.voco.ui.page
 
 import android.annotation.SuppressLint
 import android.content.Intent

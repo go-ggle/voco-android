@@ -1,4 +1,4 @@
-package com.example.voco.ui
+package com.example.voco.ui.page
 
 import android.content.Context
 import android.content.Intent

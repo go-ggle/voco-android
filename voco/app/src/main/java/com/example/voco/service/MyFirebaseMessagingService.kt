@@ -13,7 +13,7 @@ import androidx.core.app.NotificationCompat
 import com.example.voco.R
 import com.example.voco.service.MyFirebaseMessagingService.Constants.CHANNEL_ID
 import com.example.voco.service.MyFirebaseMessagingService.Constants.CHANNEL_NAME
-import com.example.voco.ui.SplashActivity
+import com.example.voco.ui.page.SplashActivity
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import kotlin.random.Random
@@ -42,7 +42,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         }
     }
     private fun sendNotification(title:String, message: String){
-        val intent = Intent(applicationContext,SplashActivity::class.java)
+        val intent = Intent(applicationContext, SplashActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(applicationContext, 0, intent, FLAG_IMMUTABLE)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notificationID = Random.nextInt()

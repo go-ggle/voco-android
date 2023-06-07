@@ -49,14 +49,14 @@
 
     <!--activity-->
     <activity
-        android:name=".ui.RecordActivity"
+        android:name=".ui.page.RecordActivity"
         android:exported="true" />
     <activity
-        android:name=".ui.SignupActivity"
+        android:name=".ui.page.SignupActivity"
         android:exported="false" />
 
     <activity
-        android:name=".ui.LoginActivity"
+        android:name=".ui.page.LoginActivity"
         android:exported="true">
     </activity>
 
@@ -75,13 +75,13 @@
       </intent-filter>
     </activity>
     <activity
-        android:name=".ui.CreateProjectActivity"
+        android:name=".ui.page.CreateProjectActivity"
         android:exported="false" />
     <activity
-        android:name=".ui.BottomNavigationActivity"
+        android:name=".ui.page.BottomNavigationActivity"
         android:exported="true" />
     <activity
-        android:name=".ui.SplashActivity"
+        android:name=".ui.page.SplashActivity"
         android:exported="true"
         android:theme="@style/SplashTheme">
       <intent-filter>

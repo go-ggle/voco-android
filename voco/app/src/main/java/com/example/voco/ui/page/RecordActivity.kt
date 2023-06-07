@@ -1,4 +1,4 @@
-package com.example.voco.ui
+package com.example.voco.ui.page
 
 import android.content.pm.PackageManager
 import android.graphics.Point

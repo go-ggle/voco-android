@@ -11,7 +11,7 @@ import com.example.voco.data.adapter.BlockAdapter
 import com.example.voco.data.model.Block
 import com.example.voco.data.model.Project
 import com.example.voco.databinding.DialogIntervalPickerBinding
-import com.example.voco.ui.CreateProjectActivity
+import com.example.voco.ui.page.CreateProjectActivity
 
 class IntervalDialog(val context: Context) {
     private lateinit var intervalBlock : Block

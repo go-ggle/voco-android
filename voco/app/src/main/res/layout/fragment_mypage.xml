@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.MypageFragment"
+    tools:context=".ui.page.MypageFragment"
     android:background="@color/light_purple">
     <TextView
         android:id="@+id/title"
