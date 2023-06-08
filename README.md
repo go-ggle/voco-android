@@ -122,7 +122,8 @@ voco
 이후 카카오 서버 토큰을 voco 서버에 전달하여 voco 서버의 사용자 토큰을 받습니다.    
 
 
-![KakaoTalk_20230607_134715094](https://github.com/go-ggle/voco-android/assets/52921222/c810a99b-4c06-4e2d-9654-c710e8041f10)
+![KakaoTalk_20230607_134715094](https://github.com/go-ggle/voco-android/assets/52921222/c810a99b-4c06-4e2d-9654-c710e8041f10)  ![KakaoTalk_20230608_162500193](https://github.com/go-ggle/voco-android/assets/52921222/b361fa3d-c6a9-4ec6-b15a-5afc9eb9f680)
+
 
 #### 기타
 * 프로젝트는 북마크를 설정할 수 있습니다.
