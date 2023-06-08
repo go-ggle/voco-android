@@ -130,6 +130,10 @@ voco
 * 프로젝트를 클릭하면 프로젝트 편집 화면으로 이동합니다.
 * 프로젝트를 길게 클릭하여 프로젝트를 삭제할 수 있습니다.
 
+##  Poster
+<img src="https://github.com/go-ggle/voco-android/assets/52921222/80b1a922-7153-43a9-a9a2-94df0fad8951" height="600px" width="400px">
+
+
 ## Developer
 [정민정 - @minjungJ](https://github.com/minjungJ)
 
