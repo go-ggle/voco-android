@@ -122,12 +122,17 @@ voco
 이후 카카오 서버 토큰을 voco 서버에 전달하여 voco 서버의 사용자 토큰을 받습니다.    
 
 
-![KakaoTalk_20230607_134715094](https://github.com/go-ggle/voco-android/assets/52921222/c810a99b-4c06-4e2d-9654-c710e8041f10)
+![KakaoTalk_20230607_134715094](https://github.com/go-ggle/voco-android/assets/52921222/c810a99b-4c06-4e2d-9654-c710e8041f10)  ![KakaoTalk_20230608_162500193](https://github.com/go-ggle/voco-android/assets/52921222/b361fa3d-c6a9-4ec6-b15a-5afc9eb9f680)
+
 
 #### 기타
 * 프로젝트는 북마크를 설정할 수 있습니다.
 * 프로젝트를 클릭하면 프로젝트 편집 화면으로 이동합니다.
 * 프로젝트를 길게 클릭하여 프로젝트를 삭제할 수 있습니다.
+
+##  Poster
+<img src="https://github.com/go-ggle/voco-android/assets/52921222/80b1a922-7153-43a9-a9a2-94df0fad8951" height="600px" width="400px">
+
 
 ## Developer
 [정민정 - @minjungJ](https://github.com/minjungJ)
