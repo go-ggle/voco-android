@@ -6,17 +6,6 @@ import androidx.room.PrimaryKey
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
 
-//@Entity(tableName="User")
-//data class User(
-//    @PrimaryKey @ColumnInfo(name="id") val id: String, // default: snsUser
-//    @NotNull @ColumnInfo(name = "pwd") val pwd: String, // default: snsUser
-//    @NotNull @ColumnInfo(name = "team") val team: Int, // default: 0
-//    @NotNull @ColumnInfo(name = "workSpace") val workSpace: Int, // default: 0
-//    @NotNull @ColumnInfo(name = "defaultVoice") val defaultVoice: Int, // default: 0
-//    @NotNull @ColumnInfo(name = "sns") val sns: SNS, // default: EMAIL
-//    @NotNull @ColumnInfo(name = "token") val token: String, // default: logout
-//    @NotNull @ColumnInfo(name = "refreshToken") val refreshToken: String, // default: logout
-//)
 @Entity(tableName="Country")
 data class Country(
     @PrimaryKey @ColumnInfo(name="countryId") val countryId: Int,

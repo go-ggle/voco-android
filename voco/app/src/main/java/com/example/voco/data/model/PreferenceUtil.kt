@@ -39,13 +39,5 @@ class PreferenceUtil(context: Context) {
     }
     fun logout(){
         prefs.edit().clear().apply()
-//        setString("token","logout")
-//        setString("refresh_token", "logout")
-//        setString("id","sns_user")
-//        setString("pwd","sns_user")
-//        setInt("sns",0)
-//        setInt("team",0)
-//        setInt("workspace",0)
-//        setInt("default_voice",0)
     }
 }
