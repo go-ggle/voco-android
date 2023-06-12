@@ -1,6 +1,10 @@
 ![Group 16484](https://github.com/go-ggle/voco-android/assets/52921222/0b3c72c7-5a03-4c47-87f2-3ed3ec36339a)
 
+**[ 2023-1 캡스톤디자인프로젝트 포스트세션 우수상 수상작 ]**
+
+**[ 제4회 이화여대 SW창업 경진대회 장려상 수상작 ]**
 ## Introduction
+
 **원하는 발음으로, 내가 말하는 듯한 외국어 더빙을 생성합니다.**  
 
 Google Text-to-Speech를 이용하여 텍스트를 음성으로 변환한 다음, Voice Conversion 모델에 통과시켜 사용자 목소리로 변환합니다. 사용한 VC(Voice Conversion) 모델은 [StarGANv2-VC](https://starganv2-vc.github.io/)입니다. 총 **3분 분량**(2~3초 길이의 영어 80문장) 녹음만으로 사용자별 VC 모델을 생성할 수 있으며, 영어 녹음만으로 모든 언어에 대한 VC가 가능합니다.
@@ -8,7 +12,7 @@ Google Text-to-Speech를 이용하여 텍스트를 음성으로 변환한 다음
 
 ![image](https://github.com/go-ggle/voco-android/assets/52921222/94b4f68a-d824-47fc-a505-4e9089a09c05)
 
-## Project Structure
+## [Project Structure](https://github.com/go-ggle/voco-android/tree/main/voco/app/src/main/java/com/example/voco)
 ```
 voco
 ├─api 
@@ -50,10 +54,10 @@ voco
 │  │  ├─TabFragment.kt
 │  │  ├─TeamFragment.kt
 │  │  └─TeamBottomShee│.kt
-│  └─pag│
-│  │  ├─│plashActivity.kt
-│  │  ├─│ottomNavigationActivity.kt
-│  │  ├─│reateProjectActivity.kt
+│  └─page
+│  │  ├─SplashActivity.kt
+│  │  ├─BottomNavigationActivity.kt
+│  │  ├─CreateProjectActivity.kt
 │  │  ├─LoginActivity.kt
 │  │  ├─RecordActivity.kt
 │  │  ├─SignupActivity.kt
@@ -64,6 +68,7 @@ voco
 ## Library
 
 * AudioRecord
+* Coroutines
 * MediaPlayer
 * ExoPlayer
 * Retrofit2
@@ -131,9 +136,10 @@ voco
 * 프로젝트를 길게 클릭하여 프로젝트를 삭제할 수 있습니다.
 
 ##  Poster
-<img src="https://github.com/go-ggle/voco-android/assets/52921222/80b1a922-7153-43a9-a9a2-94df0fad8951" height="600px" width="400px">
+<img src="https://github.com/go-ggle/voco-android/assets/52921222/4dde0e56-f78a-49d2-a04d-15b2d33df8e9" height="800px" width="550px">
 
 
 ## Developer
-[정민정 - @minjungJ](https://github.com/minjungJ)
+[정민정 - @milijung](https://github.com/milijung)<br/>
+[velog - 프로젝트 회고](https://velog.io/@minjungh63/%EC%BA%A1%EC%8A%A4%ED%86%A4%EB%94%94%EC%9E%90%EC%9D%B8%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-voco-%EA%B0%9C%EB%B0%9C-%ED%9A%8C%EA%B3%A0#%ED%9B%84%EA%B8%B0)
 
