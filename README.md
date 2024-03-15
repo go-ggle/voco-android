@@ -140,6 +140,6 @@ voco
 
 
 ## Developer
-[정민정 - @milijung](https://github.com/milijung)<br/>
+[정민정 - @reezung](https://github.com/reezung)<br/>
 [velog - 프로젝트 회고](https://velog.io/@minjungh63/%EC%BA%A1%EC%8A%A4%ED%86%A4%EB%94%94%EC%9E%90%EC%9D%B8%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-voco-%EA%B0%9C%EB%B0%9C-%ED%9A%8C%EA%B3%A0#%ED%9B%84%EA%B8%B0)
 
